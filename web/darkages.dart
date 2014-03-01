@@ -1,8 +1,8 @@
 library darkagesgame;
 
-import 'dart:html';
+import 'dart:html' hide MouseEvent;
 import 'dart:async' show Timer;
-import 'package:stagexl/stagexl.dart' hide MouseEvent;
+import 'package:stagexl/stagexl.dart';
 
 part 'menu.dart';
 part 'city.dart';
@@ -18,6 +18,7 @@ Menu listMenu;
 Menu actionMenu;
 Menu spaceShipMenu;
 var listOfMenus = new List(15);
+City selectedCity;
 //Menu testGraph;
 
 
@@ -34,11 +35,11 @@ void main()
   resourceManager = new ResourceManager()
   ..addBitmapData('map', 'images/MapRender-Real-1280x720.jpg')
   ..addBitmapData('hammer', 'images/spaceHammer.jpg')
-  ..addSound('ambientMusic', 'sounds/ambient.mp3')
-  ..addBitmapData('hammer', 'images/spaceHammer.jpg');
+  ..addSound('ambientMusic', 'sounds/ambient.mp3');
   //..addBitmapData('button', 'images/button.jpg')
   //..addSound('backgroundMusic', 'images/JACKSTEP.mp3');
   
+  stage.onMouseClick.listen(showCoordinates);
 
 
 resourceManager.load().then((result) 
@@ -63,8 +64,8 @@ resourceManager.load().then((result)
   
   
   mapPic = new Bitmap(resourceManager.getBitmapData('map'));
-  mapPic.x = 5;
-  mapPic.y = 5;
+  //mapPic.x = 5;
+  //mapPic.y = 5;
   
   listMenu = new Menu(1060,0,0,35,135,250);
   actionMenu = new Menu(1060,0,0, 295, 135, 250);
@@ -76,7 +77,6 @@ resourceManager.load().then((result)
   //stage.addChild(testGraph);
   
   musicLoop();
-  
 
   city_init();
   createMenus();
@@ -103,11 +103,24 @@ createMenus()
   {
     listOfMenus[i] = new Menu.graph(50, 5 + i*50, 0, 0, 75, 45, cities[i]);
     stage.addChild(listOfMenus[i]);
+    
   }
 }
 
 startGame()
 {
   
+}
+
+setSelected(City thisCity)
+{
+  print(thisCity);
+  selectedCity = thisCity;
+  actionMenu.cityName.text = "change";
+}
+
+void showCoordinates(MouseEvent e)
+{
+  print("${e.localX} ${e.localY}");
 }
 

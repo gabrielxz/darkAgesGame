@@ -6,6 +6,7 @@ class Menu extends DisplayObjectContainer
   int healthyPercent;
   int deadPerfect;
   City thisCity;
+  TextField cityName;
   
   Menu(displayObjectX, displayObjectY, xLoc, yLoc, width, height) 
   {
@@ -15,6 +16,16 @@ class Menu extends DisplayObjectContainer
     shape.graphics.rect(xLoc, yLoc, width, height);
     shape.graphics.strokeColor(Color.Blue);
     this.addChild(shape);
+    
+    cityName = new TextField();
+    cityName.defaultTextFormat = new TextFormat('Spicy Rice', 30, Color.Red);
+    cityName.text = 'null';
+    cityName.x = 15;
+    cityName.y = 30;
+    cityName.width = 100;
+    cityName.height = 50;
+    cityName.wordWrap = true;
+    this.addChild(cityName);
   }
   
   Menu.graph(displayObjectX, displayObjectY, xLoc, yLoc, width, height, city) 
@@ -39,6 +50,14 @@ class Menu extends DisplayObjectContainer
     
     this.addChild(infectedGraph);
     this.addChild(hammerPic);
+    
+    this.onMouseClick.listen(handleClickOnMenu);
+  }
+  
+  void handleClickOnMenu(MouseEvent e)
+  {
+    print(thisCity);
+    setSelected(thisCity);
   }
   
 

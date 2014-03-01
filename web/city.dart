@@ -168,9 +168,9 @@ void city_init ()
     cities[c].healthy = cities[c].population - cities[c].infected;
     cities[c].name = "David's NAME";
     
-    cities[c].spread_to = 1.0;
-    cities[c].spread_from = 1.0;
-    cities[c].spread_within = 1.0;
+    cities[c].spread_to_factor = 1.0;
+    cities[c].spread_from_factor = 1.0;
+    cities[c].spread_within_factor = 1.0;
     
     cities[c].production = prod[c];
     cities[c].next_to = new Set();
