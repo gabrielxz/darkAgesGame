@@ -445,8 +445,28 @@ var $$ = {};
         return H.ioore(receiver, index);
       return receiver[index];
     },
+    contains$1: function(receiver, other) {
+      var i;
+      for (i = 0; i < receiver.length; ++i)
+        if (J.$eq(receiver[i], other))
+          return true;
+      return false;
+    },
     toString$0: function(receiver) {
       return H.IterableMixinWorkaround_toStringIterable(receiver, "[", "]");
+    },
+    toList$1$growable: function(receiver, growable) {
+      var t1;
+      if (growable)
+        return H.setRuntimeTypeInfo(receiver.slice(), [H.getTypeArgumentByIndex(receiver, 0)]);
+      else {
+        t1 = H.setRuntimeTypeInfo(receiver.slice(), [H.getTypeArgumentByIndex(receiver, 0)]);
+        t1.fixed$length = init;
+        return t1;
+      }
+    },
+    toList$0: function($receiver) {
+      return this.toList$1$growable($receiver, true);
     },
     get$iterator: function(receiver) {
       return new H.ListIterator(receiver, receiver.length, 0, null);
@@ -466,7 +486,7 @@ var $$ = {};
     },
     $index: function(receiver, index) {
       if (typeof index !== "number" || Math.floor(index) !== index)
-        throw H.wrapException(new P.ArgumentError(index));
+        throw H.wrapException(P.ArgumentError$(index));
       if (index >= receiver.length || index < 0)
         throw H.wrapException(P.RangeError$value(index));
       return receiver[index];
@@ -638,7 +658,7 @@ var $$ = {};
     },
     $index: function(receiver, index) {
       if (typeof index !== "number" || Math.floor(index) !== index)
-        throw H.wrapException(new P.ArgumentError(index));
+        throw H.wrapException(P.ArgumentError$(index));
       if (index >= receiver.length || index < 0)
         throw H.wrapException(P.RangeError$value(index));
       return receiver[index];
@@ -748,7 +768,7 @@ var $$ = {};
         break;
       case "message":
         if (t1.$index(msg, "port") != null)
-          t1.$index(msg, "port").send$1(t1.$index(msg, "msg"));
+          J.send$1$x(t1.$index(msg, "port"), t1.$index(msg, "msg"));
         init.globalState.topEventLoop.run$0();
         break;
       case "close":
@@ -986,7 +1006,7 @@ var $$ = {};
       t4 = new H.ReceivePortImpl(t5, null);
       t4.ReceivePortImpl$fromRawReceivePort$1(t5);
       $.controlPort = t4;
-      this.replyTo_4.send$1(["spawned", new H._NativeJsSendPort(t5, init.globalState.currentContext.id)]);
+      J.send$1$x(this.replyTo_4, ["spawned", new H._NativeJsSendPort(t5, init.globalState.currentContext.id)]);
       if (this.isSpawnUri_3 !== true)
         t1.call$1(t3);
       else {
@@ -1010,7 +1030,7 @@ var $$ = {};
   },
   _NativeJsSendPort: {
     "": "_BaseSendPort;_receivePort,_isolateId",
-    send$1: function(message) {
+    send$1: function(_, message) {
       var t1, t2, t3, isolate, shouldSerialize;
       t1 = {};
       t2 = init.globalState.isolates;
@@ -1057,7 +1077,7 @@ var $$ = {};
   },
   _WorkerSendPort: {
     "": "_BaseSendPort;_workerId,_receivePortId,_isolateId",
-    send$1: function(message) {
+    send$1: function(_, message) {
       var workerMessage, t1, manager;
       workerMessage = H._serializeMessage(H.fillLiteralMap(["command", "message", "port", this, "msg", message], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)));
       if (init.globalState.isWorker === true) {
@@ -1257,21 +1277,19 @@ var $$ = {};
       return x;
     },
     visitList$1: function(list) {
-      var t1, copy, len, i;
+      var t1, copy, len, t2, i;
       t1 = this._visited;
       copy = t1.$index(t1, list);
       if (copy != null)
         return copy;
-      len = J.get$length$asx(list);
+      t1 = J.getInterceptor$asx(list);
+      len = t1.get$length(list);
       copy = Array(len);
       copy.fixed$length = init;
-      t1 = this._visited;
-      t1.$indexSet(t1, list, copy);
-      for (i = 0; i < len; ++i) {
-        if (i >= list.length)
-          return H.ioore(list, i);
-        copy[i] = this._dispatch$1(list[i]);
-      }
+      t2 = this._visited;
+      t2.$indexSet(t2, list, copy);
+      for (i = 0; i < len; ++i)
+        copy[i] = this._dispatch$1(t1.$index(list, i));
       return copy;
     },
     visitMap$1: function(map) {
@@ -1333,17 +1351,16 @@ var $$ = {};
       return ["map", id, keys, this._serializeList$1(P.List_List$from(t1, true, H.getRuntimeTypeArgument(t1, "IterableBase", 0)))];
     },
     _serializeList$1: function(list) {
-      var len, result, i, t1;
-      len = J.get$length$asx(list);
+      var t1, len, result, i, t2;
+      t1 = J.getInterceptor$asx(list);
+      len = t1.get$length(list);
       result = [];
       C.JSArray_methods.set$length(result, len);
       for (i = 0; i < len; ++i) {
-        if (i >= list.length)
-          return H.ioore(list, i);
-        t1 = this._dispatch$1(list[i]);
+        t2 = this._dispatch$1(t1.$index(list, i));
         if (i >= result.length)
           return H.ioore(result, i);
-        result[i] = t1;
+        result[i] = t2;
       }
       return result;
     },
@@ -2296,24 +2313,37 @@ var $$ = {};
     return C.JSString_methods.indexOf$2(receiver, other, startIndex) !== -1;
   },
   stringReplaceAllUnchecked: function(receiver, from, to) {
-    var result, $length, i, t1;
-    if (from === "")
-      if (receiver === "")
-        return to;
-      else {
-        result = P.StringBuffer$("");
-        $length = receiver.length;
-        result.write$1(to);
-        for (i = 0; i < $length; ++i) {
-          t1 = receiver[i];
-          t1 = result._contents + t1;
-          result._contents = t1;
-          result._contents = t1 + to;
+    var t1, result, $length, i, t2, str, nativeRegexp;
+    t1 = typeof to === "string";
+    if (!t1)
+      H.throwExpression(new P.ArgumentError(to));
+    if (typeof from === "string")
+      if (from === "")
+        if (receiver === "")
+          return to;
+        else {
+          result = P.StringBuffer$("");
+          $length = receiver.length;
+          result.write$1(to);
+          for (i = 0; i < $length; ++i) {
+            t2 = receiver[i];
+            result._contents = result._contents + t2;
+            str = t1 ? to : H.S(to);
+            result._contents = result._contents + str;
+          }
+          return result._contents;
         }
-        return result._contents;
-      }
-    else
-      return receiver.replace(new RegExp(from.replace(new RegExp("[[\\]{}()*+?.\\\\^$|]", 'g'), "\\$&"), 'g'), to.replace("$", "$$$$"));
+      else
+        return receiver.replace(new RegExp(from.replace(new RegExp("[[\\]{}()*+?.\\\\^$|]", 'g'), "\\$&"), 'g'), to.replace("$", "$$$$"));
+    else {
+      t1 = J.getInterceptor(from);
+      if (typeof from === "object" && from !== null && !!t1.$isJSSyntaxRegExp) {
+        nativeRegexp = from.get$_nativeGlobalVersion();
+        nativeRegexp.lastIndex = 0;
+        return receiver.replace(nativeRegexp, to.replace("$", "$$$$"));
+      } else
+        throw H.wrapException("String.replaceAll(Pattern) UNIMPLEMENTED");
+    }
   },
   ReflectionInfo: {
     "": "Object;jsFunction,data,isAccessor,requiredParameterCount,optionalParameterCount,areOptionalParametersNamed,functionType",
@@ -2694,12 +2724,25 @@ var $$ = {};
   },
   JSSyntaxRegExp: {
     "": "Object;_nativeRegExp,_nativeGlobalRegExp,_nativeAnchoredRegExp",
+    get$_nativeGlobalVersion: function() {
+      var t1 = this._nativeGlobalRegExp;
+      if (t1 != null)
+        return t1;
+      t1 = this._nativeRegExp;
+      t1 = H.JSSyntaxRegExp_makeNative(t1.source, t1.multiline, !t1.ignoreCase, true);
+      this._nativeGlobalRegExp = t1;
+      return t1;
+    },
     firstMatch$1: function(str) {
-      var m = this._nativeRegExp.exec(str);
+      var m;
+      if (typeof str !== "string")
+        H.throwExpression(new P.ArgumentError(str));
+      m = this._nativeRegExp.exec(str);
       if (m == null)
         return;
       return H._MatchImplementation$(this, m);
     },
+    $isJSSyntaxRegExp: true,
     static: {JSSyntaxRegExp_makeNative: function(pattern, multiLine, caseSensitive, global) {
         var m, i, g, regexp, errorMessage;
         m = multiLine ? "m" : "";
@@ -2731,6 +2774,48 @@ var $$ = {};
 }],
 ["darkagesgame", "darkages.dart", , V, {
   "": "",
+  city_init: function() {
+    var connx, pop, prod, inf, c, t1, t2, t3, p, t4;
+    connx = [[0, 1], [0, 4], [0, 8], [0, 11], [1, 2], [1, 4], [1, 5], [2, 3], [2, 5], [2, 6], [2, 10], [3, 6], [3, 7], [4, 5], [4, 8], [4, 9], [5, 9], [5, 10], [6, 7], [6, 10], [6, 13], [6, 14], [7, 14], [8, 9], [8, 11], [8, 12], [9, 10], [9, 12], [10, 12], [10, 13], [11, 12], [12, 13], [13, 14]];
+    pop = [15000, 20000, 55000, 25000, 30000, 40000, 40000, 10000, 35000, 45000, 500000, 20000, 60000, 50000, 35000];
+    prod = [1.25, 1.75, 1.75, 1.25, 2, 2.25, 2, 1.25, 1.75, 2.25, 0, 1.25, 2.75, 1.75, 1.5];
+    inf = [0.04, 0.04, 0, 0.05, 0.03, 0, 0, 0, 0, 0, 0, 0.03, 0, 0, 0.04];
+    $.cities = Array(15);
+    for (c = 0; c < 15; ++c) {
+      t1 = new V.City(null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+      $.cities[c] = t1;
+      t2 = pop[c];
+      t1.population = t2;
+      t1.dead = 0;
+      t3 = t2 * inf[c];
+      t1.infected = t3;
+      t1.healthy = t2 - t3;
+      t1.name = "David's NAME";
+      t1.set$spread_to(1);
+      t1.set$spread_from(1);
+      t1.set$spread_within(1);
+      t1.production = prod[c];
+      t1.next_to = P.LinkedHashSet_LinkedHashSet(null, null, null, null);
+    }
+    for (t1 = new H.ListIterator(connx, connx.length, 0, null); t1.moveNext$0();) {
+      p = t1._current;
+      t2 = $.cities;
+      t3 = J.getInterceptor$asx(p);
+      t4 = t3.$index(p, 0);
+      t2.length;
+      if (t4 >>> 0 !== t4 || t4 >= 15)
+        return H.ioore(t2, t4);
+      t4 = t2[t4].next_to;
+      t4.add$1(t4, t3.$index(p, 1));
+      t4 = $.cities;
+      t2 = t3.$index(p, 1);
+      t4.length;
+      if (t2 >>> 0 !== t2 || t2 >= 15)
+        return H.ioore(t4, t2);
+      t2 = t4[t2].next_to;
+      t2.add$1(t2, t3.$index(p, 0));
+    }
+  },
   main: [function() {
     var t1, t2, renderLoop, t3;
     t1 = document.querySelector("#canvas");
@@ -2758,9 +2843,39 @@ var $$ = {};
     t1 = new Z.ResourceManager(P.LinkedHashMap_LinkedHashMap(null, null, null, J.JSString, Z.ResourceManagerResource), null);
     t1._addResource$4("BitmapData", "map", "images/MapRender-Real-1280x720.jpg", Z.BitmapData_load("images/MapRender-Real-1280x720.jpg", null));
     t1._addResource$4("BitmapData", "hammer", "images/spaceHammer.jpg", Z.BitmapData_load("images/spaceHammer.jpg", null));
+    t1._addResource$4("Sound", "ambientMusic", "sounds/ambient.mp3", Z.Sound_load("sounds/ambient.mp3", null));
     $.resourceManager = t1;
     t1.load$0(t1).then$1(new V.main_closure());
   }, "call$0", "main$closure", 0, 0, 0],
+  musicLoop: [function() {
+    var value, t1;
+    P.print("musicLoop");
+    value = $.resourceManager._getResourceValue$2("Sound", "ambientMusic");
+    t1 = J.getInterceptor$x(value);
+    if (typeof value !== "object" || value === null || !t1.$isSound)
+      H.throwExpression("dart2js_hint");
+    $.soundChannel = t1.play$2(value, false, new Z.SoundTransform(0.5, 0));
+    P.Timer_Timer(P.Duration$(0, 0, 0, 0, 0, 10), V.musicLoop$closure());
+  }, "call$0", "musicLoop$closure", 0, 0, 0],
+  createMenus: function() {
+    var i, t1, t2, t3, t4;
+    for (i = 0; t1 = $.cities, t1.length, i < 15; ++i) {
+      t2 = $.get$listOfMenus();
+      t1 = t1[i];
+      t3 = [];
+      t3.$builtinTypeInfo = [Z.DisplayObject];
+      t4 = $.DisplayObject__nextID;
+      $.DisplayObject__nextID = t4 + 1;
+      t4 = new V.Menu(null, null, null, null, t3, true, true, false, true, true, 0, t4, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, new Z.Matrix(1, 0, 0, 1, 0, 0, 1), new Z.Matrix(1, 0, 0, 1, 0, 0, 1), true, null, null);
+      t4.Menu$graph$7(50, 5 + i * 50, 0, 0, 75, 45, t1);
+      t2[i] = t4;
+      t4 = $.stage;
+      t4.addChildAt$2($.get$listOfMenus()[i], t4._children.length);
+    }
+  },
+  City: {
+    "": "Object;population,dead,infected,healthy,name,spread_from_factor,spread_to_factor,spread_within_factor,death_rate,workforce,production,next_to,house_arrest,quarantine"
+  },
   main_closure: {
     "": "Closure:11;",
     call$1: function(result) {
@@ -2772,22 +2887,17 @@ var $$ = {};
       $.mapPic = t2;
       t2.set$x(t2, 5);
       t2.set$y(t2, 5);
-      $.listMenu = V.Menu$(800, 0, 0, 35, 135, 250);
-      $.actionMenu = V.Menu$(800, 0, 0, 295, 135, 250);
-      t2 = H.setRuntimeTypeInfo([], [Z.DisplayObject]);
-      t1 = $.DisplayObject__nextID;
-      $.DisplayObject__nextID = t1 + 1;
-      t1 = new V.Menu(null, null, null, null, t2, true, true, false, true, true, 0, t1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, Z.Matrix$fromIdentity(), Z.Matrix$fromIdentity(), true, null, null);
-      t1.Menu$graph$6(335, 200, 0, 0, 75, 45);
-      $.testGraph = t1;
-      t1 = $.stage;
-      t1.addChildAt$2($.mapPic, t1._children.length);
-      t1 = $.stage;
-      t1.addChildAt$2($.listMenu, t1._children.length);
-      t1 = $.stage;
-      t1.addChildAt$2($.actionMenu, t1._children.length);
-      t1 = $.stage;
-      t1.addChildAt$2($.testGraph, t1._children.length);
+      $.listMenu = V.Menu$(1060, 0, 0, 35, 135, 250);
+      $.actionMenu = V.Menu$(1060, 0, 0, 295, 135, 250);
+      t2 = $.stage;
+      t2.addChildAt$2($.mapPic, t2._children.length);
+      t2 = $.stage;
+      t2.addChildAt$2($.listMenu, t2._children.length);
+      t2 = $.stage;
+      t2.addChildAt$2($.actionMenu, t2._children.length);
+      V.musicLoop();
+      V.city_init();
+      V.createMenus();
     }
   },
   Menu: {
@@ -2814,8 +2924,9 @@ var $$ = {};
       t2._identityRectangleRefresh = true;
       this.addChildAt$2(new Z.Shape(t2, t3, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, t4, t5, true, null, null), this._children.length);
     },
-    Menu$graph$6: function(displayObjectX, displayObjectY, xLoc, yLoc, width, height) {
+    Menu$graph$7: function(displayObjectX, displayObjectY, xLoc, yLoc, width, height, city) {
       var t1, t2, t3, shape, t4, t5, t6, t7, t8, t9, infectedGraph;
+      this.thisCity = city;
       this.set$x(this, displayObjectX);
       this.set$y(this, displayObjectY);
       t1 = H.setRuntimeTypeInfo([], [Z._GraphicsCommand]);
@@ -2943,16 +3054,16 @@ var $$ = {};
     H.Lists_copy(from, skipCount, list, start, $length);
   },
   Lists_copy: function(src, srcStart, dst, dstStart, count) {
-    var i, j, t1, t2;
+    var i, j, t1;
     if (srcStart < dstStart)
-      for (i = srcStart + count - 1, j = dstStart + count - 1, t1 = src.length; i >= srcStart; --i, --j) {
-        if (i >= t1)
+      for (i = srcStart + count - 1, j = dstStart + count - 1; i >= srcStart; --i, --j) {
+        if (i >= src.length)
           return H.ioore(src, i);
         C.JSArray_methods.$indexSet(dst, j, src[i]);
       }
     else
-      for (t1 = srcStart + count, t2 = src.length, j = dstStart, i = srcStart; i < t1; ++i, ++j) {
-        if (i >= t2)
+      for (t1 = srcStart + count, j = dstStart, i = srcStart; i < t1; ++i, ++j) {
+        if (i >= src.length)
           return H.ioore(src, i);
         C.JSArray_methods.$indexSet(dst, j, src[i]);
       }
@@ -3152,11 +3263,8 @@ var $$ = {};
       future.then$2$onError(new P.Future_wait_closure(t1, eagerError, pos), t2);
     }
     t2 = t1.remaining_2;
-    if (t2 === 0) {
-      t1 = H.setRuntimeTypeInfo(new P._Future(0, $.Zone__current, null, null, null, null, null, null), [null]);
-      t1._async$_Future$immediate$1(C.List_empty, null);
-      return t1;
-    }
+    if (t2 === 0)
+      return P._Future$immediate(C.List_empty, null);
     values = Array(t2);
     values.fixed$length = init;
     t1.values_1 = values;
@@ -3670,7 +3778,7 @@ var $$ = {};
     }, function($receiver) {
       return this.complete$1($receiver, null);
     }, "complete$0", "call$1", "call$0", "get$complete", 0, 2, 17, 3],
-    completeError$2: function(error, stackTrace) {
+    completeError$2: [function(error, stackTrace) {
       var t1;
       if (error == null)
         throw H.wrapException(new P.ArgumentError("Error must not be null"));
@@ -3678,10 +3786,9 @@ var $$ = {};
       if (t1._state !== 0)
         throw H.wrapException(P.StateError$("Future already completed"));
       t1._asyncCompleteError$2(error, stackTrace);
-    },
-    completeError$1: function(error) {
+    }, function(error) {
       return this.completeError$2(error, null);
-    },
+    }, "completeError$1", "call$2", "call$1", "get$completeError", 2, 2, 14, 3],
     $as_Completer: null
   },
   _Future: {
@@ -3720,6 +3827,18 @@ var $$ = {};
     },
     then$1: function(f) {
       return this.then$2$onError(f, null);
+    },
+    catchError$2$test: function(onError, test) {
+      var t1, t2, result;
+      t1 = $.Zone__current;
+      t2 = P._registerErrorHandler(onError, t1);
+      t1.toString;
+      result = H.setRuntimeTypeInfo(new P._Future(0, t1, null, null, null, test, t2, null), [null]);
+      this._addListener$1(result);
+      return result;
+    },
+    catchError$1: function(onError) {
+      return this.catchError$2$test(onError, null);
     },
     whenComplete$1: function(action) {
       var t1, result;
@@ -3820,6 +3939,10 @@ var $$ = {};
     $isFuture: true,
     static: {"": "_Future__INCOMPLETE,_Future__PENDING_COMPLETE,_Future__CHAINED,_Future__VALUE,_Future__ERROR", _Future$: function($T) {
         return H.setRuntimeTypeInfo(new P._Future(0, $.Zone__current, null, null, null, null, null, null), [$T]);
+      }, _Future$immediate: function(value, $T) {
+        var t1 = H.setRuntimeTypeInfo(new P._Future(0, $.Zone__current, null, null, null, null, null, null), [$T]);
+        t1._async$_Future$immediate$1(value, $T);
+        return t1;
       }, _Future__chainFutures: function(source, target) {
         var t1;
         target._state = 2;
@@ -5831,8 +5954,15 @@ var $$ = {};
       }
     },
     add$1: function(_, element) {
-      var nums, rest, hash, bucket;
-      if ((element & 0x3ffffff) === element) {
+      var strings, nums, rest, hash, bucket;
+      if (typeof element === "string" && element !== "__proto__") {
+        strings = this._strings;
+        if (strings == null) {
+          strings = P._LinkedHashSet__newHashTable();
+          this._strings = strings;
+        }
+        return this._addHashTableEntry$2(strings, element);
+      } else if (typeof element === "number" && (element & 0x3ffffff) === element) {
         nums = this._nums;
         if (nums == null) {
           nums = P._LinkedHashSet__newHashTable();
@@ -5888,7 +6018,7 @@ var $$ = {};
         return -1;
       $length = bucket.length;
       for (i = 0; i < $length; ++i)
-        if (bucket[i].get$_element() === element)
+        if (J.$eq(bucket[i].get$_element(), element))
           return i;
       return -1;
     },
@@ -5976,10 +6106,8 @@ var $$ = {};
       var $length, i;
       $length = this.get$length(receiver);
       for (i = 0; i < $length; ++i) {
-        if (i >= receiver.length)
-          return H.ioore(receiver, i);
-        action.call$1(receiver[i]);
-        if ($length !== receiver.length)
+        action.call$1(this.$index(receiver, i));
+        if ($length !== this.get$length(receiver))
           throw H.wrapException(P.ConcurrentModificationError$(receiver));
       }
     },
@@ -6260,8 +6388,16 @@ var $$ = {};
     DateTime$_now$0: function() {
       H.Primitives_lazyAsJsDate(this);
     },
+    DateTime$fromMillisecondsSinceEpoch$2$isUtc: function(millisecondsSinceEpoch, isUtc) {
+      if (Math.abs(millisecondsSinceEpoch) > 8640000000000000)
+        throw H.wrapException(new P.ArgumentError(millisecondsSinceEpoch));
+    },
     $isDateTime: true,
-    static: {"": "DateTime_MONDAY,DateTime_TUESDAY,DateTime_WEDNESDAY,DateTime_THURSDAY,DateTime_FRIDAY,DateTime_SATURDAY,DateTime_SUNDAY,DateTime_DAYS_PER_WEEK,DateTime_JANUARY,DateTime_FEBRUARY,DateTime_MARCH,DateTime_APRIL,DateTime_MAY,DateTime_JUNE,DateTime_JULY,DateTime_AUGUST,DateTime_SEPTEMBER,DateTime_OCTOBER,DateTime_NOVEMBER,DateTime_DECEMBER,DateTime_MONTHS_PER_YEAR,DateTime__MAX_MILLISECONDS_SINCE_EPOCH"}
+    static: {"": "DateTime_MONDAY,DateTime_TUESDAY,DateTime_WEDNESDAY,DateTime_THURSDAY,DateTime_FRIDAY,DateTime_SATURDAY,DateTime_SUNDAY,DateTime_DAYS_PER_WEEK,DateTime_JANUARY,DateTime_FEBRUARY,DateTime_MARCH,DateTime_APRIL,DateTime_MAY,DateTime_JUNE,DateTime_JULY,DateTime_AUGUST,DateTime_SEPTEMBER,DateTime_OCTOBER,DateTime_NOVEMBER,DateTime_DECEMBER,DateTime_MONTHS_PER_YEAR,DateTime__MAX_MILLISECONDS_SINCE_EPOCH", DateTime$fromMillisecondsSinceEpoch: function(millisecondsSinceEpoch, isUtc) {
+        var t1 = new P.DateTime(millisecondsSinceEpoch, isUtc);
+        t1.DateTime$fromMillisecondsSinceEpoch$2$isUtc(millisecondsSinceEpoch, isUtc);
+        return t1;
+      }}
   },
   DateTime_toString_fourDigits: {
     "": "Closure:21;",
@@ -6578,6 +6714,9 @@ var $$ = {};
 }],
 ["dart.dom.html", "dart:html", , W, {
   "": "",
+  AudioElement_AudioElement: function(src) {
+    return new Audio();
+  },
   CanvasElement_CanvasElement: function(height, width) {
     var e = document.createElement("canvas", null);
     J.set$width$x(e, width);
@@ -6592,6 +6731,20 @@ var $$ = {};
     else
       return "DOMMouseScroll";
   }, "call$1", "Element__determineMouseWheelEventType$closure", 2, 0, 8],
+  HttpRequest_request: function(url, method, mimeType, onProgress, requestHeaders, responseType, sendData, withCredentials) {
+    var t1, completer, xhr;
+    t1 = W.HttpRequest;
+    completer = H.setRuntimeTypeInfo(new P._AsyncCompleter(P._Future$(t1)), [t1]);
+    xhr = new XMLHttpRequest();
+    C.HttpRequest_methods.open$3$async(xhr, "GET", url, true);
+    xhr.responseType = responseType;
+    t1 = C.EventStreamProvider_load.forTarget$1(xhr);
+    H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new W.HttpRequest_request_closure(completer, xhr)), t1._useCapture), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
+    t1 = C.EventStreamProvider_error0.forTarget$1(xhr);
+    H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(completer.get$completeError()), t1._useCapture), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
+    xhr.send();
+    return completer.future;
+  },
   ImageElement_ImageElement: function(height, src, width) {
     var e = document.createElement("img", null);
     return e;
@@ -6614,6 +6767,12 @@ var $$ = {};
     } else
       return e;
   },
+  _convertNativeToDart_XHR_Response: function(o) {
+    var t1 = J.getInterceptor(o);
+    if (typeof o === "object" && o !== null && !!t1.$isDocument)
+      return o;
+    return P.convertNativeToDart_AcceptStructuredClone(o, true);
+  },
   _wrapZone: function(callback) {
     var t1 = $.Zone__current;
     if (t1 === C.C__RootZone)
@@ -6635,6 +6794,10 @@ var $$ = {};
     "": "HtmlElement;target=",
     "%": "HTMLAreaElement"
   },
+  AudioElement: {
+    "": "MediaElement;",
+    "%": "HTMLAudioElement"
+  },
   BaseElement: {
     "": "HtmlElement;target=",
     "%": "HTMLBaseElement"
@@ -6645,7 +6808,7 @@ var $$ = {};
       return C.EventStreamProvider_error.forElement$1(receiver);
     },
     get$onLoad: function(receiver) {
-      return C.EventStreamProvider_load.forElement$1(receiver);
+      return C.EventStreamProvider_load0.forElement$1(receiver);
     },
     "%": "HTMLBodyElement"
   },
@@ -6701,6 +6864,11 @@ var $$ = {};
     },
     "%": "CSS2Properties|CSSStyleDeclaration|MSStyleCSSProperties"
   },
+  Document: {
+    "": "Node;",
+    $isDocument: true,
+    "%": "Document|HTMLDocument|SVGDocument"
+  },
   DomException: {
     "": "Interceptor;",
     toString$0: function(receiver) {
@@ -6720,7 +6888,7 @@ var $$ = {};
       return C.EventStreamProvider_error.forElement$1(receiver);
     },
     get$onLoad: function(receiver) {
-      return C.EventStreamProvider_load.forElement$1(receiver);
+      return C.EventStreamProvider_load0.forElement$1(receiver);
     },
     "%": ";Element"
   },
@@ -6740,7 +6908,7 @@ var $$ = {};
     preventDefault$0: function(receiver) {
       return receiver.preventDefault();
     },
-    "%": "AudioProcessingEvent|AutocompleteErrorEvent|BeforeLoadEvent|BeforeUnloadEvent|CSSFontFaceLoadEvent|CloseEvent|CustomEvent|DeviceMotionEvent|DeviceOrientationEvent|HashChangeEvent|IDBVersionChangeEvent|MIDIConnectionEvent|MIDIMessageEvent|MediaKeyEvent|MediaKeyMessageEvent|MediaKeyNeededEvent|MediaStreamEvent|MediaStreamTrackEvent|MessageEvent|MutationEvent|OfflineAudioCompletionEvent|OverflowEvent|PageTransitionEvent|PopStateEvent|ProgressEvent|RTCDTMFToneChangeEvent|RTCDataChannelEvent|RTCIceCandidateEvent|ResourceProgressEvent|SecurityPolicyViolationEvent|SpeechInputEvent|SpeechRecognitionEvent|SpeechSynthesisEvent|StorageEvent|TrackEvent|TransitionEvent|WebKitAnimationEvent|WebKitTransitionEvent|XMLHttpRequestProgressEvent;Event"
+    "%": "AudioProcessingEvent|AutocompleteErrorEvent|BeforeLoadEvent|BeforeUnloadEvent|CSSFontFaceLoadEvent|CloseEvent|CustomEvent|DeviceMotionEvent|DeviceOrientationEvent|HashChangeEvent|IDBVersionChangeEvent|MIDIConnectionEvent|MIDIMessageEvent|MediaKeyEvent|MediaKeyMessageEvent|MediaKeyNeededEvent|MediaStreamEvent|MediaStreamTrackEvent|MessageEvent|MutationEvent|OfflineAudioCompletionEvent|OverflowEvent|PageTransitionEvent|PopStateEvent|RTCDTMFToneChangeEvent|RTCDataChannelEvent|RTCIceCandidateEvent|SecurityPolicyViolationEvent|SpeechInputEvent|SpeechRecognitionEvent|SpeechSynthesisEvent|StorageEvent|TrackEvent|TransitionEvent|WebKitAnimationEvent|WebKitTransitionEvent;Event"
   },
   EventTarget: {
     "": "Interceptor;",
@@ -6754,11 +6922,58 @@ var $$ = {};
       return receiver.removeEventListener(type, H.convertDartClosureToJS(listener, 1), useCapture);
     },
     $isEventTarget: true,
-    "%": "MediaStream;EventTarget"
+    "%": "AudioBufferSourceNode|AudioDestinationNode|AudioGainNode|AudioNode|AudioSourceNode|GainNode|MediaStream;EventTarget"
   },
   FormElement: {
     "": "HtmlElement;length=,target=",
     "%": "HTMLFormElement"
+  },
+  HtmlCollection: {
+    "": "Interceptor_ListMixin_ImmutableListMixin;",
+    get$length: function(receiver) {
+      return receiver.length;
+    },
+    $index: function(receiver, index) {
+      var t1 = receiver.length;
+      if (index >>> 0 !== index || index >= t1)
+        throw H.wrapException(P.RangeError$range(index, 0, t1));
+      return receiver[index];
+    },
+    $indexSet: function(receiver, index, value) {
+      throw H.wrapException(P.UnsupportedError$("Cannot assign element of immutable List."));
+    },
+    elementAt$1: function(receiver, index) {
+      if (index < 0 || index >= receiver.length)
+        return H.ioore(receiver, index);
+      return receiver[index];
+    },
+    $isList: true,
+    $asList: function() {
+      return [W.Node];
+    },
+    $isEfficientLength: true,
+    $isJavaScriptIndexingBehavior: true,
+    "%": "HTMLCollection|HTMLFormControlsCollection|HTMLOptionsCollection"
+  },
+  HttpRequest: {
+    "": "HttpRequestEventTarget;",
+    get$response: function(receiver) {
+      return W._convertNativeToDart_XHR_Response(receiver.response);
+    },
+    open$5$async$password$user: function(receiver, method, url, async, password, user) {
+      return receiver.open(method, url, async, user, password);
+    },
+    open$3$async: function($receiver, method, url, async) {
+      return $receiver.open(method, url, async);
+    },
+    send$1: function(receiver, data) {
+      return receiver.send(data);
+    },
+    "%": "XMLHttpRequest"
+  },
+  HttpRequestEventTarget: {
+    "": "EventTarget;",
+    "%": ";XMLHttpRequestEventTarget"
   },
   IFrameElement: {
     "": "HtmlElement;height%,src},width%",
@@ -6786,8 +7001,11 @@ var $$ = {};
     "%": "HTMLLIElement"
   },
   MediaElement: {
-    "": "HtmlElement;error=,src}",
-    "%": "HTMLAudioElement;HTMLMediaElement"
+    "": "HtmlElement;duration=,error=,src}",
+    get$onEnded: function(receiver) {
+      return C.EventStreamProvider_ended.forElement$1(receiver);
+    },
+    "%": ";HTMLMediaElement"
   },
   MeterElement: {
     "": "HtmlElement;value=",
@@ -6806,7 +7024,34 @@ var $$ = {};
       var t1 = receiver.nodeValue;
       return t1 == null ? J.Interceptor.prototype.toString$0.call(this, receiver) : t1;
     },
-    "%": "Document|DocumentFragment|DocumentType|Entity|HTMLDocument|Notation|SVGDocument|ShadowRoot;Node"
+    "%": "DocumentFragment|DocumentType|Entity|Notation|ShadowRoot;Node"
+  },
+  NodeList: {
+    "": "Interceptor_ListMixin_ImmutableListMixin0;",
+    get$length: function(receiver) {
+      return receiver.length;
+    },
+    $index: function(receiver, index) {
+      var t1 = receiver.length;
+      if (index >>> 0 !== index || index >= t1)
+        throw H.wrapException(P.RangeError$range(index, 0, t1));
+      return receiver[index];
+    },
+    $indexSet: function(receiver, index, value) {
+      throw H.wrapException(P.UnsupportedError$("Cannot assign element of immutable List."));
+    },
+    elementAt$1: function(receiver, index) {
+      if (index < 0 || index >= receiver.length)
+        return H.ioore(receiver, index);
+      return receiver[index];
+    },
+    $isList: true,
+    $asList: function() {
+      return [W.Node];
+    },
+    $isEfficientLength: true,
+    $isJavaScriptIndexingBehavior: true,
+    "%": "NodeList|RadioNodeList"
   },
   ObjectElement: {
     "": "HtmlElement;height%,width%",
@@ -6831,6 +7076,10 @@ var $$ = {};
   ProgressElement: {
     "": "HtmlElement;value=",
     "%": "HTMLProgressElement"
+  },
+  ProgressEvent: {
+    "": "Event0;",
+    "%": "ProgressEvent|ResourceProgressEvent|XMLHttpRequestProgressEvent"
   },
   Screen: {
     "": "Interceptor;height=,width=",
@@ -6857,7 +7106,7 @@ var $$ = {};
     "%": "HTMLTextAreaElement"
   },
   Touch: {
-    "": "Interceptor;",
+    "": "Interceptor;identifier=",
     get$target: function(receiver) {
       return W._convertNativeToDart_EventTarget(receiver.target);
     },
@@ -6871,7 +7120,7 @@ var $$ = {};
     "%": "TouchEvent"
   },
   TouchList: {
-    "": "Interceptor_ListMixin_ImmutableListMixin;",
+    "": "Interceptor_ListMixin_ImmutableListMixin1;",
     get$length: function(receiver) {
       return receiver.length;
     },
@@ -7063,12 +7312,69 @@ var $$ = {};
     "": "Interceptor+ListMixin;",
     $isList: true,
     $asList: function() {
-      return [W.Touch];
+      return [W.Node];
     },
     $isEfficientLength: true
   },
   Interceptor_ListMixin_ImmutableListMixin: {
     "": "Interceptor_ListMixin+ImmutableListMixin;",
+    $isList: true,
+    $asList: function() {
+      return [W.Node];
+    },
+    $isEfficientLength: true
+  },
+  HttpRequest_request_closure0: {
+    "": "Closure:10;xhr_0",
+    call$2: function(header, value) {
+      this.xhr_0.setRequestHeader(header, value);
+    }
+  },
+  HttpRequest_request_closure: {
+    "": "Closure:11;completer_1,xhr_2",
+    call$1: function(e) {
+      var t1, t2, t3;
+      t1 = this.xhr_2;
+      t2 = t1.status;
+      if (typeof t2 !== "number")
+        return t2.$ge();
+      t2 = t2 >= 200 && t2 < 300 || t2 === 0 || t2 === 304;
+      t3 = this.completer_1;
+      if (t2) {
+        t2 = t3.future;
+        if (t2._state !== 0)
+          H.throwExpression(new P.StateError("Future already completed"));
+        t2._asyncComplete$1(t1);
+      } else
+        t3.completeError$1(e);
+    }
+  },
+  Interceptor_ListMixin0: {
+    "": "Interceptor+ListMixin;",
+    $isList: true,
+    $asList: function() {
+      return [W.Node];
+    },
+    $isEfficientLength: true
+  },
+  Interceptor_ListMixin_ImmutableListMixin0: {
+    "": "Interceptor_ListMixin0+ImmutableListMixin;",
+    $isList: true,
+    $asList: function() {
+      return [W.Node];
+    },
+    $isEfficientLength: true
+  },
+  Interceptor_ListMixin1: {
+    "": "Interceptor+ListMixin;",
+    $isList: true,
+    $asList: function() {
+      return [W.Touch];
+    },
+    $isEfficientLength: true
+  },
+  Interceptor_ListMixin_ImmutableListMixin1: {
+    "": "Interceptor_ListMixin1+ImmutableListMixin;",
     $isList: true,
     $asList: function() {
       return [W.Touch];
@@ -7077,6 +7383,12 @@ var $$ = {};
   },
   EventStreamProvider: {
     "": "Object;_eventType",
+    forTarget$2$useCapture: function(e, useCapture) {
+      return H.setRuntimeTypeInfo(new W._EventStream(e, this._eventType, useCapture), [null]);
+    },
+    forTarget$1: function(e) {
+      return this.forTarget$2$useCapture(e, false);
+    },
     forElement$2$useCapture: function(e, useCapture) {
       return H.setRuntimeTypeInfo(new W._ElementEventStreamImpl(e, this._eventType, useCapture), [null]);
     },
@@ -7085,7 +7397,7 @@ var $$ = {};
     }
   },
   _EventStream: {
-    "": "Stream;",
+    "": "Stream;_html$_target,_eventType,_useCapture",
     get$isBroadcast: function() {
       return true;
     },
@@ -7292,6 +7604,52 @@ var $$ = {};
   UseElement: {
     "": "GraphicsElement;height=,width=",
     "%": "SVGUseElement"
+  }
+}],
+["dart.dom.web_audio", "dart:web_audio", , P, {
+  "": "",
+  AudioBuffer: {
+    "": "Interceptor;duration=,length=",
+    "%": "AudioBuffer"
+  },
+  AudioContext: {
+    "": "EventTarget;",
+    _decodeAudioData$3: function(receiver, audioData, successCallback, errorCallback) {
+      return receiver.decodeAudioData(audioData, H.convertDartClosureToJS(successCallback, 1), H.convertDartClosureToJS(errorCallback, 1));
+    },
+    decodeAudioData$1: function(receiver, audioData) {
+      var t1, completer;
+      t1 = P.AudioBuffer;
+      completer = H.setRuntimeTypeInfo(new P._AsyncCompleter(P._Future$(t1)), [t1]);
+      this._decodeAudioData$3(receiver, audioData, new P.AudioContext_decodeAudioData_closure(completer), new P.AudioContext_decodeAudioData_closure0(completer));
+      return completer.future;
+    },
+    createGain$0: function(receiver) {
+      if (receiver.createGain !== undefined)
+        return receiver.createGain();
+      else
+        return receiver.createGainNode();
+    },
+    "%": "AudioContext|OfflineAudioContext|webkitAudioContext"
+  },
+  AudioParam: {
+    "": "Interceptor;value=",
+    "%": "AudioParam"
+  },
+  AudioContext_decodeAudioData_closure: {
+    "": "Closure:11;completer_0",
+    call$1: function(value) {
+      var t1 = this.completer_0.future;
+      if (t1._state !== 0)
+        H.throwExpression(new P.StateError("Future already completed"));
+      t1._asyncComplete$1(value);
+    }
+  },
+  AudioContext_decodeAudioData_closure0: {
+    "": "Closure:11;completer_1",
+    call$1: function(error) {
+      this.completer_1.completeError$1(error);
+    }
   }
 }],
 ["dart.dom.web_gl", "dart:web_gl", , P, {
@@ -7777,6 +8135,10 @@ var $$ = {};
     dict.forEach$1(dict, new P.convertDartToNative_Dictionary_closure(object));
     return object;
   },
+  convertNativeToDart_AcceptStructuredClone: function(object, mustCopy) {
+    var copies = [];
+    return new P.convertNativeToDart_AcceptStructuredClone_walk(mustCopy, new P.convertNativeToDart_AcceptStructuredClone_findSlot([], copies), new P.convertNativeToDart_AcceptStructuredClone_readSlot(copies), new P.convertNativeToDart_AcceptStructuredClone_writeSlot(copies)).call$1(object);
+  },
   convertDartToNative_ImageData: function(imageData) {
     return imageData;
   },
@@ -7784,6 +8146,89 @@ var $$ = {};
     "": "Closure:22;object_0",
     call$2: function(key, value) {
       this.object_0[key] = value;
+    }
+  },
+  convertNativeToDart_AcceptStructuredClone_findSlot: {
+    "": "Closure:5;values_0,copies_1",
+    call$1: function(value) {
+      var t1, $length, i, t2;
+      t1 = this.values_0;
+      $length = t1.length;
+      for (i = 0; i < $length; ++i) {
+        t2 = t1[i];
+        if (t2 == null ? value == null : t2 === value)
+          return i;
+      }
+      t1.push(value);
+      this.copies_1.push(null);
+      return $length;
+    }
+  },
+  convertNativeToDart_AcceptStructuredClone_readSlot: {
+    "": "Closure:23;copies_2",
+    call$1: function(i) {
+      var t1 = this.copies_2;
+      if (i >= t1.length)
+        return H.ioore(t1, i);
+      return t1[i];
+    }
+  },
+  convertNativeToDart_AcceptStructuredClone_writeSlot: {
+    "": "Closure:24;copies_3",
+    call$2: function(i, x) {
+      var t1 = this.copies_3;
+      if (i >= t1.length)
+        return H.ioore(t1, i);
+      t1[i] = x;
+    }
+  },
+  convertNativeToDart_AcceptStructuredClone_walk: {
+    "": "Closure:11;mustCopy_4,findSlot_5,readSlot_6,writeSlot_7",
+    call$1: function(e) {
+      var slot, copy, t1, key, $length, t2, i;
+      if (e == null)
+        return e;
+      if (typeof e === "boolean")
+        return e;
+      if (typeof e === "number")
+        return e;
+      if (typeof e === "string")
+        return e;
+      if (e instanceof Date)
+        return P.DateTime$fromMillisecondsSinceEpoch(e.getTime(), true);
+      if (e instanceof RegExp)
+        throw H.wrapException(P.UnimplementedError$("structured clone of RegExp"));
+      if (Object.getPrototypeOf(e) === Object.prototype) {
+        slot = this.findSlot_5.call$1(e);
+        copy = this.readSlot_6.call$1(slot);
+        if (copy != null)
+          return copy;
+        copy = H.fillLiteralMap([], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
+        this.writeSlot_7.call$2(slot, copy);
+        for (t1 = Object.keys(e), t1 = new H.ListIterator(t1, t1.length, 0, null); t1.moveNext$0();) {
+          key = t1._current;
+          copy.$indexSet(copy, key, this.call$1(e[key]));
+        }
+        return copy;
+      }
+      if (e instanceof Array) {
+        slot = this.findSlot_5.call$1(e);
+        copy = this.readSlot_6.call$1(slot);
+        if (copy != null)
+          return copy;
+        t1 = J.getInterceptor$asx(e);
+        $length = t1.get$length(e);
+        copy = this.mustCopy_4 ? new Array($length) : e;
+        this.writeSlot_7.call$2(slot, copy);
+        if (typeof $length !== "number")
+          return H.iae($length);
+        t2 = J.getInterceptor$ax(copy);
+        i = 0;
+        for (; i < $length; ++i)
+          t2.$indexSet(copy, i, this.call$1(t1.$index(e, i)));
+        return copy;
+      }
+      return e;
     }
   }
 }],
@@ -7810,6 +8255,76 @@ var $$ = {};
         --i;
       }
     }
+  },
+  Sound_load: function(url, soundLoadOptions) {
+    var t1;
+    if ($.SoundMixer__engine == null)
+      Z.SoundMixer__initEngine();
+    t1 = $.SoundMixer__engine;
+    switch (t1) {
+      case "WebAudioApi":
+        return Z.WebAudioApiSound_load(url, soundLoadOptions);
+      case "AudioElement":
+        return Z.AudioElementSound_load(url, soundLoadOptions);
+      default:
+        if (t1 == null)
+          Z.SoundMixer__initEngine();
+        return P._Future$immediate(new Z.MockSound(), Z.Sound);
+    }
+  },
+  SoundMixer__initEngine: function() {
+    $.SoundMixer__engine = "AudioElement";
+    $.SoundMixer__audioElementMixer = new Z.AudioElementMixer(H.setRuntimeTypeInfo([], [Z.AudioElementSoundChannel]), 1);
+    if (!!(window.AudioContext || window.webkitAudioContext)) {
+      $.SoundMixer__engine = "WebAudioApi";
+      $.SoundMixer__webAudioApiMixer = Z.WebAudioApiMixer$(null);
+    }
+    var ua = window.navigator.userAgent;
+    if (J.getInterceptor$asx(ua).contains$1(ua, "IEMobile"))
+      if (C.JSString_methods.contains$1(ua, "9.0"))
+        $.SoundMixer__engine = "Mock";
+    if (C.JSString_methods.contains$1(ua, "iPhone") || C.JSString_methods.contains$1(ua, "iPad") || C.JSString_methods.contains$1(ua, "iPod"))
+      if (C.JSString_methods.contains$1(ua, "OS 3") || C.JSString_methods.contains$1(ua, "OS 4") || C.JSString_methods.contains$1(ua, "OS 5"))
+        $.SoundMixer__engine = "Mock";
+    if ($.get$SoundMixer__supportedTypes().length === 0)
+      $.SoundMixer__engine = "Mock";
+    if ($.SoundMixer__engine == null)
+      Z.SoundMixer__initEngine();
+    P.print("StageXL audio engine  : " + $.SoundMixer__engine);
+  },
+  SoundMixer__getOptimalAudioUrls: function(originalUrl, soundLoadOptions) {
+    var regex, availableTypes, match, urls, t1, fileType, availableType;
+    regex = new H.JSSyntaxRegExp(H.JSSyntaxRegExp_makeNative("(mp3|mp4|ogg|wav)$", false, true, false), null, null);
+    availableTypes = J.toList$0$ax($.get$SoundMixer__supportedTypes());
+    match = regex.firstMatch$1(originalUrl);
+    urls = H.setRuntimeTypeInfo([], [J.JSString]);
+    if (match == null)
+      throw H.wrapException(new P.ArgumentError("Unsupported file extension."));
+    if (availableTypes.length === 0)
+      throw H.wrapException(P.UnsupportedError$("This browser supports no known audio codec."));
+    if (!soundLoadOptions.mp3)
+      C.JSArray_methods.remove$1(availableTypes, "mp3");
+    if (!soundLoadOptions.mp4)
+      C.JSArray_methods.remove$1(availableTypes, "mp4");
+    if (!soundLoadOptions.ogg)
+      C.JSArray_methods.remove$1(availableTypes, "ogg");
+    if (!soundLoadOptions.wav)
+      C.JSArray_methods.remove$1(availableTypes, "wav");
+    t1 = match._match;
+    if (1 >= t1.length)
+      return H.ioore(t1, 1);
+    fileType = t1[1];
+    if (C.JSArray_methods.contains$1(availableTypes, fileType)) {
+      urls.push(originalUrl);
+      C.JSArray_methods.remove$1(availableTypes, fileType);
+    }
+    for (t1 = new H.ListIterator(availableTypes, availableTypes.length, 0, null); t1.moveNext$0();) {
+      availableType = t1._current;
+      if (typeof availableType !== "string")
+        H.throwExpression(new P.ArgumentError(availableType));
+      urls.push(H.stringReplaceAllUnchecked(originalUrl, regex, availableType));
+    }
+    return urls;
   },
   Mouse__getCssStyle: function(mouseCursor) {
     var cursor, style;
@@ -8143,9 +8658,9 @@ var $$ = {};
     addChildAt$2: function(child, index) {
       var t1, t2, childIndex, child0, ancestor;
       if (index > this._children.length)
-        throw H.wrapException(P.ArgumentError$("Error #2006: The supplied index is out of bounds."));
+        throw H.wrapException(new P.ArgumentError("Error #2006: The supplied index is out of bounds."));
       if (child === this)
-        throw H.wrapException(P.ArgumentError$("Error #2024: An object cannot be added as a child of itself."));
+        throw H.wrapException(new P.ArgumentError("Error #2024: An object cannot be added as a child of itself."));
       t1 = child._parent;
       if (t1 === this) {
         t1 = this._children;
@@ -8156,9 +8671,9 @@ var $$ = {};
           t2 = t1._children;
           childIndex = H.Lists_indexOf(t2, child, 0, t2.length);
           if (childIndex === -1)
-            H.throwExpression(P.ArgumentError$("Error #2025: The supplied DisplayObject must be a child of the caller."));
+            H.throwExpression(new P.ArgumentError("Error #2025: The supplied DisplayObject must be a child of the caller."));
           if (childIndex < 0 || childIndex >= t2.length)
-            H.throwExpression(P.ArgumentError$("Error #2006: The supplied index is out of bounds."));
+            H.throwExpression(new P.ArgumentError("Error #2006: The supplied index is out of bounds."));
           if (childIndex < 0 || childIndex >= t2.length)
             return H.ioore(t2, childIndex);
           child0 = t2[childIndex];
@@ -8170,7 +8685,7 @@ var $$ = {};
         }
         for (ancestor = this; ancestor != null; ancestor = ancestor._parent)
           if (ancestor == null ? child == null : ancestor === child)
-            throw H.wrapException(P.ArgumentError$("Error #2150: An object cannot be added as a child to one of it's children (or children's children, etc.)."));
+            throw H.wrapException(new P.ArgumentError("Error #2150: An object cannot be added as a child to one of it's children (or children's children, etc.)."));
         C.JSArray_methods.insert$2(this._children, index, child);
         child._parent = this;
         child.dispatchEvent$1(child, new Z.Event("added", true, 2, null, null, false, false));
@@ -8913,7 +9428,7 @@ var $$ = {};
           }
         }
       }
-    }, "call$1", "get$_onMouseEvent", 2, 0, 23],
+    }, "call$1", "get$_onMouseEvent", 2, 0, 25],
     _onMouseWheelEvent$1: [function($event) {
       var t1, stagePoint, target, mouseEvent, t2;
       t1 = J.getInterceptor$x($event);
@@ -8932,7 +9447,7 @@ var $$ = {};
         if (mouseEvent._stopsPropagation)
           $event.preventDefault();
       }
-    }, "call$1", "get$_onMouseWheelEvent", 2, 0, 24],
+    }, "call$1", "get$_onMouseWheelEvent", 2, 0, 26],
     _onMultitouchInputModeChanged$1: [function(inputMode) {
       var t1, t2, t3, t4, t5, t6;
       H.IterableMixinWorkaround_forEach(this._touchEventSubscriptions, new Z.Stage__onMultitouchInputModeChanged_closure());
@@ -8964,7 +9479,7 @@ var $$ = {};
       t1.preventDefault$0($event);
       for (t1 = J.get$iterator$ax(t1.get$changedTouches($event)), t2 = this._touches, t3 = this._clientTransformation; t1.moveNext$0();) {
         changedTouch = t1._html$_current;
-        identifier = changedTouch.identifier;
+        identifier = J.get$identifier$x(changedTouch);
         t4 = new P.Point0(changedTouch.clientX, changedTouch.clientY);
         t4.$builtinTypeInfo = [null];
         stagePoint = t3._transformHtmlPoint$1(t4);
@@ -9037,13 +9552,13 @@ var $$ = {};
           target.dispatchEvent$1(target, t4);
         }
       }
-    }, "call$1", "get$_onTouchEvent", 2, 0, 25],
+    }, "call$1", "get$_onTouchEvent", 2, 0, 27],
     _onKeyEvent$1: [function($event) {
       var t1 = J.getInterceptor$x($event);
       if (t1.get$keyCode($event) === 8)
         t1.preventDefault$0($event);
       return;
-    }, "call$1", "get$_onKeyEvent", 2, 0, 26],
+    }, "call$1", "get$_onKeyEvent", 2, 0, 28],
     Stage$6$color$frameRate$height$webGL$width: function(canvas, color, frameRate, height, webGL, width) {
       var t1, t2, t3, t4, exception;
       t1 = canvas;
@@ -9300,10 +9815,10 @@ var $$ = {};
     _onContextLost$1: [function(contextEvent) {
       J.preventDefault$0$x(contextEvent);
       this._dispatchEventInternal$3(new Z.Event("contextLost", false, 2, null, null, false, false), this, 2);
-    }, "call$1", "get$_onContextLost", 2, 0, 27],
+    }, "call$1", "get$_onContextLost", 2, 0, 29],
     _onContextRestored$1: [function(contextEvent) {
       this._dispatchEventInternal$3(new Z.Event("contextRestored", false, 2, null, null, false, false), this, 2);
-    }, "call$1", "get$_onContextRestored", 2, 0, 27],
+    }, "call$1", "get$_onContextRestored", 2, 0, 29],
     RenderContextWebGL$2: function(canvasElement, backgroundColor) {
       var t1, t2, options, context;
       t1 = this._canvasElement;
@@ -9393,7 +9908,7 @@ var $$ = {};
         }
         Z._dispatchBroadcastEvent(this._exitFrameEvent, $.get$_exitFrameSubscriptions());
       }
-    }, "call$1", "get$_onAnimationFrame", 2, 0, 28]
+    }, "call$1", "get$_onAnimationFrame", 2, 0, 30]
   },
   RenderProgram: {
     "": "Object;",
@@ -9518,7 +10033,7 @@ var $$ = {};
     },
     _onContextRestored$1: [function(e) {
       this._program = null;
-    }, "call$1", "get$_onContextRestored", 2, 0, 29],
+    }, "call$1", "get$_onContextRestored", 2, 0, 31],
     RenderProgramQuad$0: function() {
       var t1, t2, i, j, t3, t4;
       for (t1 = this._indexList, t2 = t1.length - 6, i = 0, j = 0; i <= t2; i += 6, j += 4) {
@@ -9579,7 +10094,7 @@ var $$ = {};
     },
     _onContextRestored$1: [function(e) {
       this._program = null;
-    }, "call$1", "get$_onContextRestored", 2, 0, 29],
+    }, "call$1", "get$_onContextRestored", 2, 0, 31],
     static: {"": "RenderProgramTriangle__maxTriangleCount"}
   },
   _ContextState: {
@@ -9609,7 +10124,7 @@ var $$ = {};
     },
     _onContextRestored$1: [function(e) {
       this._texture = null;
-    }, "call$1", "get$_onContextRestored", 2, 0, 29],
+    }, "call$1", "get$_onContextRestored", 2, 0, 31],
     RenderTexture$fromImage$2: function(imageElement, imagePixelRatio) {
       var t1, t2, t3, canvasWidth, canvasHeight;
       this._storePixelRatio = Z._ensureNum(imagePixelRatio);
@@ -10102,6 +10617,329 @@ var $$ = {};
     },
     static: {"": "Vector_Epsilon,Vector_EpsilonSqr"}
   },
+  AudioElementMixer: {
+    "": "Object;_soundChannels,_mixerVolume",
+    _updateSoundChannel$1: function(audioElementSoundChannel) {
+      var audio, channelVolume;
+      audio = audioElementSoundChannel.get$_audio();
+      channelVolume = audioElementSoundChannel.get$_soundTransform().volume;
+      if (audio != null)
+        audio.volume = this._mixerVolume * channelVolume;
+    }
+  },
+  AudioElementSound: {
+    "": "Sound;_audio<,_audioPool,_soundChannels",
+    get$length: function(_) {
+      return this._audio.duration;
+    },
+    play$2: function(_, loop, soundTransform) {
+      var t1 = new Z.AudioElementSoundChannel(null, null, null, null, null);
+      t1.AudioElementSoundChannel$3(this, loop, soundTransform);
+      return t1;
+    },
+    _onAudioEnded$1: [function($event) {
+      var audio, t1, t2, i, t3, t4;
+      audio = J.get$target$x($event);
+      for (t1 = this._soundChannels, t2 = t1.length, i = 0; i < t2; ++i) {
+        t3 = t1[i];
+        t4 = t3._audio;
+        if (t4 == null ? audio == null : t4 === audio) {
+          if (t4 != null) {
+            if (t4.ended === false)
+              t4.pause();
+            t1 = t3._audioElementSound;
+            C.JSArray_methods.remove$1($.SoundMixer__audioElementMixer._soundChannels, t3);
+            C.JSArray_methods.remove$1(t1._soundChannels, t3);
+            audio = t3._audio;
+            t1._audioPool.push(audio);
+            t1 = audio.currentTime;
+            if (typeof t1 !== "number")
+              return t1.$gt();
+            if (t1 > 0 && audio.ended === false)
+              audio.currentTime = 0;
+            t3._audio = null;
+          }
+          break;
+        }
+      }
+    }, "call$1", "get$_onAudioEnded", 2, 0, 32],
+    AudioElementSound$0: function() {
+      this._soundChannels = H.setRuntimeTypeInfo([], [Z.AudioElementSoundChannel]);
+      var t1 = W.AudioElement_AudioElement(null);
+      this._audio = t1;
+      t1 = C.EventStreamProvider_ended.forElement$1(t1);
+      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(this.get$_onAudioEnded()), t1._useCapture), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
+      t1 = H.setRuntimeTypeInfo([], [W.AudioElement]);
+      this._audioPool = t1;
+      t1.push(this._audio);
+      document.body.appendChild(this._audio);
+    },
+    static: {AudioElementSound_load: function(url, soundLoadOptions) {
+        var t1, sound, audio, audioUrls, t2, loadCompleter, onCanPlaySubscription, onErrorSubscription;
+        t1 = {};
+        t1.soundLoadOptions_0 = soundLoadOptions;
+        t1.soundLoadOptions_0 = $.get$Sound_defaultLoadOptions();
+        sound = new Z.AudioElementSound(null, null, null);
+        if ($.SoundMixer__engine == null)
+          Z.SoundMixer__initEngine();
+        sound.AudioElementSound$0();
+        audio = sound._audio;
+        audioUrls = Z.SoundMixer__getOptimalAudioUrls(url, t1.soundLoadOptions_0);
+        t2 = Z.Sound;
+        loadCompleter = H.setRuntimeTypeInfo(new P._AsyncCompleter(P._Future$(t2)), [t2]);
+        if (audioUrls.length === 0) {
+          if ($.SoundMixer__engine == null)
+            Z.SoundMixer__initEngine();
+          return P._Future$immediate(new Z.MockSound(), Z.Sound);
+        }
+        t1.onCanPlaySubscription_1 = null;
+        t1.onErrorSubscription_2 = null;
+        t2 = C.EventStreamProvider_canplay.forElement$1(audio);
+        onCanPlaySubscription = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(new Z.AudioElementSound_load_onCanPlay(t1, sound, loadCompleter)), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)]);
+        onCanPlaySubscription._tryResume$0();
+        t1.onCanPlaySubscription_1 = onCanPlaySubscription;
+        t2 = C.EventStreamProvider_error.forElement$1(audio);
+        onErrorSubscription = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(new Z.AudioElementSound_load_onError(t1, url, audio, audioUrls, loadCompleter)), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)]);
+        onErrorSubscription._tryResume$0();
+        t1.onErrorSubscription_2 = onErrorSubscription;
+        audio.src = C.JSArray_methods.removeAt$1(audioUrls, 0);
+        audio.load();
+        return loadCompleter.future;
+      }}
+  },
+  AudioElementSound_load_onCanPlay: {
+    "": "Closure:11;box_0,sound_1,loadCompleter_2",
+    call$1: function($event) {
+      var t1 = this.box_0;
+      t1.onCanPlaySubscription_1.cancel$0();
+      t1.onErrorSubscription_2.cancel$0();
+      t1 = this.loadCompleter_2.future;
+      if (t1._state !== 0)
+        H.throwExpression(new P.StateError("Future already completed"));
+      t1._asyncComplete$1(this.sound_1);
+    }
+  },
+  AudioElementSound_load_onError: {
+    "": "Closure:11;box_0,url_3,audio_4,audioUrls_5,loadCompleter_6",
+    call$1: function($event) {
+      var t1, t2;
+      t1 = this.audioUrls_5;
+      if (t1.length > 0) {
+        t2 = this.audio_4;
+        t2.src = C.JSArray_methods.removeAt$1(t1, 0);
+        t2.load();
+      } else {
+        t1 = this.box_0;
+        t1.onCanPlaySubscription_1.cancel$0();
+        t1.onErrorSubscription_2.cancel$0();
+        if (t1.soundLoadOptions_0.ignoreErrors) {
+          if ($.SoundMixer__engine == null)
+            Z.SoundMixer__initEngine();
+          P._Future$immediate(new Z.MockSound(), Z.Sound).then$1(new Z.AudioElementSound_load_onError_closure(this.loadCompleter_6));
+        } else
+          this.loadCompleter_6.completeError$1(new P.StateError("Failed to load audio."));
+      }
+    }
+  },
+  AudioElementSound_load_onError_closure: {
+    "": "Closure:11;loadCompleter_7",
+    call$1: function(s) {
+      var t1 = this.loadCompleter_7.future;
+      if (t1._state !== 0)
+        H.throwExpression(new P.StateError("Future already completed"));
+      t1._asyncComplete$1(s);
+      return;
+    }
+  },
+  AudioElementSoundChannel: {
+    "": "SoundChannel;_audioElementSound,_audio<,_loop,_soundTransform<,_eventStreams",
+    AudioElementSoundChannel$3: function(audioElementSound, loop, soundTransform) {
+      var t1, audio;
+      this._audioElementSound = audioElementSound;
+      this._soundTransform = soundTransform;
+      this._loop = loop;
+      t1 = audioElementSound._audioPool;
+      if (t1.length === 0) {
+        audio = audioElementSound._audio.cloneNode(true);
+        t1 = J.get$onEnded$x(audio);
+        H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(audioElementSound.get$_onAudioEnded()), t1._useCapture), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
+      } else
+        audio = J.removeAt$1$ax(t1, 0);
+      $.SoundMixer__audioElementMixer._soundChannels.push(this);
+      audioElementSound._soundChannels.push(this);
+      this._audio = audio;
+      $.SoundMixer__audioElementMixer._updateSoundChannel$1(this);
+      t1 = this._audio;
+      t1.loop = this._loop;
+      t1.play();
+    }
+  },
+  MockSound: {
+    "": "Sound;",
+    get$length: function(_) {
+      return 0 / 0;
+    },
+    play$2: function(_, loop, soundTransform) {
+      var t1 = new Z.MockSoundChannel(null, null, null);
+      t1._loop = loop;
+      t1._soundTransform = soundTransform;
+      return t1;
+    }
+  },
+  MockSoundChannel: {
+    "": "SoundChannel;_loop,_soundTransform,_eventStreams"
+  },
+  WebAudioApiMixer: {
+    "": "Object;_inputNode,_volumeNode",
+    WebAudioApiMixer$1: function(inputNode) {
+      var t1;
+      this._inputNode = inputNode != null ? inputNode : $.get$WebAudioApiMixer_audioContext().destination;
+      t1 = J.createGain$0$x($.get$WebAudioApiMixer_audioContext());
+      this._volumeNode = t1;
+      t1.connect(this._inputNode, 0, 0);
+    },
+    static: {"": "WebAudioApiMixer_audioContext", WebAudioApiMixer$: function(inputNode) {
+        var t1 = new Z.WebAudioApiMixer(null, null);
+        t1.WebAudioApiMixer$1(inputNode);
+        return t1;
+      }}
+  },
+  WebAudioApiSound: {
+    "": "Sound;_buffer",
+    get$length: function(_) {
+      return J.get$duration$x(this._buffer);
+    },
+    play$2: function(_, loop, soundTransform) {
+      var t1 = new Z.WebAudioApiSoundChannel(null, null, null, null, null, null);
+      t1.WebAudioApiSoundChannel$3(this, loop, soundTransform);
+      return t1;
+    },
+    static: {WebAudioApiSound_load: function(url, soundLoadOptions) {
+        var t1, t2, loadCompleter, audioUrls, audioContext;
+        t1 = {};
+        t1.soundLoadOptions_0 = soundLoadOptions;
+        t1.soundLoadOptions_0 = $.get$Sound_defaultLoadOptions();
+        if ($.SoundMixer__engine == null)
+          Z.SoundMixer__initEngine();
+        if ($.SoundMixer__engine == null)
+          Z.SoundMixer__initEngine();
+        if ($.SoundMixer__engine !== "WebAudioApi")
+          H.throwExpression(P.UnsupportedError$("This browser does not support Web Audio API."));
+        t2 = Z.Sound;
+        loadCompleter = H.setRuntimeTypeInfo(new P._AsyncCompleter(P._Future$(t2)), [t2]);
+        audioUrls = Z.SoundMixer__getOptimalAudioUrls(url, t1.soundLoadOptions_0);
+        audioContext = $.get$WebAudioApiMixer_audioContext();
+        if (audioUrls.length === 0) {
+          if ($.SoundMixer__engine == null)
+            Z.SoundMixer__initEngine();
+          return P._Future$immediate(new Z.MockSound(), Z.Sound);
+        }
+        new Z.WebAudioApiSound_load_audioRequestNext(t1, url, loadCompleter, audioUrls, new Z.WebAudioApiSound_load_audioRequestFinished(t1, url, new Z.WebAudioApiSound(null), loadCompleter, audioContext)).call$1(null);
+        return loadCompleter.future;
+      }}
+  },
+  WebAudioApiSound_load_audioRequestFinished: {
+    "": "Closure:11;box_0,url_1,sound_2,loadCompleter_3,audioContext_4",
+    call$1: function(request) {
+      var t1 = this.loadCompleter_3;
+      J.decodeAudioData$1$x(this.audioContext_4, J.get$response$x(request)).then$1(new Z.WebAudioApiSound_load_audioRequestFinished_closure(this.sound_2, t1)).catchError$1(new Z.WebAudioApiSound_load_audioRequestFinished_closure0(this.box_0, this.url_1, t1));
+    }
+  },
+  WebAudioApiSound_load_audioRequestFinished_closure: {
+    "": "Closure:33;sound_5,loadCompleter_6",
+    call$1: function(buffer) {
+      var t1, t2;
+      t1 = this.sound_5;
+      t1._buffer = buffer;
+      t2 = this.loadCompleter_6.future;
+      if (t2._state !== 0)
+        H.throwExpression(new P.StateError("Future already completed"));
+      t2._asyncComplete$1(t1);
+    }
+  },
+  WebAudioApiSound_load_audioRequestFinished_closure0: {
+    "": "Closure:11;box_0,url_7,loadCompleter_8",
+    call$1: function(error) {
+      if (this.box_0.soundLoadOptions_0.ignoreErrors) {
+        if ($.SoundMixer__engine == null)
+          Z.SoundMixer__initEngine();
+        P._Future$immediate(new Z.MockSound(), Z.Sound).then$1(new Z.WebAudioApiSound_load_audioRequestFinished__closure(this.loadCompleter_8));
+      } else
+        this.loadCompleter_8.completeError$1(new P.StateError("Failed to decode audio."));
+    }
+  },
+  WebAudioApiSound_load_audioRequestFinished__closure: {
+    "": "Closure:11;loadCompleter_9",
+    call$1: function(s) {
+      var t1 = this.loadCompleter_9.future;
+      if (t1._state !== 0)
+        H.throwExpression(new P.StateError("Future already completed"));
+      t1._asyncComplete$1(s);
+      return;
+    }
+  },
+  WebAudioApiSound_load_audioRequestNext: {
+    "": "Closure:11;box_0,url_10,loadCompleter_11,audioUrls_12,audioRequestFinished_13",
+    call$1: function(error) {
+      var t1 = this.audioUrls_12;
+      if (t1.length > 0)
+        W.HttpRequest_request(C.JSArray_methods.removeAt$1(t1, 0), null, null, null, null, "arraybuffer", null, null).then$1(this.audioRequestFinished_13).catchError$1(this);
+      else if (this.box_0.soundLoadOptions_0.ignoreErrors) {
+        if ($.SoundMixer__engine == null)
+          Z.SoundMixer__initEngine();
+        P._Future$immediate(new Z.MockSound(), Z.Sound).then$1(new Z.WebAudioApiSound_load_audioRequestNext_closure(this.loadCompleter_11));
+      } else
+        this.loadCompleter_11.completeError$1(new P.StateError("Failed to load audio."));
+    }
+  },
+  WebAudioApiSound_load_audioRequestNext_closure: {
+    "": "Closure:11;loadCompleter_14",
+    call$1: function(s) {
+      var t1 = this.loadCompleter_14.future;
+      if (t1._state !== 0)
+        H.throwExpression(new P.StateError("Future already completed"));
+      t1._asyncComplete$1(s);
+      return;
+    }
+  },
+  WebAudioApiSoundChannel: {
+    "": "SoundChannel;_soundTransform,_loop,_sourceNode,_webAudioApiSound,_webAudioApiMixer,_eventStreams",
+    WebAudioApiSoundChannel$3: function(webAudioApiSound, loop, soundTransform) {
+      var t1, volume;
+      this._webAudioApiSound = webAudioApiSound;
+      this._soundTransform = soundTransform;
+      this._loop = loop;
+      t1 = Z.WebAudioApiMixer$($.SoundMixer__webAudioApiMixer._volumeNode);
+      this._webAudioApiMixer = t1;
+      volume = this._soundTransform.volume;
+      t1 = t1._volumeNode.gain;
+      t1.value = Math.pow(volume, 2);
+      t1 = $.get$WebAudioApiMixer_audioContext().createBufferSource();
+      this._sourceNode = t1;
+      t1.buffer = this._webAudioApiSound._buffer;
+      t1.loop = loop;
+      t1.connect(this._webAudioApiMixer._volumeNode, 0, 0);
+      t1 = this._sourceNode;
+      t1.toString;
+      if (!!t1.start)
+        t1.start(0);
+      else
+        t1.noteOn(0);
+    }
+  },
+  Sound: {
+    "": "Object;",
+    $isSound: true
+  },
+  SoundChannel: {
+    "": "EventDispatcher;"
+  },
+  SoundLoadOptions: {
+    "": "Object;mp3,mp4,ogg,wav,ignoreErrors"
+  },
+  SoundTransform: {
+    "": "Object;volume,pan"
+  },
   ResourceManager: {
     "": "EventDispatcher;_resources,_eventStreams",
     _addResource$4: function(kind, $name, url, loader) {
@@ -10213,14 +11051,7 @@ var $$ = {};
       return this._completer.future;
     },
     ResourceManagerResource$4: function(kind, $name, url, loader) {
-      var t1, t2, t3, result;
-      t1 = loader.then$1(new Z.ResourceManagerResource_closure(this));
-      t2 = $.Zone__current;
-      t3 = P._registerErrorHandler(new Z.ResourceManagerResource_closure0(this), t2);
-      t2.toString;
-      result = H.setRuntimeTypeInfo(new P._Future(0, t2, null, null, null, null, t3, null), [null]);
-      t1._addListener$1(result);
-      result.whenComplete$1(new Z.ResourceManagerResource_closure1(this));
+      loader.then$1(new Z.ResourceManagerResource_closure(this)).catchError$1(new Z.ResourceManagerResource_closure0(this)).whenComplete$1(new Z.ResourceManagerResource_closure1(this));
     },
     static: {ResourceManagerResource$: function(kind, $name, url, loader) {
         var t1 = new Z.ResourceManagerResource(kind, $name, url, null, null, H.setRuntimeTypeInfo(new P._AsyncCompleter(P._Future$(null)), [null]));
@@ -10260,7 +11091,7 @@ var $$ = {};
       t1 = t2.get$width(t1) === 2 && t2.get$height(t1) === 2;
       t2 = this.completer_0.future;
       if (t2._state !== 0)
-        H.throwExpression(P.StateError$("Future already completed"));
+        H.throwExpression(new P.StateError("Future already completed"));
       t2._asyncComplete$1(t1);
     }
   },
@@ -10298,13 +11129,13 @@ var $$ = {};
     }
   },
   _loadImageElement_closure1: {
-    "": "Closure:30;url_4,webpAvailable_5,imageElement_6",
+    "": "Closure:34;url_4,webpAvailable_5,imageElement_6",
     call$1: function(webpSupported) {
       var t1, match;
       t1 = this.url_4;
       match = new H.JSSyntaxRegExp(H.JSSyntaxRegExp_makeNative("(png|jpg|jpeg)$", false, true, false), null, null).firstMatch$1(t1);
       if (this.webpAvailable_5 && webpSupported === true && match != null)
-        t1 = C.JSString_methods.substring$2(t1, 0, match._match.index) + "webp";
+        t1 = J.substring$2$s(t1, 0, match._match.index) + "webp";
       J.set$src$x(this.imageElement_6, t1);
     }
   },
@@ -10327,6 +11158,9 @@ $$ = null;
 J.JSInt.$isint = true;
 J.JSInt.$isnum = true;
 J.JSInt.$isObject = true;
+W.Node.$isNode = true;
+W.Node.$isEventTarget = true;
+W.Node.$isObject = true;
 J.JSDouble.$isnum = true;
 J.JSDouble.$isObject = true;
 W.Touch.$isObject = true;
@@ -10341,22 +11175,43 @@ Z.ResourceManagerResource.$isObject = true;
 Z.DisplayObject.$isObject = true;
 Z._GraphicsCommand.$isObject = true;
 J.JSArray.$isObject = true;
+Z.Sound.$isObject = true;
+Z.AudioElementSoundChannel.$isAudioElementSoundChannel = true;
+Z.AudioElementSoundChannel.$isObject = true;
+W.Event0.$isEvent0 = true;
+W.Event0.$isObject = true;
+W.AudioElement.$isElement = true;
+W.AudioElement.$isNode = true;
+W.AudioElement.$isEventTarget = true;
+W.AudioElement.$isObject = true;
+W.HttpRequest.$isEventTarget = true;
+W.HttpRequest.$isObject = true;
+W.ProgressEvent.$isEvent0 = true;
+W.ProgressEvent.$isObject = true;
+P.AudioBuffer.$isAudioBuffer = true;
+P.AudioBuffer.$isObject = true;
+W.ImageElement.$isElement = true;
+W.ImageElement.$isNode = true;
 W.ImageElement.$isEventTarget = true;
 W.ImageElement.$isObject = true;
 J.JSBool.$isbool = true;
 J.JSBool.$isObject = true;
-W.Event0.$isObject = true;
 Z._Touch.$isObject = true;
 W.KeyboardEvent.$isKeyboardEvent = true;
+W.KeyboardEvent.$isEvent0 = true;
 W.KeyboardEvent.$isObject = true;
 W.MouseEvent0.$isMouseEvent0 = true;
+W.MouseEvent0.$isEvent0 = true;
 W.MouseEvent0.$isObject = true;
 W.WheelEvent.$isWheelEvent = true;
 W.WheelEvent.$isMouseEvent0 = true;
+W.WheelEvent.$isEvent0 = true;
 W.WheelEvent.$isObject = true;
 W.TouchEvent0.$isTouchEvent0 = true;
+W.TouchEvent0.$isEvent0 = true;
 W.TouchEvent0.$isObject = true;
 P.ContextEvent.$isContextEvent = true;
+P.ContextEvent.$isEvent0 = true;
 P.ContextEvent.$isObject = true;
 Z.Event.$isEvent = true;
 Z.Event.$isObject = true;
@@ -10364,9 +11219,9 @@ Z.EventStream.$isObject = true;
 H.RawReceivePortImpl.$isObject = true;
 H._IsolateEvent.$isObject = true;
 H._IsolateContext.$isObject = true;
-P.Object.$isObject = true;
 P.Symbol.$isSymbol = true;
 P.Symbol.$isObject = true;
+P.Object.$isObject = true;
 P.StackTrace.$isStackTrace = true;
 P.StackTrace.$isObject = true;
 P._BroadcastSubscription.$is_BroadcastSubscription = true;
@@ -10390,12 +11245,16 @@ P.StreamSubscription.$isStreamSubscription = true;
 P.StreamSubscription.$isObject = true;
 P.Function.$isFunction = true;
 P.Function.$isObject = true;
-Z.Animatable.$isAnimatable = true;
-Z.Animatable.$isObject = true;
-Z.Point.$isPoint = true;
-Z.Point.$isObject = true;
+W.Element.$isElement = true;
+W.Element.$isNode = true;
+W.Element.$isEventTarget = true;
+W.Element.$isObject = true;
 P.DateTime.$isDateTime = true;
 P.DateTime.$isObject = true;
+Z.Point.$isPoint = true;
+Z.Point.$isObject = true;
+Z.Animatable.$isAnimatable = true;
+Z.Animatable.$isObject = true;
 $.$signature_args2 = {func: "args2", args: [null, null]};
 $.$signature_args1 = {func: "args1", args: [null]};
 // getInterceptor methods
@@ -10512,6 +11371,12 @@ J.$indexSet$ax = function(receiver, a0, a1) {
 J.addEventListener$3$x = function(receiver, a0, a1, a2) {
   return J.getInterceptor$x(receiver).addEventListener$3(receiver, a0, a1, a2);
 };
+J.createGain$0$x = function(receiver) {
+  return J.getInterceptor$x(receiver).createGain$0(receiver);
+};
+J.decodeAudioData$1$x = function(receiver, a0) {
+  return J.getInterceptor$x(receiver).decodeAudioData$1(receiver, a0);
+};
 J.dispatchEvent$1$x = function(receiver, a0) {
   return J.getInterceptor$x(receiver).dispatchEvent$1(receiver, a0);
 };
@@ -10527,6 +11392,9 @@ J.get$complete$x = function(receiver) {
 J.get$context2D$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$context2D(receiver);
 };
+J.get$duration$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$duration(receiver);
+};
 J.get$error$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$error(receiver);
 };
@@ -10536,20 +11404,32 @@ J.get$hashCode$ = function(receiver) {
 J.get$height$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$height(receiver);
 };
+J.get$identifier$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$identifier(receiver);
+};
 J.get$iterator$ax = function(receiver) {
   return J.getInterceptor$ax(receiver).get$iterator(receiver);
 };
 J.get$length$asx = function(receiver) {
   return J.getInterceptor$asx(receiver).get$length(receiver);
 };
+J.get$onEnded$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$onEnded(receiver);
+};
 J.get$outline$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$outline(receiver);
+};
+J.get$response$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$response(receiver);
 };
 J.get$style$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$style(receiver);
 };
 J.get$tabIndex$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$tabIndex(receiver);
+};
+J.get$target$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$target(receiver);
 };
 J.get$width$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$width(receiver);
@@ -10560,8 +11440,14 @@ J.isPointInStroke$2$x = function(receiver, a0, a1) {
 J.preventDefault$0$x = function(receiver) {
   return J.getInterceptor$x(receiver).preventDefault$0(receiver);
 };
+J.removeAt$1$ax = function(receiver, a0) {
+  return J.getInterceptor$ax(receiver).removeAt$1(receiver, a0);
+};
 J.removeEventListener$3$x = function(receiver, a0, a1, a2) {
   return J.getInterceptor$x(receiver).removeEventListener$3(receiver, a0, a1, a2);
+};
+J.send$1$x = function(receiver, a0) {
+  return J.getInterceptor$x(receiver).send$1(receiver, a0);
 };
 J.set$cursor$x = function(receiver, value) {
   return J.getInterceptor$x(receiver).set$cursor(receiver, value);
@@ -10590,11 +11476,17 @@ J.set$tabIndex$x = function(receiver, value) {
 J.set$width$x = function(receiver, value) {
   return J.getInterceptor$x(receiver).set$width(receiver, value);
 };
+J.substring$2$s = function(receiver, a0, a1) {
+  return J.getInterceptor$s(receiver).substring$2(receiver, a0, a1);
+};
 J.texImage2D$6$x = function(receiver, a0, a1, a2, a3, a4, a5) {
   return J.getInterceptor$x(receiver).texImage2D$6(receiver, a0, a1, a2, a3, a4, a5);
 };
 J.toDouble$0$n = function(receiver) {
   return J.getInterceptor$n(receiver).toDouble$0(receiver);
+};
+J.toList$0$ax = function(receiver) {
+  return J.getInterceptor$ax(receiver).toList$0(receiver);
 };
 J.toString$0 = function(receiver) {
   return J.getInterceptor(receiver).toString$0(receiver);
@@ -10604,13 +11496,17 @@ C.C__DelayedDone = new P._DelayedDone();
 C.C__RootZone = new P._RootZone();
 C.CanvasElement_methods = W.CanvasElement.prototype;
 C.Duration_0 = new P.Duration(0);
+C.EventStreamProvider_canplay = new W.EventStreamProvider("canplay");
 C.EventStreamProvider_contextRestored = new Z.EventStreamProvider0("contextRestored");
 C.EventStreamProvider_contextmenu = new W.EventStreamProvider("contextmenu");
+C.EventStreamProvider_ended = new W.EventStreamProvider("ended");
 C.EventStreamProvider_error = new W.EventStreamProvider("error");
+C.EventStreamProvider_error0 = new W.EventStreamProvider("error");
 C.EventStreamProvider_keydown = new W.EventStreamProvider("keydown");
 C.EventStreamProvider_keypress = new W.EventStreamProvider("keypress");
 C.EventStreamProvider_keyup = new W.EventStreamProvider("keyup");
 C.EventStreamProvider_load = new W.EventStreamProvider("load");
+C.EventStreamProvider_load0 = new W.EventStreamProvider("load");
 C.EventStreamProvider_mousedown = new W.EventStreamProvider("mousedown");
 C.EventStreamProvider_mousemove = new W.EventStreamProvider("mousemove");
 C.EventStreamProvider_mouseout = new W.EventStreamProvider("mouseout");
@@ -10623,6 +11519,7 @@ C.EventStreamProvider_touchmove = new W.EventStreamProvider("touchmove");
 C.EventStreamProvider_touchstart = new W.EventStreamProvider("touchstart");
 C.EventStreamProvider_webglcontextlost = new W.EventStreamProvider("webglcontextlost");
 C.EventStreamProvider_webglcontextrestored = new W.EventStreamProvider("webglcontextrestored");
+C.HttpRequest_methods = W.HttpRequest.prototype;
 C.JSArray_methods = J.JSArray.prototype;
 C.JSInt_methods = J.JSInt.prototype;
 C.JSNumber_methods = J.JSNumber.prototype;
@@ -10786,12 +11683,13 @@ $.prototypeForTagFunction = null;
 $.dispatchRecordsForInstanceTags = null;
 $.interceptorsForUncacheableTags = null;
 $.initNativeDispatchFlag = null;
+$.cities = null;
 $.resourceManager = null;
+$.soundChannel = null;
 $.canvas = null;
 $.stage = null;
 $.listMenu = null;
 $.actionMenu = null;
-$.testGraph = null;
 $.mapPic = null;
 $.hammerPic = null;
 $.printToZone = null;
@@ -10805,6 +11703,9 @@ $.Device__isWebKit = null;
 $.Device__cachedCssPrefix = null;
 $.DisplayObject__nextID = 0;
 $._Touch__globalTouchPointID = 0;
+$.SoundMixer__engine = null;
+$.SoundMixer__webAudioApiMixer = null;
+$.SoundMixer__audioElementMixer = null;
 $.Mouse__customCursor = "auto";
 $.Mouse__isCursorHidden = false;
 $.Mouse__dragSprite = null;
@@ -10883,6 +11784,9 @@ Isolate.$lazy($, "undefinedLiteralPropertyPattern", "TypeErrorDecoder_undefinedL
   }
 }());
 });
+Isolate.$lazy($, "listOfMenus", "listOfMenus", "get$listOfMenus", function() {
+  return Array(15);
+});
 Isolate.$lazy($, "_toStringList", "IterableMixinWorkaround__toStringList", "get$IterableMixinWorkaround__toStringList", function() {
   return [];
 });
@@ -10913,6 +11817,28 @@ Isolate.$lazy($, "_exitFrameSubscriptions", "_exitFrameSubscriptions", "get$_exi
 });
 Isolate.$lazy($, "_renderSubscriptions", "_renderSubscriptions", "get$_renderSubscriptions", function() {
   return [];
+});
+Isolate.$lazy($, "audioContext", "WebAudioApiMixer_audioContext", "get$WebAudioApiMixer_audioContext", function() {
+  return new (window.AudioContext || window.webkitAudioContext)();
+});
+Isolate.$lazy($, "defaultLoadOptions", "Sound_defaultLoadOptions", "get$Sound_defaultLoadOptions", function() {
+  return new Z.SoundLoadOptions(true, true, true, true, true);
+});
+Isolate.$lazy($, "_supportedTypes", "SoundMixer__supportedTypes", "get$SoundMixer__supportedTypes", function() {
+  var supportedTypes, audio, valid;
+  supportedTypes = H.setRuntimeTypeInfo([], [J.JSString]);
+  audio = W.AudioElement_AudioElement(null);
+  valid = ["maybe", "probably"];
+  if (H.Lists_indexOf(valid, audio.canPlayType("audio/mpeg", ""), 0, 2) !== -1)
+    supportedTypes.push("mp3");
+  if (H.Lists_indexOf(valid, audio.canPlayType("audio/mp4", ""), 0, 2) !== -1)
+    supportedTypes.push("mp4");
+  if (H.Lists_indexOf(valid, audio.canPlayType("audio/ogg", ""), 0, 2) !== -1)
+    supportedTypes.push("ogg");
+  if (H.Lists_indexOf(valid, audio.canPlayType("audio/wav", ""), 0, 2) !== -1)
+    supportedTypes.push("wav");
+  P.print("StageXL audio types   : " + H.S(supportedTypes));
+  return supportedTypes;
 });
 Isolate.$lazy($, "_mouseCursorChangedEvent", "Mouse__mouseCursorChangedEvent", "get$Mouse__mouseCursorChangedEvent", function() {
   return P.StreamController_StreamController(null, null, null, null, false, J.JSString);
@@ -10995,6 +11921,8 @@ init.metadata = [{func: "void_", void: true},
 {func: "dynamic__Symbol_dynamic", args: [P.Symbol, null]},
 {func: "String__int", ret: J.JSString, args: [J.JSInt]},
 {func: "dynamic__String_dynamic", args: [J.JSString, null]},
+{func: "dynamic__int", args: [J.JSInt]},
+{func: "dynamic__int_dynamic", args: [J.JSInt, null]},
 {func: "dynamic__MouseEvent", args: [W.MouseEvent0]},
 {func: "dynamic__WheelEvent", args: [W.WheelEvent]},
 {func: "dynamic__TouchEvent", args: [W.TouchEvent0]},
@@ -11002,6 +11930,8 @@ init.metadata = [{func: "void_", void: true},
 {func: "dynamic__ContextEvent", args: [P.ContextEvent]},
 {func: "dynamic__num", args: [J.JSNumber]},
 {func: "dynamic__Event", args: [Z.Event]},
+{func: "void__Event", void: true, args: [W.Event0]},
+{func: "dynamic__AudioBuffer", args: [P.AudioBuffer]},
 {func: "dynamic__bool", args: [J.JSBool]},
 ];
 $ = null;
@@ -11889,6 +12819,15 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   HeadingElement.prototype = $desc;
+  function HtmlCollection() {
+  }
+  HtmlCollection.builtin$cls = "HtmlCollection";
+  if (!"name" in HtmlCollection)
+    HtmlCollection.name = "HtmlCollection";
+  $desc = $collectedClasses.HtmlCollection;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  HtmlCollection.prototype = $desc;
   function HtmlDocument() {
   }
   HtmlDocument.builtin$cls = "HtmlDocument";
@@ -11898,6 +12837,15 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   HtmlDocument.prototype = $desc;
+  function HtmlFormControlsCollection() {
+  }
+  HtmlFormControlsCollection.builtin$cls = "HtmlFormControlsCollection";
+  if (!"name" in HtmlFormControlsCollection)
+    HtmlFormControlsCollection.name = "HtmlFormControlsCollection";
+  $desc = $collectedClasses.HtmlFormControlsCollection;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  HtmlFormControlsCollection.prototype = $desc;
   function HtmlHtmlElement() {
   }
   HtmlHtmlElement.builtin$cls = "HtmlHtmlElement";
@@ -11907,6 +12855,33 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   HtmlHtmlElement.prototype = $desc;
+  function HtmlOptionsCollection() {
+  }
+  HtmlOptionsCollection.builtin$cls = "HtmlOptionsCollection";
+  if (!"name" in HtmlOptionsCollection)
+    HtmlOptionsCollection.name = "HtmlOptionsCollection";
+  $desc = $collectedClasses.HtmlOptionsCollection;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  HtmlOptionsCollection.prototype = $desc;
+  function HttpRequest() {
+  }
+  HttpRequest.builtin$cls = "HttpRequest";
+  if (!"name" in HttpRequest)
+    HttpRequest.name = "HttpRequest";
+  $desc = $collectedClasses.HttpRequest;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  HttpRequest.prototype = $desc;
+  function HttpRequestEventTarget() {
+  }
+  HttpRequestEventTarget.builtin$cls = "HttpRequestEventTarget";
+  if (!"name" in HttpRequestEventTarget)
+    HttpRequestEventTarget.name = "HttpRequestEventTarget";
+  $desc = $collectedClasses.HttpRequestEventTarget;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  HttpRequestEventTarget.prototype = $desc;
   function IFrameElement() {
   }
   IFrameElement.builtin$cls = "IFrameElement";
@@ -12060,6 +13035,9 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   MediaElement.prototype = $desc;
+  MediaElement.prototype.get$duration = function(receiver) {
+    return receiver.duration;
+  };
   MediaElement.prototype.get$error = function(receiver) {
     return receiver.error;
   };
@@ -12243,6 +13221,15 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   Node.prototype = $desc;
+  function NodeList() {
+  }
+  NodeList.builtin$cls = "NodeList";
+  if (!"name" in NodeList)
+    NodeList.name = "NodeList";
+  $desc = $collectedClasses.NodeList;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  NodeList.prototype = $desc;
   function OListElement() {
   }
   OListElement.builtin$cls = "OListElement";
@@ -12708,6 +13695,9 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   Touch.prototype = $desc;
+  Touch.prototype.get$identifier = function(receiver) {
+    return receiver.identifier;
+  };
   function TouchEvent0() {
   }
   TouchEvent0.builtin$cls = "TouchEvent0";
@@ -13974,6 +14964,69 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   _SVGVKernElement.prototype = $desc;
+  function AudioBuffer() {
+  }
+  AudioBuffer.builtin$cls = "AudioBuffer";
+  if (!"name" in AudioBuffer)
+    AudioBuffer.name = "AudioBuffer";
+  $desc = $collectedClasses.AudioBuffer;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  AudioBuffer.prototype = $desc;
+  AudioBuffer.prototype.get$duration = function(receiver) {
+    return receiver.duration;
+  };
+  AudioBuffer.prototype.get$length = function(receiver) {
+    return receiver.length;
+  };
+  function AudioBufferSourceNode() {
+  }
+  AudioBufferSourceNode.builtin$cls = "AudioBufferSourceNode";
+  if (!"name" in AudioBufferSourceNode)
+    AudioBufferSourceNode.name = "AudioBufferSourceNode";
+  $desc = $collectedClasses.AudioBufferSourceNode;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  AudioBufferSourceNode.prototype = $desc;
+  function AudioContext() {
+  }
+  AudioContext.builtin$cls = "AudioContext";
+  if (!"name" in AudioContext)
+    AudioContext.name = "AudioContext";
+  $desc = $collectedClasses.AudioContext;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  AudioContext.prototype = $desc;
+  function AudioDestinationNode() {
+  }
+  AudioDestinationNode.builtin$cls = "AudioDestinationNode";
+  if (!"name" in AudioDestinationNode)
+    AudioDestinationNode.name = "AudioDestinationNode";
+  $desc = $collectedClasses.AudioDestinationNode;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  AudioDestinationNode.prototype = $desc;
+  function AudioNode() {
+  }
+  AudioNode.builtin$cls = "AudioNode";
+  if (!"name" in AudioNode)
+    AudioNode.name = "AudioNode";
+  $desc = $collectedClasses.AudioNode;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  AudioNode.prototype = $desc;
+  function AudioParam() {
+  }
+  AudioParam.builtin$cls = "AudioParam";
+  if (!"name" in AudioParam)
+    AudioParam.name = "AudioParam";
+  $desc = $collectedClasses.AudioParam;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  AudioParam.prototype = $desc;
+  AudioParam.prototype.get$value = function(receiver) {
+    return receiver.value;
+  };
   function AudioProcessingEvent() {
   }
   AudioProcessingEvent.builtin$cls = "AudioProcessingEvent";
@@ -13983,6 +15036,24 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   AudioProcessingEvent.prototype = $desc;
+  function AudioSourceNode() {
+  }
+  AudioSourceNode.builtin$cls = "AudioSourceNode";
+  if (!"name" in AudioSourceNode)
+    AudioSourceNode.name = "AudioSourceNode";
+  $desc = $collectedClasses.AudioSourceNode;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  AudioSourceNode.prototype = $desc;
+  function GainNode() {
+  }
+  GainNode.builtin$cls = "GainNode";
+  if (!"name" in GainNode)
+    GainNode.name = "GainNode";
+  $desc = $collectedClasses.GainNode;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  GainNode.prototype = $desc;
   function OfflineAudioCompletionEvent() {
   }
   OfflineAudioCompletionEvent.builtin$cls = "OfflineAudioCompletionEvent";
@@ -13992,6 +15063,15 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   OfflineAudioCompletionEvent.prototype = $desc;
+  function OfflineAudioContext() {
+  }
+  OfflineAudioContext.builtin$cls = "OfflineAudioContext";
+  if (!"name" in OfflineAudioContext)
+    OfflineAudioContext.name = "OfflineAudioContext";
+  $desc = $collectedClasses.OfflineAudioContext;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  OfflineAudioContext.prototype = $desc;
   function Buffer() {
   }
   Buffer.builtin$cls = "Buffer";
@@ -14883,6 +15963,29 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   _MatchImplementation.prototype = $desc;
+  function City(population, dead, infected, healthy, name, spread_from_factor, spread_to_factor, spread_within_factor, death_rate, workforce, production, next_to, house_arrest, quarantine) {
+    this.population = population;
+    this.dead = dead;
+    this.infected = infected;
+    this.healthy = healthy;
+    this.name = name;
+    this.spread_from_factor = spread_from_factor;
+    this.spread_to_factor = spread_to_factor;
+    this.spread_within_factor = spread_within_factor;
+    this.death_rate = death_rate;
+    this.workforce = workforce;
+    this.production = production;
+    this.next_to = next_to;
+    this.house_arrest = house_arrest;
+    this.quarantine = quarantine;
+  }
+  City.builtin$cls = "City";
+  if (!"name" in City)
+    City.name = "City";
+  $desc = $collectedClasses.City;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  City.prototype = $desc;
   function main_closure() {
   }
   main_closure.builtin$cls = "main_closure";
@@ -16506,6 +17609,63 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   Interceptor_ListMixin_ImmutableListMixin.prototype = $desc;
+  function HttpRequest_request_closure0(xhr_0) {
+    this.xhr_0 = xhr_0;
+  }
+  HttpRequest_request_closure0.builtin$cls = "HttpRequest_request_closure0";
+  if (!"name" in HttpRequest_request_closure0)
+    HttpRequest_request_closure0.name = "HttpRequest_request_closure0";
+  $desc = $collectedClasses.HttpRequest_request_closure0;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  HttpRequest_request_closure0.prototype = $desc;
+  function HttpRequest_request_closure(completer_1, xhr_2) {
+    this.completer_1 = completer_1;
+    this.xhr_2 = xhr_2;
+  }
+  HttpRequest_request_closure.builtin$cls = "HttpRequest_request_closure";
+  if (!"name" in HttpRequest_request_closure)
+    HttpRequest_request_closure.name = "HttpRequest_request_closure";
+  $desc = $collectedClasses.HttpRequest_request_closure;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  HttpRequest_request_closure.prototype = $desc;
+  function Interceptor_ListMixin0() {
+  }
+  Interceptor_ListMixin0.builtin$cls = "Interceptor_ListMixin0";
+  if (!"name" in Interceptor_ListMixin0)
+    Interceptor_ListMixin0.name = "Interceptor_ListMixin0";
+  $desc = $collectedClasses.Interceptor_ListMixin0;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  Interceptor_ListMixin0.prototype = $desc;
+  function Interceptor_ListMixin_ImmutableListMixin0() {
+  }
+  Interceptor_ListMixin_ImmutableListMixin0.builtin$cls = "Interceptor_ListMixin_ImmutableListMixin0";
+  if (!"name" in Interceptor_ListMixin_ImmutableListMixin0)
+    Interceptor_ListMixin_ImmutableListMixin0.name = "Interceptor_ListMixin_ImmutableListMixin0";
+  $desc = $collectedClasses.Interceptor_ListMixin_ImmutableListMixin0;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  Interceptor_ListMixin_ImmutableListMixin0.prototype = $desc;
+  function Interceptor_ListMixin1() {
+  }
+  Interceptor_ListMixin1.builtin$cls = "Interceptor_ListMixin1";
+  if (!"name" in Interceptor_ListMixin1)
+    Interceptor_ListMixin1.name = "Interceptor_ListMixin1";
+  $desc = $collectedClasses.Interceptor_ListMixin1;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  Interceptor_ListMixin1.prototype = $desc;
+  function Interceptor_ListMixin_ImmutableListMixin1() {
+  }
+  Interceptor_ListMixin_ImmutableListMixin1.builtin$cls = "Interceptor_ListMixin_ImmutableListMixin1";
+  if (!"name" in Interceptor_ListMixin_ImmutableListMixin1)
+    Interceptor_ListMixin_ImmutableListMixin1.name = "Interceptor_ListMixin_ImmutableListMixin1";
+  $desc = $collectedClasses.Interceptor_ListMixin_ImmutableListMixin1;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  Interceptor_ListMixin_ImmutableListMixin1.prototype = $desc;
   function EventStreamProvider(_eventType) {
     this._eventType = _eventType;
   }
@@ -16516,7 +17676,10 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   EventStreamProvider.prototype = $desc;
-  function _EventStream() {
+  function _EventStream(_html$_target, _eventType, _useCapture) {
+    this._html$_target = _html$_target;
+    this._eventType = _eventType;
+    this._useCapture = _useCapture;
   }
   _EventStream.builtin$cls = "_EventStream";
   if (!"name" in _EventStream)
@@ -16593,6 +17756,26 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   _DOMWindowCrossFrame.prototype = $desc;
+  function AudioContext_decodeAudioData_closure(completer_0) {
+    this.completer_0 = completer_0;
+  }
+  AudioContext_decodeAudioData_closure.builtin$cls = "AudioContext_decodeAudioData_closure";
+  if (!"name" in AudioContext_decodeAudioData_closure)
+    AudioContext_decodeAudioData_closure.name = "AudioContext_decodeAudioData_closure";
+  $desc = $collectedClasses.AudioContext_decodeAudioData_closure;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  AudioContext_decodeAudioData_closure.prototype = $desc;
+  function AudioContext_decodeAudioData_closure0(completer_1) {
+    this.completer_1 = completer_1;
+  }
+  AudioContext_decodeAudioData_closure0.builtin$cls = "AudioContext_decodeAudioData_closure0";
+  if (!"name" in AudioContext_decodeAudioData_closure0)
+    AudioContext_decodeAudioData_closure0.name = "AudioContext_decodeAudioData_closure0";
+  $desc = $collectedClasses.AudioContext_decodeAudioData_closure0;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  AudioContext_decodeAudioData_closure0.prototype = $desc;
   function Point0(x, y) {
     this.x = x;
     this.y = y;
@@ -16714,6 +17897,50 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   convertDartToNative_Dictionary_closure.prototype = $desc;
+  function convertNativeToDart_AcceptStructuredClone_findSlot(values_0, copies_1) {
+    this.values_0 = values_0;
+    this.copies_1 = copies_1;
+  }
+  convertNativeToDart_AcceptStructuredClone_findSlot.builtin$cls = "convertNativeToDart_AcceptStructuredClone_findSlot";
+  if (!"name" in convertNativeToDart_AcceptStructuredClone_findSlot)
+    convertNativeToDart_AcceptStructuredClone_findSlot.name = "convertNativeToDart_AcceptStructuredClone_findSlot";
+  $desc = $collectedClasses.convertNativeToDart_AcceptStructuredClone_findSlot;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  convertNativeToDart_AcceptStructuredClone_findSlot.prototype = $desc;
+  function convertNativeToDart_AcceptStructuredClone_readSlot(copies_2) {
+    this.copies_2 = copies_2;
+  }
+  convertNativeToDart_AcceptStructuredClone_readSlot.builtin$cls = "convertNativeToDart_AcceptStructuredClone_readSlot";
+  if (!"name" in convertNativeToDart_AcceptStructuredClone_readSlot)
+    convertNativeToDart_AcceptStructuredClone_readSlot.name = "convertNativeToDart_AcceptStructuredClone_readSlot";
+  $desc = $collectedClasses.convertNativeToDart_AcceptStructuredClone_readSlot;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  convertNativeToDart_AcceptStructuredClone_readSlot.prototype = $desc;
+  function convertNativeToDart_AcceptStructuredClone_writeSlot(copies_3) {
+    this.copies_3 = copies_3;
+  }
+  convertNativeToDart_AcceptStructuredClone_writeSlot.builtin$cls = "convertNativeToDart_AcceptStructuredClone_writeSlot";
+  if (!"name" in convertNativeToDart_AcceptStructuredClone_writeSlot)
+    convertNativeToDart_AcceptStructuredClone_writeSlot.name = "convertNativeToDart_AcceptStructuredClone_writeSlot";
+  $desc = $collectedClasses.convertNativeToDart_AcceptStructuredClone_writeSlot;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  convertNativeToDart_AcceptStructuredClone_writeSlot.prototype = $desc;
+  function convertNativeToDart_AcceptStructuredClone_walk(mustCopy_4, findSlot_5, readSlot_6, writeSlot_7) {
+    this.mustCopy_4 = mustCopy_4;
+    this.findSlot_5 = findSlot_5;
+    this.readSlot_6 = readSlot_6;
+    this.writeSlot_7 = writeSlot_7;
+  }
+  convertNativeToDart_AcceptStructuredClone_walk.builtin$cls = "convertNativeToDart_AcceptStructuredClone_walk";
+  if (!"name" in convertNativeToDart_AcceptStructuredClone_walk)
+    convertNativeToDart_AcceptStructuredClone_walk.name = "convertNativeToDart_AcceptStructuredClone_walk";
+  $desc = $collectedClasses.convertNativeToDart_AcceptStructuredClone_walk;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  convertNativeToDart_AcceptStructuredClone_walk.prototype = $desc;
   function Animatable() {
   }
   Animatable.builtin$cls = "Animatable";
@@ -17596,6 +18823,259 @@ function dart_precompiled($collectedClasses) {
   Vector.prototype.get$_y = function() {
     return this._y;
   };
+  function AudioElementMixer(_soundChannels, _mixerVolume) {
+    this._soundChannels = _soundChannels;
+    this._mixerVolume = _mixerVolume;
+  }
+  AudioElementMixer.builtin$cls = "AudioElementMixer";
+  if (!"name" in AudioElementMixer)
+    AudioElementMixer.name = "AudioElementMixer";
+  $desc = $collectedClasses.AudioElementMixer;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  AudioElementMixer.prototype = $desc;
+  function AudioElementSound(_audio, _audioPool, _soundChannels) {
+    this._audio = _audio;
+    this._audioPool = _audioPool;
+    this._soundChannels = _soundChannels;
+  }
+  AudioElementSound.builtin$cls = "AudioElementSound";
+  if (!"name" in AudioElementSound)
+    AudioElementSound.name = "AudioElementSound";
+  $desc = $collectedClasses.AudioElementSound;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  AudioElementSound.prototype = $desc;
+  AudioElementSound.prototype.get$_audio = function() {
+    return this._audio;
+  };
+  function AudioElementSound_load_onCanPlay(box_0, sound_1, loadCompleter_2) {
+    this.box_0 = box_0;
+    this.sound_1 = sound_1;
+    this.loadCompleter_2 = loadCompleter_2;
+  }
+  AudioElementSound_load_onCanPlay.builtin$cls = "AudioElementSound_load_onCanPlay";
+  if (!"name" in AudioElementSound_load_onCanPlay)
+    AudioElementSound_load_onCanPlay.name = "AudioElementSound_load_onCanPlay";
+  $desc = $collectedClasses.AudioElementSound_load_onCanPlay;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  AudioElementSound_load_onCanPlay.prototype = $desc;
+  function AudioElementSound_load_onError(box_0, url_3, audio_4, audioUrls_5, loadCompleter_6) {
+    this.box_0 = box_0;
+    this.url_3 = url_3;
+    this.audio_4 = audio_4;
+    this.audioUrls_5 = audioUrls_5;
+    this.loadCompleter_6 = loadCompleter_6;
+  }
+  AudioElementSound_load_onError.builtin$cls = "AudioElementSound_load_onError";
+  if (!"name" in AudioElementSound_load_onError)
+    AudioElementSound_load_onError.name = "AudioElementSound_load_onError";
+  $desc = $collectedClasses.AudioElementSound_load_onError;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  AudioElementSound_load_onError.prototype = $desc;
+  function AudioElementSound_load_onError_closure(loadCompleter_7) {
+    this.loadCompleter_7 = loadCompleter_7;
+  }
+  AudioElementSound_load_onError_closure.builtin$cls = "AudioElementSound_load_onError_closure";
+  if (!"name" in AudioElementSound_load_onError_closure)
+    AudioElementSound_load_onError_closure.name = "AudioElementSound_load_onError_closure";
+  $desc = $collectedClasses.AudioElementSound_load_onError_closure;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  AudioElementSound_load_onError_closure.prototype = $desc;
+  function AudioElementSoundChannel(_audioElementSound, _audio, _loop, _soundTransform, _eventStreams) {
+    this._audioElementSound = _audioElementSound;
+    this._audio = _audio;
+    this._loop = _loop;
+    this._soundTransform = _soundTransform;
+    this._eventStreams = _eventStreams;
+  }
+  AudioElementSoundChannel.builtin$cls = "AudioElementSoundChannel";
+  if (!"name" in AudioElementSoundChannel)
+    AudioElementSoundChannel.name = "AudioElementSoundChannel";
+  $desc = $collectedClasses.AudioElementSoundChannel;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  AudioElementSoundChannel.prototype = $desc;
+  AudioElementSoundChannel.prototype.get$_audio = function() {
+    return this._audio;
+  };
+  AudioElementSoundChannel.prototype.get$_soundTransform = function() {
+    return this._soundTransform;
+  };
+  function MockSound() {
+  }
+  MockSound.builtin$cls = "MockSound";
+  if (!"name" in MockSound)
+    MockSound.name = "MockSound";
+  $desc = $collectedClasses.MockSound;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  MockSound.prototype = $desc;
+  function MockSoundChannel(_loop, _soundTransform, _eventStreams) {
+    this._loop = _loop;
+    this._soundTransform = _soundTransform;
+    this._eventStreams = _eventStreams;
+  }
+  MockSoundChannel.builtin$cls = "MockSoundChannel";
+  if (!"name" in MockSoundChannel)
+    MockSoundChannel.name = "MockSoundChannel";
+  $desc = $collectedClasses.MockSoundChannel;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  MockSoundChannel.prototype = $desc;
+  function WebAudioApiMixer(_inputNode, _volumeNode) {
+    this._inputNode = _inputNode;
+    this._volumeNode = _volumeNode;
+  }
+  WebAudioApiMixer.builtin$cls = "WebAudioApiMixer";
+  if (!"name" in WebAudioApiMixer)
+    WebAudioApiMixer.name = "WebAudioApiMixer";
+  $desc = $collectedClasses.WebAudioApiMixer;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  WebAudioApiMixer.prototype = $desc;
+  function WebAudioApiSound(_buffer) {
+    this._buffer = _buffer;
+  }
+  WebAudioApiSound.builtin$cls = "WebAudioApiSound";
+  if (!"name" in WebAudioApiSound)
+    WebAudioApiSound.name = "WebAudioApiSound";
+  $desc = $collectedClasses.WebAudioApiSound;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  WebAudioApiSound.prototype = $desc;
+  function WebAudioApiSound_load_audioRequestFinished(box_0, url_1, sound_2, loadCompleter_3, audioContext_4) {
+    this.box_0 = box_0;
+    this.url_1 = url_1;
+    this.sound_2 = sound_2;
+    this.loadCompleter_3 = loadCompleter_3;
+    this.audioContext_4 = audioContext_4;
+  }
+  WebAudioApiSound_load_audioRequestFinished.builtin$cls = "WebAudioApiSound_load_audioRequestFinished";
+  if (!"name" in WebAudioApiSound_load_audioRequestFinished)
+    WebAudioApiSound_load_audioRequestFinished.name = "WebAudioApiSound_load_audioRequestFinished";
+  $desc = $collectedClasses.WebAudioApiSound_load_audioRequestFinished;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  WebAudioApiSound_load_audioRequestFinished.prototype = $desc;
+  function WebAudioApiSound_load_audioRequestFinished_closure(sound_5, loadCompleter_6) {
+    this.sound_5 = sound_5;
+    this.loadCompleter_6 = loadCompleter_6;
+  }
+  WebAudioApiSound_load_audioRequestFinished_closure.builtin$cls = "WebAudioApiSound_load_audioRequestFinished_closure";
+  if (!"name" in WebAudioApiSound_load_audioRequestFinished_closure)
+    WebAudioApiSound_load_audioRequestFinished_closure.name = "WebAudioApiSound_load_audioRequestFinished_closure";
+  $desc = $collectedClasses.WebAudioApiSound_load_audioRequestFinished_closure;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  WebAudioApiSound_load_audioRequestFinished_closure.prototype = $desc;
+  function WebAudioApiSound_load_audioRequestFinished_closure0(box_0, url_7, loadCompleter_8) {
+    this.box_0 = box_0;
+    this.url_7 = url_7;
+    this.loadCompleter_8 = loadCompleter_8;
+  }
+  WebAudioApiSound_load_audioRequestFinished_closure0.builtin$cls = "WebAudioApiSound_load_audioRequestFinished_closure0";
+  if (!"name" in WebAudioApiSound_load_audioRequestFinished_closure0)
+    WebAudioApiSound_load_audioRequestFinished_closure0.name = "WebAudioApiSound_load_audioRequestFinished_closure0";
+  $desc = $collectedClasses.WebAudioApiSound_load_audioRequestFinished_closure0;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  WebAudioApiSound_load_audioRequestFinished_closure0.prototype = $desc;
+  function WebAudioApiSound_load_audioRequestFinished__closure(loadCompleter_9) {
+    this.loadCompleter_9 = loadCompleter_9;
+  }
+  WebAudioApiSound_load_audioRequestFinished__closure.builtin$cls = "WebAudioApiSound_load_audioRequestFinished__closure";
+  if (!"name" in WebAudioApiSound_load_audioRequestFinished__closure)
+    WebAudioApiSound_load_audioRequestFinished__closure.name = "WebAudioApiSound_load_audioRequestFinished__closure";
+  $desc = $collectedClasses.WebAudioApiSound_load_audioRequestFinished__closure;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  WebAudioApiSound_load_audioRequestFinished__closure.prototype = $desc;
+  function WebAudioApiSound_load_audioRequestNext(box_0, url_10, loadCompleter_11, audioUrls_12, audioRequestFinished_13) {
+    this.box_0 = box_0;
+    this.url_10 = url_10;
+    this.loadCompleter_11 = loadCompleter_11;
+    this.audioUrls_12 = audioUrls_12;
+    this.audioRequestFinished_13 = audioRequestFinished_13;
+  }
+  WebAudioApiSound_load_audioRequestNext.builtin$cls = "WebAudioApiSound_load_audioRequestNext";
+  if (!"name" in WebAudioApiSound_load_audioRequestNext)
+    WebAudioApiSound_load_audioRequestNext.name = "WebAudioApiSound_load_audioRequestNext";
+  $desc = $collectedClasses.WebAudioApiSound_load_audioRequestNext;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  WebAudioApiSound_load_audioRequestNext.prototype = $desc;
+  function WebAudioApiSound_load_audioRequestNext_closure(loadCompleter_14) {
+    this.loadCompleter_14 = loadCompleter_14;
+  }
+  WebAudioApiSound_load_audioRequestNext_closure.builtin$cls = "WebAudioApiSound_load_audioRequestNext_closure";
+  if (!"name" in WebAudioApiSound_load_audioRequestNext_closure)
+    WebAudioApiSound_load_audioRequestNext_closure.name = "WebAudioApiSound_load_audioRequestNext_closure";
+  $desc = $collectedClasses.WebAudioApiSound_load_audioRequestNext_closure;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  WebAudioApiSound_load_audioRequestNext_closure.prototype = $desc;
+  function WebAudioApiSoundChannel(_soundTransform, _loop, _sourceNode, _webAudioApiSound, _webAudioApiMixer, _eventStreams) {
+    this._soundTransform = _soundTransform;
+    this._loop = _loop;
+    this._sourceNode = _sourceNode;
+    this._webAudioApiSound = _webAudioApiSound;
+    this._webAudioApiMixer = _webAudioApiMixer;
+    this._eventStreams = _eventStreams;
+  }
+  WebAudioApiSoundChannel.builtin$cls = "WebAudioApiSoundChannel";
+  if (!"name" in WebAudioApiSoundChannel)
+    WebAudioApiSoundChannel.name = "WebAudioApiSoundChannel";
+  $desc = $collectedClasses.WebAudioApiSoundChannel;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  WebAudioApiSoundChannel.prototype = $desc;
+  function Sound() {
+  }
+  Sound.builtin$cls = "Sound";
+  if (!"name" in Sound)
+    Sound.name = "Sound";
+  $desc = $collectedClasses.Sound;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  Sound.prototype = $desc;
+  function SoundChannel() {
+  }
+  SoundChannel.builtin$cls = "SoundChannel";
+  if (!"name" in SoundChannel)
+    SoundChannel.name = "SoundChannel";
+  $desc = $collectedClasses.SoundChannel;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  SoundChannel.prototype = $desc;
+  function SoundLoadOptions(mp3, mp4, ogg, wav, ignoreErrors) {
+    this.mp3 = mp3;
+    this.mp4 = mp4;
+    this.ogg = ogg;
+    this.wav = wav;
+    this.ignoreErrors = ignoreErrors;
+  }
+  SoundLoadOptions.builtin$cls = "SoundLoadOptions";
+  if (!"name" in SoundLoadOptions)
+    SoundLoadOptions.name = "SoundLoadOptions";
+  $desc = $collectedClasses.SoundLoadOptions;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  SoundLoadOptions.prototype = $desc;
+  function SoundTransform(volume, pan) {
+    this.volume = volume;
+    this.pan = pan;
+  }
+  SoundTransform.builtin$cls = "SoundTransform";
+  if (!"name" in SoundTransform)
+    SoundTransform.name = "SoundTransform";
+  $desc = $collectedClasses.SoundTransform;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  SoundTransform.prototype = $desc;
   function ResourceManager(_resources, _eventStreams) {
     this._resources = _resources;
     this._eventStreams = _eventStreams;
@@ -17774,5 +19254,5 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   closure.prototype = $desc;
-  return [HtmlElement, AnchorElement, AnimationEvent, AreaElement, AudioElement, AutocompleteErrorEvent, BRElement, BaseElement, BeforeLoadEvent, BeforeUnloadEvent, Blob, BodyElement, ButtonElement, CDataSection, CanvasElement, CanvasGradient, CanvasPattern, CanvasRenderingContext, CanvasRenderingContext2D, CharacterData, CloseEvent, Comment, CompositionEvent, ContentElement, CssFontFaceLoadEvent, CssStyleDeclaration, CustomEvent, DListElement, DataListElement, DetailsElement, DeviceMotionEvent, DeviceOrientationEvent, DialogElement, DivElement, Document, DocumentFragment, DocumentType, DomError, DomException, Element, EmbedElement, ErrorEvent, Event0, EventTarget, FieldSetElement, File, FileError, FocusEvent, FormElement, HRElement, HashChangeEvent, HeadElement, HeadingElement, HtmlDocument, HtmlHtmlElement, IFrameElement, ImageElement, InputElement, KeyboardEvent, KeygenElement, LIElement, LabelElement, LegendElement, LinkElement, MapElement, MediaElement, MediaError, MediaKeyError, MediaKeyEvent, MediaKeyMessageEvent, MediaKeyNeededEvent, MediaStream, MediaStreamEvent, MediaStreamTrackEvent, MenuElement, MessageEvent, MetaElement, MeterElement, MidiConnectionEvent, MidiMessageEvent, ModElement, MouseEvent0, Navigator, NavigatorUserMediaError, Node, OListElement, ObjectElement, OptGroupElement, OptionElement, OutputElement, OverflowEvent, PageTransitionEvent, ParagraphElement, ParamElement, PopStateEvent, PositionError, PreElement, ProcessingInstruction, ProgressElement, ProgressEvent, QuoteElement, ResourceProgressEvent, RtcDataChannelEvent, RtcDtmfToneChangeEvent, RtcIceCandidateEvent, Screen, ScriptElement, SecurityPolicyViolationEvent, SelectElement, ShadowElement, ShadowRoot, SourceElement, SpanElement, SpeechInputEvent, SpeechRecognitionError, SpeechRecognitionEvent, SpeechSynthesisEvent, StorageEvent, StyleElement, TableCaptionElement, TableCellElement, TableColElement, TableElement, TableRowElement, TableSectionElement, TemplateElement, Text, TextAreaElement, TextEvent, TitleElement, Touch, TouchEvent0, TouchList, TrackElement, TrackEvent, TransitionEvent, UIEvent, UListElement, UnknownElement, VideoElement, WheelEvent, Window, _Attr, _ClientRect, _Entity, _HTMLAppletElement, _HTMLBaseFontElement, _HTMLDirectoryElement, _HTMLFontElement, _HTMLFrameElement, _HTMLFrameSetElement, _HTMLMarqueeElement, _MutationEvent, _Notation, _XMLHttpRequestProgressEvent, VersionChangeEvent, AElement, AltGlyphElement, AnimateElement, AnimateMotionElement, AnimateTransformElement, AnimatedEnumeration, AnimatedLength, AnimatedLengthList, AnimatedNumber, AnimatedNumberList, AnimatedString, AnimationElement, CircleElement, ClipPathElement, DefsElement, DescElement, EllipseElement, FEBlendElement, FEColorMatrixElement, FEComponentTransferElement, FECompositeElement, FEConvolveMatrixElement, FEDiffuseLightingElement, FEDisplacementMapElement, FEDistantLightElement, FEFloodElement, FEFuncAElement, FEFuncBElement, FEFuncGElement, FEFuncRElement, FEGaussianBlurElement, FEImageElement, FEMergeElement, FEMergeNodeElement, FEMorphologyElement, FEOffsetElement, FEPointLightElement, FESpecularLightingElement, FESpotLightElement, FETileElement, FETurbulenceElement, FilterElement, ForeignObjectElement, GElement, GraphicsElement, ImageElement0, LineElement, LinearGradientElement, MarkerElement, MaskElement, MetadataElement, PathElement, PatternElement, PolygonElement, PolylineElement, RadialGradientElement, Rect, RectElement, ScriptElement0, SetElement, StopElement, StyleElement0, SvgDocument, SvgElement, SvgSvgElement, SwitchElement, SymbolElement, TSpanElement, TextContentElement, TextElement, TextPathElement, TextPositioningElement, TitleElement0, UseElement, ViewElement, ZoomEvent, _GradientElement, _SVGAltGlyphDefElement, _SVGAltGlyphItemElement, _SVGAnimateColorElement, _SVGComponentTransferFunctionElement, _SVGCursorElement, _SVGFEDropShadowElement, _SVGFontElement, _SVGFontFaceElement, _SVGFontFaceFormatElement, _SVGFontFaceNameElement, _SVGFontFaceSrcElement, _SVGFontFaceUriElement, _SVGGlyphElement, _SVGGlyphRefElement, _SVGHKernElement, _SVGMPathElement, _SVGMissingGlyphElement, _SVGVKernElement, AudioProcessingEvent, OfflineAudioCompletionEvent, Buffer, ContextEvent, Program, RenderingContext, Shader, Texture, SqlError, ByteBuffer, TypedData, ByteData, Float32List, Float64List, Int16List, Int32List, Int8List, Uint16List, Uint32List, Uint8ClampedList, Uint8List, JS_CONST, Interceptor, JSBool, JSNull, JavaScriptObject, PlainJavaScriptObject, UnknownJavaScriptObject, JSArray, JSNumber, JSInt, JSDouble, JSString, startRootIsolate_closure, startRootIsolate_closure0, _Manager, _IsolateContext, _EventLoop, _EventLoop__runHelper_next, _IsolateEvent, _MainManagerStub, IsolateNatives__processWorkerMessage_closure, _BaseSendPort, _NativeJsSendPort, _NativeJsSendPort_send_closure, _WorkerSendPort, RawReceivePortImpl, ReceivePortImpl, _JsSerializer, _JsCopier, _JsDeserializer, _JsVisitedMap, _MessageTraverserVisitedMap, _MessageTraverser, _Copier, _Copier_visitMap_closure, _Serializer, _Deserializer, TimerImpl, TimerImpl_internalCallback, TimerImpl_internalCallback0, ReflectionInfo, TypeErrorDecoder, NullError, JsNoSuchMethodError, UnknownJsTypeError, unwrapException_saveStackTrace, _StackTrace, invokeClosure_closure, invokeClosure_closure0, invokeClosure_closure1, invokeClosure_closure2, invokeClosure_closure3, Closure, TearOffClosure, BoundClosure, RuntimeError, RuntimeType, RuntimeFunctionType, DynamicRuntimeType, TypeImpl, initHooks_closure, initHooks_closure0, initHooks_closure1, JSSyntaxRegExp, _MatchImplementation, main_closure, Menu, ListIterable, ListIterator, MappedIterable, EfficientLengthMappedIterable, MappedIterator, MappedListIterable, WhereIterable, WhereIterator, FixedLengthListMixin, _AsyncError, _BroadcastSubscription, _BroadcastStreamController, _SyncBroadcastStreamController, _SyncBroadcastStreamController__sendData_closure, _SyncBroadcastStreamController__sendError_closure, _SyncBroadcastStreamController__sendDone_closure, _AsBroadcastStreamController, Future, Future_wait_handleError, Future_wait_closure, _Completer, _AsyncCompleter, _Future, _Future__addListener_closure, _Future__chainFutures_closure, _Future__chainFutures_closure0, _Future__asyncComplete_closure, _Future__asyncCompleteError_closure, _Future__propagateToListeners_closure, _Future__propagateToListeners_closure0, _Future__propagateToListeners__closure, _Future__propagateToListeners__closure0, Stream, Stream_forEach_closure, Stream_forEach__closure, Stream_forEach__closure0, Stream_forEach_closure0, Stream_length_closure, Stream_length_closure0, StreamSubscription, _StreamController, _StreamController__subscribe_closure, _StreamController__recordCancel_complete, _SyncStreamControllerDispatch, _AsyncStreamControllerDispatch, _AsyncStreamController, _StreamController__AsyncStreamControllerDispatch, _SyncStreamController, _StreamController__SyncStreamControllerDispatch, _NoCallbacks, _NoCallbackAsyncStreamController, _StreamController__AsyncStreamControllerDispatch0, _NoCallbackSyncStreamController, _StreamController__SyncStreamControllerDispatch0, _ControllerStream, _ControllerSubscription, _EventSink, _BufferingStreamSubscription, _BufferingStreamSubscription__sendError_sendError, _BufferingStreamSubscription__sendDone_sendDone, _StreamImpl, _DelayedEvent, _DelayedData, _DelayedError, _DelayedDone, _PendingEvents, _PendingEvents_schedule_closure, _StreamImplEvents, _DummyStreamSubscription, _AsBroadcastStream, _BroadcastSubscriptionWrapper, _cancelAndError_closure, _cancelAndErrorClosure_closure, _BaseZone, _BaseZone_bindCallback_closure, _BaseZone_bindCallback_closure0, _BaseZone_bindUnaryCallback_closure, _BaseZone_bindUnaryCallback_closure0, _rootHandleUncaughtError_closure, _rootHandleUncaughtError__closure, _RootZone, _HashMap, _HashMap_values_closure, HashMapKeyIterable, HashMapKeyIterator, _LinkedHashMap, _LinkedHashMap_values_closure, LinkedHashMapCell, LinkedHashMapKeyIterable, LinkedHashMapKeyIterator, _HashSet, _IdentityHashSet, HashSetIterator, _LinkedHashSet, LinkedHashSetCell, LinkedHashSetIterator, _HashSetBase, IterableBase, ListMixin, Maps_mapToString_closure, ListQueue, _ListQueueIterator, NoSuchMethodError_toString_closure, DateTime, DateTime_toString_fourDigits, DateTime_toString_threeDigits, DateTime_toString_twoDigits, Duration, Duration_toString_sixDigits, Duration_toString_twoDigits, Error, NullThrownError, ArgumentError, RangeError, UnsupportedError, UnimplementedError, StateError, ConcurrentModificationError, StackOverflowError, CyclicInitializationError, _ExceptionImplementation, FormatException, Expando, Function, Iterator, Null, Object, StackTrace, StringBuffer, Symbol, Interceptor_CssStyleDeclarationBase, CssStyleDeclarationBase, Interceptor_ListMixin, Interceptor_ListMixin_ImmutableListMixin, EventStreamProvider, _EventStream, _ElementEventStreamImpl, _EventStreamSubscription, _CustomEventStreamProvider, ImmutableListMixin, FixedSizeListIterator, _DOMWindowCrossFrame, Point0, _RectangleBase, Rectangle, _NativeTypedArray, _NativeTypedArrayOfDouble, _NativeTypedArray_ListMixin, _NativeTypedArray_ListMixin_FixedLengthListMixin, _NativeTypedArrayOfInt, _NativeTypedArray_ListMixin0, _NativeTypedArray_ListMixin_FixedLengthListMixin0, convertDartToNative_Dictionary_closure, Animatable, _AnimatableLink, Juggler, Bitmap, BitmapData, BitmapData_load_closure, BitmapDataLoadOptions, DisplayObject, DisplayObjectContainer, Graphics, _GraphicsCommand, _GraphicsBounds, _GraphicsCommandMoveTo, _GraphicsCommandLineTo, _GraphicsCommandQuadraticCurveTo, _GraphicsCommandRect, _GraphicsCommandStroke, _GraphicsCommandStrokeColor, _GraphicsCommandFill, _GraphicsCommandFillColor, InteractiveObject, Shape, _MouseButton, _Touch, Stage, Stage__onMultitouchInputModeChanged_closure, RenderContext, RenderContextCanvas, RenderContextWebGL, RenderLoop, RenderProgram, RenderProgramQuad, RenderProgramTriangle, _ContextState, RenderState, RenderTexture, RenderTexture_load_closure, RenderTextureQuad, BroadcastEvent, EnterFrameEvent, ExitFrameEvent, RenderEvent, Event, EventDispatcher, EventStream, EventStreamProvider0, EventStreamSubscription, MouseEvent, TouchEvent, Matrix, Point, Rectangle0, Vector, ResourceManager, ResourceManager__addResource_closure, ResourceManager_load_closure, ResourceManager_load_closure0, ResourceManager_pendingResources_closure, ResourceManager_failedResources_closure, ResourceManagerResource, ResourceManagerResource_closure, ResourceManagerResource_closure0, ResourceManagerResource_closure1, _checkWebpSupport_checkImage, _checkWebpSupport_closure, _checkWebpSupport_closure0, _loadImageElement_closure, _loadImageElement_closure0, _loadImageElement_closure1, closure];
+  return [HtmlElement, AnchorElement, AnimationEvent, AreaElement, AudioElement, AutocompleteErrorEvent, BRElement, BaseElement, BeforeLoadEvent, BeforeUnloadEvent, Blob, BodyElement, ButtonElement, CDataSection, CanvasElement, CanvasGradient, CanvasPattern, CanvasRenderingContext, CanvasRenderingContext2D, CharacterData, CloseEvent, Comment, CompositionEvent, ContentElement, CssFontFaceLoadEvent, CssStyleDeclaration, CustomEvent, DListElement, DataListElement, DetailsElement, DeviceMotionEvent, DeviceOrientationEvent, DialogElement, DivElement, Document, DocumentFragment, DocumentType, DomError, DomException, Element, EmbedElement, ErrorEvent, Event0, EventTarget, FieldSetElement, File, FileError, FocusEvent, FormElement, HRElement, HashChangeEvent, HeadElement, HeadingElement, HtmlCollection, HtmlDocument, HtmlFormControlsCollection, HtmlHtmlElement, HtmlOptionsCollection, HttpRequest, HttpRequestEventTarget, IFrameElement, ImageElement, InputElement, KeyboardEvent, KeygenElement, LIElement, LabelElement, LegendElement, LinkElement, MapElement, MediaElement, MediaError, MediaKeyError, MediaKeyEvent, MediaKeyMessageEvent, MediaKeyNeededEvent, MediaStream, MediaStreamEvent, MediaStreamTrackEvent, MenuElement, MessageEvent, MetaElement, MeterElement, MidiConnectionEvent, MidiMessageEvent, ModElement, MouseEvent0, Navigator, NavigatorUserMediaError, Node, NodeList, OListElement, ObjectElement, OptGroupElement, OptionElement, OutputElement, OverflowEvent, PageTransitionEvent, ParagraphElement, ParamElement, PopStateEvent, PositionError, PreElement, ProcessingInstruction, ProgressElement, ProgressEvent, QuoteElement, ResourceProgressEvent, RtcDataChannelEvent, RtcDtmfToneChangeEvent, RtcIceCandidateEvent, Screen, ScriptElement, SecurityPolicyViolationEvent, SelectElement, ShadowElement, ShadowRoot, SourceElement, SpanElement, SpeechInputEvent, SpeechRecognitionError, SpeechRecognitionEvent, SpeechSynthesisEvent, StorageEvent, StyleElement, TableCaptionElement, TableCellElement, TableColElement, TableElement, TableRowElement, TableSectionElement, TemplateElement, Text, TextAreaElement, TextEvent, TitleElement, Touch, TouchEvent0, TouchList, TrackElement, TrackEvent, TransitionEvent, UIEvent, UListElement, UnknownElement, VideoElement, WheelEvent, Window, _Attr, _ClientRect, _Entity, _HTMLAppletElement, _HTMLBaseFontElement, _HTMLDirectoryElement, _HTMLFontElement, _HTMLFrameElement, _HTMLFrameSetElement, _HTMLMarqueeElement, _MutationEvent, _Notation, _XMLHttpRequestProgressEvent, VersionChangeEvent, AElement, AltGlyphElement, AnimateElement, AnimateMotionElement, AnimateTransformElement, AnimatedEnumeration, AnimatedLength, AnimatedLengthList, AnimatedNumber, AnimatedNumberList, AnimatedString, AnimationElement, CircleElement, ClipPathElement, DefsElement, DescElement, EllipseElement, FEBlendElement, FEColorMatrixElement, FEComponentTransferElement, FECompositeElement, FEConvolveMatrixElement, FEDiffuseLightingElement, FEDisplacementMapElement, FEDistantLightElement, FEFloodElement, FEFuncAElement, FEFuncBElement, FEFuncGElement, FEFuncRElement, FEGaussianBlurElement, FEImageElement, FEMergeElement, FEMergeNodeElement, FEMorphologyElement, FEOffsetElement, FEPointLightElement, FESpecularLightingElement, FESpotLightElement, FETileElement, FETurbulenceElement, FilterElement, ForeignObjectElement, GElement, GraphicsElement, ImageElement0, LineElement, LinearGradientElement, MarkerElement, MaskElement, MetadataElement, PathElement, PatternElement, PolygonElement, PolylineElement, RadialGradientElement, Rect, RectElement, ScriptElement0, SetElement, StopElement, StyleElement0, SvgDocument, SvgElement, SvgSvgElement, SwitchElement, SymbolElement, TSpanElement, TextContentElement, TextElement, TextPathElement, TextPositioningElement, TitleElement0, UseElement, ViewElement, ZoomEvent, _GradientElement, _SVGAltGlyphDefElement, _SVGAltGlyphItemElement, _SVGAnimateColorElement, _SVGComponentTransferFunctionElement, _SVGCursorElement, _SVGFEDropShadowElement, _SVGFontElement, _SVGFontFaceElement, _SVGFontFaceFormatElement, _SVGFontFaceNameElement, _SVGFontFaceSrcElement, _SVGFontFaceUriElement, _SVGGlyphElement, _SVGGlyphRefElement, _SVGHKernElement, _SVGMPathElement, _SVGMissingGlyphElement, _SVGVKernElement, AudioBuffer, AudioBufferSourceNode, AudioContext, AudioDestinationNode, AudioNode, AudioParam, AudioProcessingEvent, AudioSourceNode, GainNode, OfflineAudioCompletionEvent, OfflineAudioContext, Buffer, ContextEvent, Program, RenderingContext, Shader, Texture, SqlError, ByteBuffer, TypedData, ByteData, Float32List, Float64List, Int16List, Int32List, Int8List, Uint16List, Uint32List, Uint8ClampedList, Uint8List, JS_CONST, Interceptor, JSBool, JSNull, JavaScriptObject, PlainJavaScriptObject, UnknownJavaScriptObject, JSArray, JSNumber, JSInt, JSDouble, JSString, startRootIsolate_closure, startRootIsolate_closure0, _Manager, _IsolateContext, _EventLoop, _EventLoop__runHelper_next, _IsolateEvent, _MainManagerStub, IsolateNatives__processWorkerMessage_closure, _BaseSendPort, _NativeJsSendPort, _NativeJsSendPort_send_closure, _WorkerSendPort, RawReceivePortImpl, ReceivePortImpl, _JsSerializer, _JsCopier, _JsDeserializer, _JsVisitedMap, _MessageTraverserVisitedMap, _MessageTraverser, _Copier, _Copier_visitMap_closure, _Serializer, _Deserializer, TimerImpl, TimerImpl_internalCallback, TimerImpl_internalCallback0, ReflectionInfo, TypeErrorDecoder, NullError, JsNoSuchMethodError, UnknownJsTypeError, unwrapException_saveStackTrace, _StackTrace, invokeClosure_closure, invokeClosure_closure0, invokeClosure_closure1, invokeClosure_closure2, invokeClosure_closure3, Closure, TearOffClosure, BoundClosure, RuntimeError, RuntimeType, RuntimeFunctionType, DynamicRuntimeType, TypeImpl, initHooks_closure, initHooks_closure0, initHooks_closure1, JSSyntaxRegExp, _MatchImplementation, City, main_closure, Menu, ListIterable, ListIterator, MappedIterable, EfficientLengthMappedIterable, MappedIterator, MappedListIterable, WhereIterable, WhereIterator, FixedLengthListMixin, _AsyncError, _BroadcastSubscription, _BroadcastStreamController, _SyncBroadcastStreamController, _SyncBroadcastStreamController__sendData_closure, _SyncBroadcastStreamController__sendError_closure, _SyncBroadcastStreamController__sendDone_closure, _AsBroadcastStreamController, Future, Future_wait_handleError, Future_wait_closure, _Completer, _AsyncCompleter, _Future, _Future__addListener_closure, _Future__chainFutures_closure, _Future__chainFutures_closure0, _Future__asyncComplete_closure, _Future__asyncCompleteError_closure, _Future__propagateToListeners_closure, _Future__propagateToListeners_closure0, _Future__propagateToListeners__closure, _Future__propagateToListeners__closure0, Stream, Stream_forEach_closure, Stream_forEach__closure, Stream_forEach__closure0, Stream_forEach_closure0, Stream_length_closure, Stream_length_closure0, StreamSubscription, _StreamController, _StreamController__subscribe_closure, _StreamController__recordCancel_complete, _SyncStreamControllerDispatch, _AsyncStreamControllerDispatch, _AsyncStreamController, _StreamController__AsyncStreamControllerDispatch, _SyncStreamController, _StreamController__SyncStreamControllerDispatch, _NoCallbacks, _NoCallbackAsyncStreamController, _StreamController__AsyncStreamControllerDispatch0, _NoCallbackSyncStreamController, _StreamController__SyncStreamControllerDispatch0, _ControllerStream, _ControllerSubscription, _EventSink, _BufferingStreamSubscription, _BufferingStreamSubscription__sendError_sendError, _BufferingStreamSubscription__sendDone_sendDone, _StreamImpl, _DelayedEvent, _DelayedData, _DelayedError, _DelayedDone, _PendingEvents, _PendingEvents_schedule_closure, _StreamImplEvents, _DummyStreamSubscription, _AsBroadcastStream, _BroadcastSubscriptionWrapper, _cancelAndError_closure, _cancelAndErrorClosure_closure, _BaseZone, _BaseZone_bindCallback_closure, _BaseZone_bindCallback_closure0, _BaseZone_bindUnaryCallback_closure, _BaseZone_bindUnaryCallback_closure0, _rootHandleUncaughtError_closure, _rootHandleUncaughtError__closure, _RootZone, _HashMap, _HashMap_values_closure, HashMapKeyIterable, HashMapKeyIterator, _LinkedHashMap, _LinkedHashMap_values_closure, LinkedHashMapCell, LinkedHashMapKeyIterable, LinkedHashMapKeyIterator, _HashSet, _IdentityHashSet, HashSetIterator, _LinkedHashSet, LinkedHashSetCell, LinkedHashSetIterator, _HashSetBase, IterableBase, ListMixin, Maps_mapToString_closure, ListQueue, _ListQueueIterator, NoSuchMethodError_toString_closure, DateTime, DateTime_toString_fourDigits, DateTime_toString_threeDigits, DateTime_toString_twoDigits, Duration, Duration_toString_sixDigits, Duration_toString_twoDigits, Error, NullThrownError, ArgumentError, RangeError, UnsupportedError, UnimplementedError, StateError, ConcurrentModificationError, StackOverflowError, CyclicInitializationError, _ExceptionImplementation, FormatException, Expando, Function, Iterator, Null, Object, StackTrace, StringBuffer, Symbol, Interceptor_CssStyleDeclarationBase, CssStyleDeclarationBase, Interceptor_ListMixin, Interceptor_ListMixin_ImmutableListMixin, HttpRequest_request_closure0, HttpRequest_request_closure, Interceptor_ListMixin0, Interceptor_ListMixin_ImmutableListMixin0, Interceptor_ListMixin1, Interceptor_ListMixin_ImmutableListMixin1, EventStreamProvider, _EventStream, _ElementEventStreamImpl, _EventStreamSubscription, _CustomEventStreamProvider, ImmutableListMixin, FixedSizeListIterator, _DOMWindowCrossFrame, AudioContext_decodeAudioData_closure, AudioContext_decodeAudioData_closure0, Point0, _RectangleBase, Rectangle, _NativeTypedArray, _NativeTypedArrayOfDouble, _NativeTypedArray_ListMixin, _NativeTypedArray_ListMixin_FixedLengthListMixin, _NativeTypedArrayOfInt, _NativeTypedArray_ListMixin0, _NativeTypedArray_ListMixin_FixedLengthListMixin0, convertDartToNative_Dictionary_closure, convertNativeToDart_AcceptStructuredClone_findSlot, convertNativeToDart_AcceptStructuredClone_readSlot, convertNativeToDart_AcceptStructuredClone_writeSlot, convertNativeToDart_AcceptStructuredClone_walk, Animatable, _AnimatableLink, Juggler, Bitmap, BitmapData, BitmapData_load_closure, BitmapDataLoadOptions, DisplayObject, DisplayObjectContainer, Graphics, _GraphicsCommand, _GraphicsBounds, _GraphicsCommandMoveTo, _GraphicsCommandLineTo, _GraphicsCommandQuadraticCurveTo, _GraphicsCommandRect, _GraphicsCommandStroke, _GraphicsCommandStrokeColor, _GraphicsCommandFill, _GraphicsCommandFillColor, InteractiveObject, Shape, _MouseButton, _Touch, Stage, Stage__onMultitouchInputModeChanged_closure, RenderContext, RenderContextCanvas, RenderContextWebGL, RenderLoop, RenderProgram, RenderProgramQuad, RenderProgramTriangle, _ContextState, RenderState, RenderTexture, RenderTexture_load_closure, RenderTextureQuad, BroadcastEvent, EnterFrameEvent, ExitFrameEvent, RenderEvent, Event, EventDispatcher, EventStream, EventStreamProvider0, EventStreamSubscription, MouseEvent, TouchEvent, Matrix, Point, Rectangle0, Vector, AudioElementMixer, AudioElementSound, AudioElementSound_load_onCanPlay, AudioElementSound_load_onError, AudioElementSound_load_onError_closure, AudioElementSoundChannel, MockSound, MockSoundChannel, WebAudioApiMixer, WebAudioApiSound, WebAudioApiSound_load_audioRequestFinished, WebAudioApiSound_load_audioRequestFinished_closure, WebAudioApiSound_load_audioRequestFinished_closure0, WebAudioApiSound_load_audioRequestFinished__closure, WebAudioApiSound_load_audioRequestNext, WebAudioApiSound_load_audioRequestNext_closure, WebAudioApiSoundChannel, Sound, SoundChannel, SoundLoadOptions, SoundTransform, ResourceManager, ResourceManager__addResource_closure, ResourceManager_load_closure, ResourceManager_load_closure0, ResourceManager_pendingResources_closure, ResourceManager_failedResources_closure, ResourceManagerResource, ResourceManagerResource_closure, ResourceManagerResource_closure0, ResourceManagerResource_closure1, _checkWebpSupport_checkImage, _checkWebpSupport_closure, _checkWebpSupport_closure0, _loadImageElement_closure, _loadImageElement_closure0, _loadImageElement_closure1, closure];
 }

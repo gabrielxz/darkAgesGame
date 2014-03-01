@@ -1,8 +1,8 @@
 library darkagesgame;
 
-import 'dart:html';
+import 'dart:html' hide MouseEvent;
 import 'dart:async' show Timer;
-import 'package:stagexl/stagexl.dart' hide MouseEvent;
+import 'package:stagexl/stagexl.dart';
 
 part 'menu.dart';
 part 'city.dart';
@@ -19,7 +19,9 @@ Stage stage;
 Menu listMenu;
 Menu actionMenu;
 Menu spaceShipMenu;
-Menu testGraph;
+var listOfMenus = new List(15);
+City selectedCity;
+//Menu testGraph;
 
 
 Bitmap mapPic;
@@ -40,6 +42,7 @@ void main()
   //..addBitmapData('button', 'images/button.jpg')
   //..addSound('backgroundMusic', 'images/JACKSTEP.mp3');
   
+  stage.onMouseClick.listen(showCoordinates);
 
 
 resourceManager.load().then((result) 
@@ -64,23 +67,25 @@ resourceManager.load().then((result)
   
   
   mapPic = new Bitmap(resourceManager.getBitmapData('map'));
-  mapPic.x = 5;
-  mapPic.y = 5;
+  //mapPic.x = 5;
+  //mapPic.y = 5;
   
   listMenu = new Menu(1060,0,0,35,135,250);
   actionMenu = new Menu(1060,0,0, 295, 135, 250);
-  testGraph = new Menu.graph(335,200,0, 0, 75, 45);
+  //testGraph = new Menu.graph(335,200,0, 0, 75, 45);
   
   stage.addChild(mapPic);
   stage.addChild(listMenu);
   stage.addChild(actionMenu);
-  stage.addChild(testGraph);
+  //stage.addChild(testGraph);
   
   musicLoop();
+
   //new Timer(new Duration(seconds: 5), fadeTensionIn);
 
+
   city_init();
-  renderCities();
+  createMenus();
   startGame();
 });
 
@@ -131,13 +136,30 @@ void fadeTensionLevel4(){
   soundChannel2.soundTransform = new SoundTransform(0.5);
 }
 
-renderCities()
+createMenus()
 {
-  
+  for (int i=0; i<cities.length; i++)
+  {
+    listOfMenus[i] = new Menu.graph(50, 5 + i*50, 0, 0, 75, 45, cities[i]);
+    stage.addChild(listOfMenus[i]);
+    
+  }
 }
 
 startGame()
 {
   
+}
+
+setSelected(City thisCity)
+{
+  print(thisCity);
+  selectedCity = thisCity;
+  actionMenu.cityName.text = "change";
+}
+
+void showCoordinates(MouseEvent e)
+{
+  print("${e.localX} ${e.localY}");
 }
 
