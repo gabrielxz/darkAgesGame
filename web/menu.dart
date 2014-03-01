@@ -17,8 +17,9 @@ class Menu extends DisplayObjectContainer
     this.addChild(shape);
   }
   
-  Menu.graph(displayObjectX, displayObjectY, xLoc, yLoc, width, height) 
+  Menu.graph(displayObjectX, displayObjectY, xLoc, yLoc, width, height, city) 
   {
+    thisCity = city;
     this.x = displayObjectX;
     this.y = displayObjectY;
     var shape = new Shape();
