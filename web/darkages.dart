@@ -17,7 +17,8 @@ Stage stage;
 Menu listMenu;
 Menu actionMenu;
 Menu spaceShipMenu;
-Menu testGraph;
+var listOfMenus = new List(15);
+//Menu testGraph;
 
 
 Bitmap mapPic;
@@ -67,18 +68,18 @@ resourceManager.load().then((result)
   
   listMenu = new Menu(1060,0,0,35,135,250);
   actionMenu = new Menu(1060,0,0, 295, 135, 250);
-  testGraph = new Menu.graph(335,200,0, 0, 75, 45);
+  //testGraph = new Menu.graph(335,200,0, 0, 75, 45);
   
   stage.addChild(mapPic);
   stage.addChild(listMenu);
   stage.addChild(actionMenu);
-  stage.addChild(testGraph);
+  //stage.addChild(testGraph);
   
   musicLoop();
   
 
   city_init();
-  renderCities();
+  createMenus();
   startGame();
 });
 
@@ -96,9 +97,13 @@ void musicLoop(){
   new Timer(new Duration(seconds: 10), musicLoop);
 }
 
-renderCities()
+createMenus()
 {
-  
+  for (int i=0; i<cities.length; i++)
+  {
+    listOfMenus[i] = new Menu.graph(50, 5 + i*50, 0, 0, 75, 45, cities[i]);
+    stage.addChild(listOfMenus[i]);
+  }
 }
 
 startGame()
