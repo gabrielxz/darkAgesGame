@@ -8,8 +8,8 @@ part 'menu.dart';
 part 'city.dart';
 
 ResourceManager resourceManager;
-var soundChannel1;
-var soundChannel2;
+
+SoundChannel soundChannel2;
 
 
 Sprite countryOneButton;
@@ -81,7 +81,7 @@ resourceManager.load().then((result)
   
   musicLoop();
 
-  //new Timer(new Duration(seconds: 5), fadeTensionIn);
+  new Timer(new Duration(seconds: 5), fadeTensionIn);
 
 
   city_init();
@@ -90,23 +90,21 @@ resourceManager.load().then((result)
 });
 
 
-  
+}
 
-
+void playAudio(String trackName){
+  var sound = resourceManager.getSound(trackName);
+  var soundTransform = new SoundTransform(0.5);
+  sound.play(false, soundTransform);
 }
 
 void musicLoop(){
-  print("musicLoop");
-  var sound1 = resourceManager.getSound("ambientMusic");
-  var soundTransform0 = new SoundTransform(0.5);
-  soundChannel1 = sound1.play(false, soundTransform0);
+  playAudio("ambientMusic");
   new Timer(new Duration(seconds: 116), musicLoop);
-
 }
 
 
 void fadeTensionIn(){
-  print("fadeActionIn");
   var sound2 = resourceManager.getSound("tensionMusic");
   var soundTransform0 = new SoundTransform(0.1);
   soundChannel2 = sound2.play(false, soundTransform0);
@@ -114,25 +112,21 @@ void fadeTensionIn(){
 }
 
 void fadeTensionLevel1(){
-  print("fadeTensionLevel1");
   soundChannel2.soundTransform = new SoundTransform(0.2);
   new Timer(new Duration(milliseconds: 500), fadeTensionLevel2);
 }
 
 void fadeTensionLevel2(){
-  print("fadeTensionLevel2");
   soundChannel2.soundTransform = new SoundTransform(0.3);
   new Timer(new Duration(milliseconds: 500), fadeTensionLevel3);
 }
 
 void fadeTensionLevel3(){
-  print("fadeTensionLevel3");
   soundChannel2.soundTransform = new SoundTransform(0.4);
   new Timer(new Duration(milliseconds: 500), fadeTensionLevel4);
 }
 
 void fadeTensionLevel4(){
-  print("fadeTensionLevel4");
   soundChannel2.soundTransform = new SoundTransform(0.5);
 }
 
