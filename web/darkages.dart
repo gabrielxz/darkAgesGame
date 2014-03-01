@@ -2,6 +2,7 @@ library darkagesgame;
 
 import 'dart:html';
 import 'package:stagexl/stagexl.dart';
+import 'city.dart';
 Sprite countryOneButton;
 TextField textField;
 
@@ -17,6 +18,7 @@ void main()
   ..addBitmapData('button', 'images/button.jpg');
   //..addSound('backgroundMusic', 'images/JACKSTEP.mp3');
   
+  city_init();
 
 
 resourceManager.load().then((result) 
