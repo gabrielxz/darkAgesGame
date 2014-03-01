@@ -34,6 +34,7 @@ void main()
   ..addBitmapData('map', 'images/MapRender-Real-1280x720.jpg')
   ..addBitmapData('hammer', 'images/spaceHammer.jpg')
   ..addSound('ambientMusic', 'sounds/ambient.mp3');
+
   //..addBitmapData('button', 'images/button.jpg')
   //..addSound('backgroundMusic', 'images/JACKSTEP.mp3');
   
@@ -75,6 +76,10 @@ resourceManager.load().then((result)
   
   musicLoop();
   
+
+  city_init();
+  renderCities();
+  startGame();
 });
 
 
@@ -91,4 +96,13 @@ void musicLoop(){
   new Timer(new Duration(seconds: 10), musicLoop);
 }
 
+renderCities()
+{
+  
+}
+
+startGame()
+{
+  
+}
 
