@@ -1,12 +1,14 @@
 library darkagesgame;
 
 import 'dart:html';
-import 'package:stagexl/stagexl.dart';
+import 'dart:async' show Timer;
+import 'package:stagexl/stagexl.dart' hide MouseEvent;
 
 part 'menu.dart';
 part 'city.dart';
 
 ResourceManager resourceManager;
+var soundChannel;
 
 Sprite countryOneButton;
 TextField textField;
@@ -16,6 +18,7 @@ Menu listMenu;
 Menu actionMenu;
 Menu spaceShipMenu;
 Menu testGraph;
+
 
 Bitmap mapPic;
 Bitmap hammerPic;
@@ -29,7 +32,8 @@ void main()
   
   resourceManager = new ResourceManager()
   ..addBitmapData('map', 'images/MapRender-Real-1280x720.jpg')
-  ..addBitmapData('hammer', 'images/spaceHammer.jpg');
+  ..addBitmapData('hammer', 'images/spaceHammer.jpg')
+  ..addSound('ambientMusic', 'sounds/ambient.mp3');
   //..addBitmapData('button', 'images/button.jpg')
   //..addSound('backgroundMusic', 'images/JACKSTEP.mp3');
   
@@ -69,15 +73,22 @@ resourceManager.load().then((result)
   stage.addChild(actionMenu);
   stage.addChild(testGraph);
   
+  musicLoop();
   
 });
+
+
   
+
+
 }
 
-
-_handleClick(MouseEvent e)
-{
-  textField.text = "You Vented!";
+void musicLoop(){
+  print("musicLoop");
+  var sound1 = resourceManager.getSound("ambientMusic");
+  var soundTransform1 = new SoundTransform(0.5);
+  soundChannel = sound1.play(false, soundTransform1);
+  new Timer(new Duration(seconds: 10), musicLoop);
 }
 
 
