@@ -1,25 +1,46 @@
 library darkagesgame;
 
-import 'dart:html' as html;
+import 'dart:html';
 import 'package:stagexl/stagexl.dart';
+Sprite countryOneButton;
 
-//part 'sound_demo.dart';
-
-
-Stage stage = new Stage(html.querySelector('#canvas'));
-RenderLoop renderLoop = new RenderLoop();
-ResourceManager resourceManager  = new ResourceManager();
-
-void main() {
-     
+void main() 
+{
+  var canvas = querySelector('#canvas');
+  var stage = new Stage(canvas);
+  var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
   
-  //resourceManager
- //   ..addBitmapData('KeyBlack','images/piano/KeyBlack.png')
-  //  ..addSound('Cheer','sounds/Cheer.mp3')
-     
+  var resourceManager = new ResourceManager()
+  ..addBitmapData('map', 'images/map.jpg')
+  ..addBitmapData('button', 'images/button.jpg');
+  //..addSound('backgroundMusic', 'images/JACKSTEP.mp3');
   
-  resourceManager.load()
-    .then((_) => stage.addChild(new SoundDemo()))
-    .catchError((e) => print(e));
+
+
+resourceManager.load().then((result) 
+{
+  var mapPic = new Bitmap(resourceManager.getBitmapData('map'));
+  mapPic.x = 200;
+  mapPic.y = 200;
+  
+  var buttonPic = new Bitmap(resourceManager.getBitmapData('button'));
+  var buttonSprite = new Sprite();
+  buttonSprite.addChild(buttonPic);
+  buttonSprite.x = 220;
+  buttonSprite.y = 220;
+  buttonSprite.onMouseUp.listen(_handleClick);
+  
+  stage.addChild(mapPic);
+  stage.addChild(buttonSprite);
+});
+  
 }
+
+
+_handleClick(MouseEvent e)
+{
+  print("You Vented!");
+}
+
+
