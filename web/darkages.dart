@@ -29,7 +29,7 @@ void main()
   
   resourceManager = new ResourceManager()
   ..addBitmapData('map', 'images/MapRender-Real-1280x720.jpg')
-  ..addBitmapData('hammer', 'images/spaceHammer.jpg');
+  ..addBitmapData('hammer', 'images/spaceHammer.jpg')
   //..addBitmapData('button', 'images/button.jpg')
   //..addSound('backgroundMusic', 'images/JACKSTEP.mp3');
   
@@ -69,7 +69,9 @@ resourceManager.load().then((result)
   stage.addChild(actionMenu);
   stage.addChild(testGraph);
   
-  
+  city_init();
+  renderCities();
+  startGame();
 });
   
 }
@@ -80,4 +82,13 @@ _handleClick(MouseEvent e)
   textField.text = "You Vented!";
 }
 
+renderCities()
+{
+  
+}
+
+startGame()
+{
+  
+}
 
