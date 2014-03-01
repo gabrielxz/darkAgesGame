@@ -21,6 +21,7 @@ class City {
   // Settings
   var house_arrest;          // Infected don't work
   var quarantine;            // No production, very low spread to/from
+  var barricade;             // Low production, low spread to
   
   void configure ()
   {
@@ -30,16 +31,22 @@ class City {
     death_rate = 1.0;
     workforce = population - dead;
       
+    
+    if (house_arrest) {
+      spread_within_factor *= 0.5;
+      spread_from_factor *= 0.5;
+      workforce -= infected;
+    }
+  
     if (quarantine) {
       spread_to_factor *= 0.01;
       spread_from_factor *= 0.01;
       workforce = 0;
     }
-      
-    if (house_arrest) {
-      spread_within_factor *= 0.5;
-      spread_from_factor *= 0.5;
-      workforce -= infected;
+
+    if (barricade) {
+      spread_to_factor *= 0.15;
+      workforce *= 0.5;
     }
   }
   
@@ -76,7 +83,7 @@ class City {
   
   void succumb ()
   {
-    var deaths = infected * 0.3 * death_rate;
+    var deaths = infected * 0.85 * death_rate;
     if (deaths > infected) {
       deaths = infected;
     }
@@ -97,7 +104,12 @@ class City {
   {
     house_arrest = setting;
   }
-
+  
+  void set_barricade (bool setting)
+  {
+    barricade = setting;
+  }
+  
   void wipeout ()
   {
     kill(infected, healthy);
@@ -109,6 +121,13 @@ class City {
   {
     kill(infected * 0.85, healthy * 0.05);
     workforce *= 0.5;
+  }
+  
+  void medicate ()
+  {
+    spread_to_factor *= 0.5;
+    spread_from_factor *= 0.5;
+    spread_within_factor *= 0.5;
   }
 }
 
@@ -168,6 +187,10 @@ void turn_start ()
   for (var city in cities) {
     city.configure();
   }
+}
+
+void turn_end ()
+{
   for (var city in cities) {
     city.spread_within();
   }
@@ -177,10 +200,6 @@ void turn_start ()
   for (var city in cities) {
     city.spread_from();
   }
-}
-
-void turn_end ()
-{
   for (var city in cities) {
     city.harvest();
   }
