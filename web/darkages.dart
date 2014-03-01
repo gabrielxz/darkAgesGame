@@ -29,7 +29,7 @@ void main()
   
   resourceManager = new ResourceManager()
   ..addBitmapData('map', 'images/MapRender-Real-1280x720.jpg')
-  ..addBitmapData('hammer', 'images/spaceHammer.jpg')
+  ..addBitmapData('hammer', 'images/spaceHammer.jpg');
   //..addBitmapData('button', 'images/button.jpg')
   //..addSound('backgroundMusic', 'images/JACKSTEP.mp3');
   
