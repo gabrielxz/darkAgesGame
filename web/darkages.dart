@@ -4,6 +4,9 @@ import 'dart:html';
 import 'package:stagexl/stagexl.dart';
 
 part 'menu.dart';
+part 'city.dart';
+
+ResourceManager resourceManager;
 
 Sprite countryOneButton;
 TextField textField;
@@ -12,7 +15,10 @@ Stage stage;
 Menu listMenu;
 Menu actionMenu;
 Menu spaceShipMenu;
+Menu testGraph;
+
 Bitmap mapPic;
+Bitmap hammerPic;
 
 void main() 
 {
@@ -21,20 +27,16 @@ void main()
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
   
-  var resourceManager = new ResourceManager()
-  ..addBitmapData('map', 'images/mapLayout.jpg')
+  resourceManager = new ResourceManager()
+  ..addBitmapData('map', 'images/MapRender-Real-1280x720.jpg')
+  ..addBitmapData('hammer', 'images/spaceHammer.jpg');
   //..addBitmapData('button', 'images/button.jpg')
-  ..addBitmapData('spaceShip', 'images/rocketShip.png');
   //..addSound('backgroundMusic', 'images/JACKSTEP.mp3');
   
 
 
 resourceManager.load().then((result) 
 {
-  var spaceShip = new Bitmap(resourceManager.getBitmapData('spaceShip'));
-  mapPic = new Bitmap(resourceManager.getBitmapData('map'));
-  mapPic.x = 150;
-  mapPic.y = 5;
   
   /*
   var buttonPic = new Bitmap(resourceManager.getBitmapData('button'));
@@ -54,17 +56,19 @@ resourceManager.load().then((result)
   */
   
   
-  listMenu = new Menu(5,0,0,35,135,250);
+  mapPic = new Bitmap(resourceManager.getBitmapData('map'));
+  mapPic.x = 5;
+  mapPic.y = 5;
   
-  actionMenu = new Menu(5,0,0, 295, 135, 250);
-  spaceShipMenu = new Menu(160,550,0, 0, 700, 150);
+  listMenu = new Menu(1060,0,0,35,135,250);
+  actionMenu = new Menu(1060,0,0, 295, 135, 250);
+  testGraph = new Menu.graph(335,200,0, 0, 75, 45);
   
   stage.addChild(mapPic);
   stage.addChild(listMenu);
   stage.addChild(actionMenu);
-  stage.addChild(spaceShipMenu);
+  stage.addChild(testGraph);
   
-  spaceShipMenu.addChild(spaceShip);
   
 });
   
