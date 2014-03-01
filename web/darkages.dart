@@ -3,6 +3,7 @@ library darkagesgame;
 import 'dart:html';
 import 'package:stagexl/stagexl.dart';
 Sprite countryOneButton;
+TextField textField;
 
 void main() 
 {
@@ -12,7 +13,7 @@ void main()
   renderLoop.addStage(stage);
   
   var resourceManager = new ResourceManager()
-  ..addBitmapData('map', 'images/map.jpg')
+  ..addBitmapData('map', 'images/mapLayout.jpg')
   ..addBitmapData('button', 'images/button.jpg');
   //..addSound('backgroundMusic', 'images/JACKSTEP.mp3');
   
@@ -21,18 +22,29 @@ void main()
 resourceManager.load().then((result) 
 {
   var mapPic = new Bitmap(resourceManager.getBitmapData('map'));
-  mapPic.x = 200;
-  mapPic.y = 200;
+  mapPic.x = 35;
+  mapPic.y = 35;
   
   var buttonPic = new Bitmap(resourceManager.getBitmapData('button'));
   var buttonSprite = new Sprite();
   buttonSprite.addChild(buttonPic);
-  buttonSprite.x = 220;
-  buttonSprite.y = 220;
+  buttonSprite.x = 340;
+  buttonSprite.y = 235;
   buttonSprite.onMouseUp.listen(_handleClick);
+  
+  textField = new TextField();
+  textField.defaultTextFormat = new TextFormat('Spicy Rice', 30, Color.Black);
+  textField.text = 'Everything is Great';
+  textField.x = 350;
+  textField.y = 600;
+  textField.width = 500;
+  textField.height = 50;
+  textField.wordWrap = true;
+  
   
   stage.addChild(mapPic);
   stage.addChild(buttonSprite);
+  stage.addChild(textField);
 });
   
 }
@@ -40,7 +52,7 @@ resourceManager.load().then((result)
 
 _handleClick(MouseEvent e)
 {
-  print("You Vented!");
+  textField.text = "You Vented!";
 }
 
 
