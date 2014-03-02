@@ -111,19 +111,22 @@ class City {
     return (workforce * production).toInt();
   }
 
-  void set_quarantine (bool setting)
+  void set_quarantine ()
   {
-    quarantine = setting;
+    quarantine = !quarantine;
+    configure();
   }
 
-  void set_house_arrest (bool setting)
+  void set_house_arrest ()
   {
-    house_arrest = setting;
+    house_arrest = !house_arrest;
+    configure();
   }
   
-  void set_barricade (bool setting)
+  void set_barricade ()
   {
-    barricade = setting;
+    barricade = !barricade;
+    configure();
   }
   
   void wipeout ()

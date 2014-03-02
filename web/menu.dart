@@ -39,15 +39,15 @@ class Menu extends DisplayObjectContainer
     shape.alpha = .5;
     this.addChild(shape);
     
-    healthyBar.graphics.rect(5, 5, 60, 15);
+    healthyBar.graphics.rect(5, 5, 60, 9);
     healthyBar.graphics.fillColor(Color.Lime);
     healthyBar.alpha = 1;
     
-    infectedBar.graphics.rect(5, 5, 60, 15);
+    infectedBar.graphics.rect(5, 5, 60, 9);
     infectedBar.graphics.fillColor(Color.Yellow);
     infectedBar.alpha = 1;
     
-    deceasedBar.graphics.rect(5, 5, 60, 15);
+    deceasedBar.graphics.rect(5, 5, 60, 9);
     deceasedBar.graphics.fillColor(Color.Red);
     deceasedBar.alpha = 1;
     

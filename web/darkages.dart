@@ -39,6 +39,7 @@ void main()
   ..addBitmapData('map', 'images/MapRender-445pm.png')
   ..addBitmapData('hammer', 'images/spaceHammer.jpg')
   ..addBitmapData('endTurn', 'images/button_EndTurn.png')
+  ..addBitmapData('barricade', 'images/button_Barricade.png')
   ..addSound('ambientMusic', 'sounds/ambient.mp3')
   ..addSound('tensionMusic', 'sounds/moon_virus_Tension_master.wav');
   //..addBitmapData('button', 'images/button.jpg')
@@ -70,6 +71,16 @@ resourceManager.load().then((result)
   endTurnSprite.addChild(endTurnButton);
   stage.addChild(endTurnSprite);
   endTurnSprite.onMouseClick.listen(stepTurn);
+  
+  var barricadeButton = new Bitmap(resourceManager.getBitmapData('barricade'));
+  barricadeButton.y = 150;
+  barricadeButton.x = 17;
+  barricadeButton.height = 50;
+  barricadeButton.width = 110;
+  Sprite barricadeSprite = new Sprite();
+  barricadeSprite.addChild(barricadeButton);
+  actionMenu.addChild(barricadeSprite);
+  barricadeSprite.onMouseClick.listen(clickOnBarricade);
   
   
   musicLoop();
@@ -169,4 +180,9 @@ void stepTurn(MouseEvent e){
   setSelected(selectedCity);
 }
 
-
+void clickOnBarricade(MouseEvent e)
+{
+  selectedCity.set_barricade();
+  print("barricade!");
+  
+}
