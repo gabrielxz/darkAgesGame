@@ -22,7 +22,6 @@ Menu listMenu;
 Menu actionMenu;
 Menu spaceShipMenu;
 var listOfMenus = new List(15);
-City selectedCity;
 
 
 Bitmap mapPic;
@@ -42,7 +41,10 @@ void main()
   ..addBitmapData('hammer', 'images/icon_Wheat.png')
   ..addBitmapData('endTurn', 'images/button_EndTurn.png')
   ..addBitmapData('barricade', 'images/button_Barricade.png')
-    ..addBitmapData('orbitalStrike', 'images/button_OrbitalStrike.png')
+  ..addBitmapData('orbitalStrike', 'images/button_OrbitalStrike.png')
+  ..addBitmapData('quarantine', 'images/button_Quarrantine.png')
+  ..addBitmapData('houseArrest', 'images/button_HouseArrest.png')
+  ..addBitmapData('uproot', 'images/button_Uproot.png')
   ..addBitmapData('spaceShip', 'images/ShipTop.png')
   ..addSound('ambientMusic', 'sounds/ambient.mp3')
   ..addSound('tensionMusic', 'sounds/moon_virus_Tension_master.mp3')
@@ -156,7 +158,7 @@ startGame()
 
 setSelected(City thisCity)
 {
-  selectedCity = thisCity;
+  colony.select(thisCity);
   actionMenu.cityName.text = thisCity.name;
   actionMenu.deathToll.text = "Death Toll: ${thisCity.dead}";
   actionMenu.infected.text = "${thisCity.infected} Infected";
@@ -177,10 +179,10 @@ void stepTurn(MouseEvent e){
   for(var menu in listOfMenus){
     menu.updateStatusBar();
   }
-  setSelected(selectedCity);
+  
 }
 
 _onEnterFrame(EnterFrameEvent e) 
 {
-  setSelected(selectedCity);
+  setSelected(colony.selected_city);
 }

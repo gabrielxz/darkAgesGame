@@ -208,9 +208,9 @@ class Colony
     remaining_turns--;
   }
   
-  void select(var index)
+  void select(City thisCity)
   {
-    selected_city = cities[index];
+    selected_city = thisCity;
   }
   
   void orbital_strike()
