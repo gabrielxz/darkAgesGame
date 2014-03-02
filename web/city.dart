@@ -1,6 +1,9 @@
 part of darkagesgame;
 
 var cities;
+final spread_from_const = 3;
+final spread_within_const = 5;
+final death_const = 0.85;
 
 class City {
   var population;
@@ -54,7 +57,7 @@ class City {
   
   void kill (var infected_cnt, var healthy_cnt)
   {
-    infected_cnt = infected_cnt.toInt();
+    infected_cnt = infected_cnt.ceil().toInt();
     healthy_cnt = healthy_cnt.toInt();
     
     dead += infected_cnt;
@@ -65,7 +68,8 @@ class City {
   
   void infect (var spread_factor, var adjust)
   {
-    var infection = healthy * spread_factor * adjust;
+    print("spread_factor is $spread_factor and adjust is $adjust");
+    var infection = spread_factor * adjust;
     if (infection > healthy) {
       infection = healthy;
     }
@@ -76,24 +80,30 @@ class City {
   
   void spread_within ()
   {
-    infect(0.3, spread_within_factor);
+    infect(spread_within_const, infected * spread_within_factor);
   }
 
   void spread_from ()
   {
-    var from_rate = infected * spread_from_factor;
+    var from_rate = infected * spread_from_factor * spread_from_const;
     for (var to_city in next_to) {
-      to_city.infect((0.2 * from_rate), to_city.spread_to_factor);
+      to_city.infect(from_rate, to_city.spread_to_factor);
     }
   }
   
   void succumb ()
   {
-    var deaths = infected * 0.85 * death_rate;
+    var deaths = infected * death_const * death_rate;
     if (deaths > infected) {
       deaths = infected;
     }
     kill(deaths, 0);
+  }
+  
+  void metastacize ()
+  {
+    infected += getting_sick;
+    getting_sick = 0;
   }
   
   int harvest ()
@@ -145,8 +155,7 @@ void turn_start ()
 
 {
   for (var city in cities) {
-    city.infected += city.getting_sick;
-    city.getting_sick = 0;
+    city.metastacize();
     city.configure();
   }
 }
@@ -172,7 +181,7 @@ void turn_end ()
 void city_init ()
 {
   var city;
-  var connx = [[0,1],[0,4],[0,8],[0,11],
+  var connx = [[0,1],[0,4],[0,8],
                [1,2],[1,4],[1,5],
                [2,3],[2,5],[2,6],[2,10],
                [3,6],[3,7],
@@ -315,6 +324,7 @@ void city_init ()
   for (city in cities) {
     city.dead = 0;
     city.getting_sick = (city.getting_sick * city.population).toInt();
+    //city.getting_sick = 0;
     city.infected = 0;
     city.healthy = city.population - city.getting_sick;
     city.quarantine = false;
@@ -323,6 +333,7 @@ void city_init ()
     city.next_to = new Set();
     city.configure();
   }
+  //cities[0].getting_sick = 1;
   
   for (var p in connx) {
     cities[p[0]].next_to.add(cities[p[1]]);

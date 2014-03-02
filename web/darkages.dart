@@ -38,6 +38,7 @@ void main()
   resourceManager = new ResourceManager()
   ..addBitmapData('map', 'images/MapRender-445pm.png')
   ..addBitmapData('hammer', 'images/spaceHammer.jpg')
+  ..addBitmapData('endTurn', 'images/button_EndTurn.png')
   ..addSound('ambientMusic', 'sounds/ambient.mp3')
   ..addSound('tensionMusic', 'sounds/moon_virus_Tension_master.wav');
   //..addBitmapData('button', 'images/button.jpg')
@@ -59,17 +60,16 @@ resourceManager.load().then((result)
   stage.addChild(listMenu);
   stage.addChild(actionMenu);
   
-  var hammerPic1 = new Bitmap(resourceManager.getBitmapData('hammer'));
-  hammerPic1.y = 23;
-  hammerPic1.x = 5;
   
-  Sprite sprite = new Sprite();
-  sprite.addChild(hammerPic1);
-  
-  
-  
-  stage.addChild(sprite);
-  sprite.onMouseClick.listen(stepTurn);
+  var endTurnButton = new Bitmap(resourceManager.getBitmapData('endTurn'));
+  endTurnButton.y = 245;
+  endTurnButton.x = 1067;
+  endTurnButton.height = 60;
+  endTurnButton.width = 140;
+  Sprite endTurnSprite = new Sprite();
+  endTurnSprite.addChild(endTurnButton);
+  stage.addChild(endTurnSprite);
+  endTurnSprite.onMouseClick.listen(stepTurn);
   
   
   musicLoop();
@@ -136,6 +136,7 @@ createMenus()
 
 startGame()
 {
+  setSelected(cities[10]);
   turn_start();
   for(var menu in listOfMenus){
       menu.updateStatusBar();
@@ -165,6 +166,7 @@ void stepTurn(MouseEvent e){
     for(var menu in listOfMenus){
       menu.updateStatusBar();
     }
+  setSelected(selectedCity);
 }
 
 
