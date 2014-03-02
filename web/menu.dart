@@ -7,6 +7,12 @@ class Menu extends DisplayObjectContainer
   int deadPerfect;
   City thisCity;
   TextField cityName;
+  TextField originalPopulation;
+  TextField deathToll;
+  TextField infected;
+  TextField uninfected;
+  TextField productionRate;
+  TextField expectedProduction;
   
   Menu(displayObjectX, displayObjectY, xLoc, yLoc, width, height) 
   {
@@ -18,15 +24,26 @@ class Menu extends DisplayObjectContainer
     this.addChild(shape);
     
     cityName = new TextField();
-    cityName.defaultTextFormat = new TextFormat('Spicy Rice', 15, Color.Red);
-    cityName.text = 'null';
-    cityName.x = 15;
-    cityName.y = 30;
-    cityName.width = 100;
-    cityName.height = 50;
-    cityName.wordWrap = true;
-    cityName.type = "DYNAMIC";
-    this.addChild(cityName);
+    setTextFieldValues(cityName, "cityName", 15, 30);
+    
+    originalPopulation = new TextField();
+    setTextFieldValues(originalPopulation, "originalPopulation", 15, 30);
+    
+    deathToll = new TextField();
+    setTextFieldValues(deathToll, "deathToll", 15, 30);
+    
+    infected = new TextField();
+    setTextFieldValues(infected, "infected", 15, 30);
+    
+    uninfected = new TextField();
+    setTextFieldValues(uninfected, "uninfected", 15, 30);
+    
+    productionRate = new TextField();
+    setTextFieldValues(productionRate, "productionRate", 15, 30);
+    
+    expectedProduction = new TextField();
+    setTextFieldValues(expectedProduction, "expectedProduction", 15, 30);
+
   }
   
   Menu.graph(displayObjectX, displayObjectY, xLoc, yLoc, width, height, city) 
@@ -60,5 +77,17 @@ class Menu extends DisplayObjectContainer
     setSelected(thisCity);
   }
   
+  TextField setTextFieldValues(var theTextField, var textValue, var xCoord, var yCoord )
+  {
+    theTextField.defaultTextFormat = new TextFormat('Spicy Rice', 15, Color.Red);
+    theTextField.text = '$textValue';
+    theTextField.x = 15;
+    theTextField.y = 30;
+    theTextField.width = 100;
+    theTextField.height = 50;
+    theTextField.wordWrap = true;
+    theTextField.type = "DYNAMIC";
+    this.addChild(theTextField);
+  }
 
 }

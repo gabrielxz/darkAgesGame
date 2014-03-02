@@ -90,16 +90,12 @@ resourceManager.load().then((result)
   startGame();
 });
 
-<<<<<<< HEAD
-=======
-
 }
 
 void playAudio(String trackName){
   var sound = resourceManager.getSound(trackName);
   var soundTransform = new SoundTransform(0.5);
   sound.play(false, soundTransform);
->>>>>>> FETCH_HEAD
 }
 
 void musicLoop(){
