@@ -112,19 +112,37 @@ class City {
 
   void set_quarantine ()
   {
-    quarantine = !quarantine;
+    if (!quarantine) {
+      house_arrest = false;
+      barricade = false;
+      quarantine = true;
+    } else {
+      quarantine = false;
+    }
     configure();
   }
 
   void set_house_arrest ()
   {
-    house_arrest = !house_arrest;
+    if (!house_arrest) {
+      house_arrest = true;
+      barricade = false;
+      quarantine = false;
+    } else {
+      house_arrest = false;
+    }
     configure();
   }
   
   void set_barricade ()
   {
-    barricade = !barricade;
+    if (!barricade) {
+      house_arrest = false;
+      barricade = true;
+      quarantine = false;
+    } else {
+      barricade = false;
+    }
     configure();
   }
   
