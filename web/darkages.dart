@@ -84,7 +84,7 @@ resourceManager.load().then((result)
   
   musicLoop();
 
-  //new Timer(new Duration(seconds: 5), fadeTensionIn);
+  new Timer(new Duration(seconds: 5), fadeTensionIn);
 
   city_init();
   colony = new Colony();
