@@ -157,5 +157,13 @@ setSelected(City thisCity)
 void showCoordinates(MouseEvent e)
 {
   print("${e.localX} ${e.localY}");
+  endTurn();
+}
+
+void endTurn(){
+  //print("endTurn");
+  for (var i in listOfMenus){
+    //i.city.endTurn();
+  }
 }
 

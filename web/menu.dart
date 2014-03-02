@@ -13,6 +13,9 @@ class Menu extends DisplayObjectContainer
   TextField uninfected;
   TextField productionRate;
   TextField expectedProduction;
+  var healthyBar = new Shape();
+  var infectedBar = new Shape();
+  var deceasedBar = new Shape();
   
   Menu(displayObjectX, displayObjectY, xLoc, yLoc, width, height) 
   {
@@ -57,19 +60,30 @@ class Menu extends DisplayObjectContainer
     shape.alpha = .5;
     this.addChild(shape);
     
-    var infectedGraph = new Shape();
-    infectedGraph.graphics.rect(5, 5, 60, 15);
-    infectedGraph.graphics.fillColor(Color.Aqua);
-    infectedGraph.alpha = .55;
+    healthyBar.graphics.rect(5, 5, 60, 15);
+    healthyBar.graphics.fillColor(Color.Lime);
+    healthyBar.alpha = 1;
+    
+    infectedBar.graphics.rect(5, 5, 60, 15);
+    infectedBar.graphics.fillColor(Color.Yellow);
+    infectedBar.alpha = 1;
+    
+    deceasedBar.graphics.rect(5, 5, 60, 15);
+    deceasedBar.graphics.fillColor(Color.Red);
+    deceasedBar.alpha = 1;
     
     hammerPic = new Bitmap(resourceManager.getBitmapData('hammer'));
     hammerPic.y = 23;
     hammerPic.x = 5;
     
-    this.addChild(infectedGraph);
+    this.addChild(deceasedBar);
+    this.addChild(infectedBar);
+    this.addChild(healthyBar);
     this.addChild(hammerPic);
     
     this.onMouseClick.listen(handleClickOnMenu);
+    
+    updateStatusBar();
   }
   
   void handleClickOnMenu(MouseEvent e)
@@ -88,6 +102,13 @@ class Menu extends DisplayObjectContainer
     theTextField.wordWrap = true;
     theTextField.type = "DYNAMIC";
     this.addChild(theTextField);
+  }
+  
+  void updateStatusBar(){
+    var healthBarLength = ((thisCity.healthy/thisCity.population)*60);
+    var infectedBarLength = (((thisCity.healthy+thisCity.infected)/thisCity.population)*60);
+    healthyBar.width = healthBarLength;
+    infectedBar.width = infectedBarLength;
   }
 
 }
