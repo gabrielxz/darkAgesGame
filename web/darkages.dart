@@ -26,6 +26,7 @@ City selectedCity;
 
 Bitmap mapPic;
 Bitmap hammerPic;
+Bitmap barricadeButtonPic;
 
 void main() 
 {
@@ -47,38 +48,17 @@ void main()
 
 resourceManager.load().then((result) 
 {
-  
-  /*
-  var buttonPic = new Bitmap(resourceManager.getBitmapData('button'));
-  var buttonSprite = new Sprite();
-  buttonSprite.addChild(buttonPic);
-  buttonSprite.x = 340;
-  buttonSprite.y = 235;
-  buttonSprite.onMouseUp.listen(_handleClick);
-  textField = new TextField();
-  textField.defaultTextFormat = new TextFormat('Spicy Rice', 30, Color.Black);
-  textField.text = 'Everything is Great';
-  textField.x = 350;
-  textField.y = 600;
-  textField.width = 500;
-  textField.height = 50;
-  textField.wordWrap = true;
-  */
-  
-  
   mapPic = new Bitmap(resourceManager.getBitmapData('map'));
-  //mapPic.x = 5;
-  //mapPic.y = 5;
   
   listMenu = new Menu(1060,0,0,0,135,250);
   actionMenu = new Menu(1060,295,0, 0, 135, 250);
+  actionMenu.setupAllText();
   //Menu(displayObjectX, displayObjectY, xLoc, yLoc, width, height) 
-  //testGraph = new Menu.graph(335,200,0, 0, 75, 45);
   
   stage.addChild(mapPic);
   stage.addChild(listMenu);
   stage.addChild(actionMenu);
-  //stage.addChild(testGraph);
+  
   
   musicLoop();
 
@@ -151,6 +131,11 @@ setSelected(City thisCity)
 {
   selectedCity = thisCity;
   actionMenu.cityName.text = thisCity.name;
+  actionMenu.deathToll.text = "Death Toll: ${thisCity.dead}";
+  actionMenu.infected.text = "${thisCity.infected} Infected";
+  actionMenu.uninfected.text = "${thisCity.healthy} Uninfected";
+  actionMenu.productionRate.text = "Productivity: ${thisCity.production}";
+  actionMenu.expectedProduction.text = "Productivity: ${thisCity.harvest()}";
 }
 
 
