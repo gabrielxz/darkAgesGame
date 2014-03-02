@@ -93,10 +93,10 @@ resourceManager.load().then((result)
 
 }
 
-void playAudio(String trackName){
+SoundChannel playAudio(String trackName){
   var sound = resourceManager.getSound(trackName);
   var soundTransform = new SoundTransform(0.5);
-  sound.play(false, soundTransform);
+  return sound.play(false, soundTransform);
 }
 
 void musicLoop(){
