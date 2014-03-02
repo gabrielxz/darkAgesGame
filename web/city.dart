@@ -31,6 +31,7 @@ class City {
   var house_arrest;          // Infected don't work
   var quarantine;            // No production, very low spread to/from
   var barricade;             // Low production, low spread to
+  var uprooted;              // No production next turn
   
   void configure ()
   {
@@ -55,6 +56,10 @@ class City {
     if (barricade) {
       spread_to_factor *= 0.15;
       workforce *= 0.5;
+    }
+    
+    if (uprooted) {
+      workforce = 0;
     }
   }
   
@@ -162,6 +167,12 @@ class City {
     workforce *= 0.5;
   }
   
+  void uproot ()
+  {
+    workforce = (workforce * 1.5).toInt();
+    uprooted = true;
+  }
+  
   void medicate ()
   {
     spread_to_factor *= 0.5;
@@ -205,6 +216,9 @@ class Colony
     for (var city in cities) {
       city.metastacize();
       city.configure();
+      if (city.uprooted) {
+        city.uprooted = false;
+      }
     }
     remaining_turns--;
   }
