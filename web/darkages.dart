@@ -84,9 +84,9 @@ resourceManager.load().then((result)
   stage.addChild(spaceShip);
   /* end spaceship stuff */
   
-  //musicLoop();
+  musicLoop();
 
-  //new Timer(new Duration(seconds: 5), fadeTensionIn);
+  new Timer(new Duration(seconds: 5), fadeTensionIn);
 
   city_init();
   colony = new Colony();

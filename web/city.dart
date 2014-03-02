@@ -423,7 +423,9 @@ void city_init ()
     city.house_arrest = false;
     city.barricade = false;
     city.next_to = new Set();
+    city.uprooted = false;
     city.configure();
+    
   }
   //cities[0].getting_sick = 1;
   
