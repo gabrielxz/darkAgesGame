@@ -6,6 +6,7 @@ class City {
   var population;
   var dead;
   var infected;
+  var getting_sick;
   var healthy;
   var name;
   
@@ -69,7 +70,7 @@ class City {
       infection = healthy;
     }
     infection = infection.toInt();
-    infected += infection;
+    getting_sick += infection;
     healthy -= infection;
   }
   
@@ -144,6 +145,8 @@ void turn_start ()
 
 {
   for (var city in cities) {
+    city.infected += city.getting_sick;
+    city.getting_sick = 0;
     city.configure();
   }
 }
@@ -193,7 +196,7 @@ void city_init ()
   city.name = "Constantinople";
   city.population = 15000;
   city.production = 1.25;
-  city.infected = 0.04;
+  city.getting_sick = 0.04;
   city.x = 48;
   city.y = 137;
 
@@ -201,7 +204,7 @@ void city_init ()
   city.name = "Rome";
   city.population = 20000;
   city.production = 1.75;
-  city.infected = 0.04;
+  city.getting_sick = 0.04;
   city.x = 290;
   city.y = 64;
 
@@ -209,7 +212,7 @@ void city_init ()
   city.name = "Barcelona";
   city.population = 55000;
   city.production = 1.75;
-  city.infected = 0;
+  city.getting_sick = 0;
   city.x = 524;
   city.y = 72;
 
@@ -217,7 +220,7 @@ void city_init ()
   city.name = "Marsailles";
   city.population = 25000;
   city.production = 1.25;
-  city.infected = 0.05;
+  city.getting_sick = 0.05;
   city.x = 928;
   city.y = 134;
 
@@ -225,7 +228,7 @@ void city_init ()
   city.name = "Milan";
   city.population = 30000;
   city.production = 2.0;
-  city.infected = 0.03;
+  city.getting_sick = 0.03;
   city.x = 206;
   city.y = 229;
 
@@ -233,7 +236,7 @@ void city_init ()
   city.name = "Vienna";
   city.population = 40000;
   city.production = 2.25;
-  city.infected = 0;
+  city.getting_sick = 0;
   city.x = 401;
   city.y = 169;
 
@@ -241,7 +244,7 @@ void city_init ()
   city.name = "Paris";
   city.population = 40000;
   city.production = 2.0;
-  city.infected = 0;
+  city.getting_sick = 0;
   city.x = 798;
   city.y = 350;
   
@@ -249,7 +252,7 @@ void city_init ()
   city.name = "Cologne";
   city.population = 10000;
   city.production = 1.25;
-  city.infected = 0.04;
+  city.getting_sick = 0.04;
   city.x = 936;
   city.y = 273;
 
@@ -257,7 +260,7 @@ void city_init ()
   city.name = "London";
   city.population = 35000;
   city.production = 1.75;
-  city.infected = 0;
+  city.getting_sick = 0;
   city.x = 138;
   city.y = 366;
 
@@ -265,7 +268,7 @@ void city_init ()
   city.name = "Copenhagen";
   city.population = 45000;
   city.production = 2.25;
-  city.infected = 0;
+  city.getting_sick = 0;
   city.x = 352;
   city.y = 405;
 
@@ -273,7 +276,7 @@ void city_init ()
   city.name = "Stockholm";
   city.population = 500000;
   city.production = 0;
-  city.infected = 0;
+  city.getting_sick = 0;
   city.x = 502;
   city.y = 371;
 
@@ -281,7 +284,7 @@ void city_init ()
   city.name = "Moscow";
   city.population = 20000;
   city.production = 1.25;
-  city.infected = 0.03;
+  city.getting_sick = 0.03;
   city.x = 60;
   city.y = 525;
 
@@ -289,7 +292,7 @@ void city_init ()
   city.name = "Kiev";
   city.population = 60000;
   city.production = 2.75;
-  city.infected = 0;
+  city.getting_sick = 0;
   city.x = 393;
   city.y = 547;
 
@@ -297,7 +300,7 @@ void city_init ()
   city.name = "Cracow";
   city.population = 50000;
   city.production = 1.75;
-  city.infected = 0;
+  city.getting_sick = 0;
   city.x = 691;
   city.y = 565;
 
@@ -305,14 +308,15 @@ void city_init ()
   city.name = "Naples";
   city.population = 35000;
   city.production = 1.5;
-  city.infected = 0.04;
+  city.getting_sick = 0.04;
   city.x = 926;
   city.y = 488;
 
   for (city in cities) {
     city.dead = 0;
-    city.infected = (city.infected * city.population).toInt();
-    city.healthy = city.population - city.infected;
+    city.getting_sick = (city.getting_sick * city.population).toInt();
+    city.infected = 0;
+    city.healthy = city.population - city.getting_sick;
     city.quarantine = false;
     city.house_arrest = false;
     city.barricade = false;
