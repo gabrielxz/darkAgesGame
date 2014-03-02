@@ -42,7 +42,8 @@ void main()
   ..addBitmapData('endTurn', 'images/button_EndTurn.png')
   ..addBitmapData('barricade', 'images/button_Barricade.png')
   ..addSound('ambientMusic', 'sounds/ambient.mp3')
-  ..addSound('tensionMusic', 'sounds/moon_virus_Tension_master.wav');
+  ..addSound('tensionMusic', 'sounds/moon_virus_Tension_master.mp3')
+  ..addSound('culling', 'sounds/moon_virus_FX_Culling.mp3');
   //..addBitmapData('button', 'images/button.jpg')
   //..addSound('backgroundMusic', 'images/JACKSTEP.mp3');
   
@@ -107,7 +108,6 @@ void musicLoop(){
   playAudio("ambientMusic");
   new Timer(new Duration(seconds: 116), musicLoop);
 }
-
 
 void fadeTensionIn(){
   var sound2 = resourceManager.getSound("tensionMusic");
@@ -186,6 +186,7 @@ void stepTurn(MouseEvent e){
 void clickOnBarricade(MouseEvent e)
 {
   selectedCity.set_barricade();
+  playAudio("culling");
   print("barricade!");
   
 }
