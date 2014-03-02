@@ -88,8 +88,9 @@ resourceManager.load().then((result)
 
   new Timer(new Duration(seconds: 5), fadeTensionIn);
 
-
   city_init();
+  colony = new Colony();
+  
   createMenus();
   startGame();
 });
@@ -139,7 +140,6 @@ createMenus()
 {
   for (int i=0; i<cities.length; i++)
   {
-    //listOfMenus[i] = new Menu.graph(50, 5 + i*50, 0, 0, 75, 45, cities[i]);
     listOfMenus[i] = new Menu.graph(cities[i].x, cities[i].y, 0, 0, 75, 45, cities[i]);
     stage.addChild(listOfMenus[i]);
     
@@ -149,11 +149,10 @@ createMenus()
 startGame()
 {
   setSelected(cities[10]);
-  turn_start();
-  for(var menu in listOfMenus){
-      menu.updateStatusBar();
-      
   stage.onEnterFrame.listen(_onEnterFrame);
+  
+  for(var menu in listOfMenus){
+    menu.updateStatusBar();
   }
 }
 
@@ -176,10 +175,10 @@ void showCoordinates(MouseEvent e)
 
 void stepTurn(MouseEvent e){
   print("stepTurn");
-  turn_end();
-    for(var menu in listOfMenus){
-      menu.updateStatusBar();
-    }
+  colony.turn_end();
+  for(var menu in listOfMenus){
+    menu.updateStatusBar();
+  }
   setSelected(selectedCity);
 }
 

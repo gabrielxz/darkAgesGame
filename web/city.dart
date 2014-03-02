@@ -1,9 +1,12 @@
 part of darkagesgame;
 
 var cities;
+var colony;
+
 final spread_from_const = 3;
 final spread_within_const = 5;
 final death_const = 0.85;
+final game_turns = 25;
 
 class City {
   var population;
@@ -168,33 +171,41 @@ class City {
 }
 
 
-
-/////////////////////// GABE'S API //////////////////////
-
-void turn_start ()
-
+class Colony
 {
-  for (var city in cities) {
-    city.metastacize();
-    city.configure();
+  var resources;
+  var remaining_turns;
+  
+  void Colony()
+  {
+    remaining_turns = game_turns;
+    
+    for (var city in cities) {
+      city.metastacize();
+      city.configure();
+    }
   }
-}
-
-void turn_end ()
-{
-  for (var city in cities) {
-    city.spread_within();
+  
+  void turn_end ()
+  {
+    for (var city in cities) {
+      resources += city.harvest();
+    }
+    for (var city in cities) {
+      city.spread_within();
+    }
+    for (var city in cities) {
+      city.succumb();
+    }
+    for (var city in cities) {
+      city.spread_from();
+    }
+    for (var city in cities) {
+      city.metastacize();
+      city.configure();
+    }
+    remaining_turns--;
   }
-  for (var city in cities) {
-    city.succumb();
-  }
-  for (var city in cities) {
-    city.spread_from();
-  }
-  for (var city in cities) {
-    city.harvest();
-  }
-  turn_start ();
 }
 
 
@@ -360,3 +371,4 @@ void city_init ()
     cities[p[1]].next_to.add(cities[p[0]]);
   }
 }
+
