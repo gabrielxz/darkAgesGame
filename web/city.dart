@@ -68,7 +68,6 @@ class City {
   
   void infect (var spread_factor, var adjust)
   {
-    print("spread_factor is $spread_factor and adjust is $adjust");
     var infection = spread_factor * adjust;
     if (infection > healthy) {
       infection = healthy;

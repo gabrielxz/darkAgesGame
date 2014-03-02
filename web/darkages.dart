@@ -35,6 +35,7 @@ void main()
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
   
+  
   resourceManager = new ResourceManager()
   ..addBitmapData('map', 'images/MapRender-445pm.png')
   ..addBitmapData('hammer', 'images/spaceHammer.jpg')
@@ -151,6 +152,8 @@ startGame()
   turn_start();
   for(var menu in listOfMenus){
       menu.updateStatusBar();
+      
+  stage.onEnterFrame.listen(_onEnterFrame);
   }
 }
 
@@ -185,4 +188,9 @@ void clickOnBarricade(MouseEvent e)
   selectedCity.set_barricade();
   print("barricade!");
   
+}
+
+_onEnterFrame(EnterFrameEvent e) 
+{
+  setSelected(selectedCity);
 }
