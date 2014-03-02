@@ -79,8 +79,8 @@ resourceManager.load().then((result)
   
   /* stick in the spaceship for later */
   var spaceShip = new Bitmap(resourceManager.getBitmapData('spaceShip'));
-  spaceShip.y = 680;
-  spaceShip.x = 17;
+  spaceShip.y = 650;
+  spaceShip.x = 22;
   spaceShip.height = 50;
   spaceShip.width = 110;
   stage.addChild(spaceShip);
@@ -113,12 +113,10 @@ void musicLoop(){
 
 void fadeTensionIn(){
   print("fadeTensionIn");
-  /*
   var sound2 = resourceManager.getSound("tensionMusic");
   var soundTransform0 = new SoundTransform(0.1);
   soundChannel2 = sound2.play(false, soundTransform0);
   new Timer(new Duration(milliseconds: 500), fadeTensionLevel1);
-  */
 }
 
 void fadeTensionLevel1(){
@@ -175,15 +173,6 @@ setSelected(City thisCity)
 void showCoordinates(MouseEvent e)
 {
   print("${e.localX} ${e.localY}");
-}
-
-void stepTurn(MouseEvent e){
-  print("stepTurn");
-  colony.turn_end();
-  for(var menu in listOfMenus){
-    menu.updateStatusBar();
-  }
-  
 }
 
 _onEnterFrame(EnterFrameEvent e) 

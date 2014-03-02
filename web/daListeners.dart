@@ -54,3 +54,11 @@ void clickOnHouseArrest(MouseEvent e)
   print("barricade!");
   
 }
+void stepTurn(MouseEvent e){
+  print("stepTurn");
+  colony.turn_end();
+  for(var menu in listOfMenus){
+    menu.updateStatusBar();
+  }
+  
+}
