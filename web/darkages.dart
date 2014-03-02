@@ -79,8 +79,8 @@ resourceManager.load().then((result)
   
   /* stick in the spaceship for later */
   var spaceShip = new Bitmap(resourceManager.getBitmapData('spaceShip'));
-  spaceShip.y = 680;
-  spaceShip.x = 17;
+  spaceShip.y = 650;
+  spaceShip.x = 22;
   spaceShip.height = 50;
   spaceShip.width = 110;
   stage.addChild(spaceShip);
