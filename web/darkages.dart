@@ -7,6 +7,7 @@ import 'package:stagexl/stagexl.dart';
 part 'menu.dart';
 part 'city.dart';
 part 'daListeners.dart';
+part 'actionButtons.dart';
 
 ResourceManager resourceManager;
 
@@ -22,7 +23,6 @@ Menu actionMenu;
 Menu spaceShipMenu;
 var listOfMenus = new List(15);
 City selectedCity;
-//Menu testGraph;
 
 
 Bitmap mapPic;
@@ -39,9 +39,11 @@ void main()
   
   resourceManager = new ResourceManager()
   ..addBitmapData('map', 'images/MapRender-445pm.png')
-  ..addBitmapData('hammer', 'images/spaceHammer.jpg')
+  ..addBitmapData('hammer', 'images/icon_Wheat.png')
   ..addBitmapData('endTurn', 'images/button_EndTurn.png')
   ..addBitmapData('barricade', 'images/button_Barricade.png')
+    ..addBitmapData('orbitalStrike', 'images/button_OrbitalStrike.png')
+  ..addBitmapData('spaceShip', 'images/ShipTop.png')
   ..addSound('ambientMusic', 'sounds/ambient.mp3')
   ..addSound('tensionMusic', 'sounds/moon_virus_Tension_master.mp3')
   ..addSound('culling', 'sounds/moon_virus_FX_Culling.mp3')
@@ -65,34 +67,26 @@ resourceManager.load().then((result)
   stage.addChild(listMenu);
   stage.addChild(actionMenu);
   
+  /* Buttons */
+  setupButtons();
+  /* End Buttons */
   
-  var endTurnButton = new Bitmap(resourceManager.getBitmapData('endTurn'));
-  endTurnButton.y = 245;
-  endTurnButton.x = 1067;
-  endTurnButton.height = 60;
-  endTurnButton.width = 140;
-  Sprite endTurnSprite = new Sprite();
-  endTurnSprite.addChild(endTurnButton);
-  stage.addChild(endTurnSprite);
-  endTurnSprite.onMouseClick.listen(stepTurn);
-  
-  var barricadeButton = new Bitmap(resourceManager.getBitmapData('barricade'));
-  barricadeButton.y = 150;
-  barricadeButton.x = 17;
-  barricadeButton.height = 50;
-  barricadeButton.width = 110;
-  Sprite barricadeSprite = new Sprite();
-  barricadeSprite.addChild(barricadeButton);
-  actionMenu.addChild(barricadeSprite);
-  barricadeSprite.onMouseClick.listen(clickOnBarricade);
-  
+  /* stick in the spaceship for later */
+  var spaceShip = new Bitmap(resourceManager.getBitmapData('spaceShip'));
+  spaceShip.y = 680;
+  spaceShip.x = 17;
+  spaceShip.height = 50;
+  spaceShip.width = 110;
+  stage.addChild(spaceShip);
+  /* end spaceship stuff */
   
   musicLoop();
 
-  new Timer(new Duration(seconds: 5), fadeTensionIn);
-
+  //new Timer(new Duration(seconds: 5), fadeTensionIn);
 
   city_init();
+  colony = new Colony();
+  
   createMenus();
   startGame();
 });
@@ -112,10 +106,13 @@ void musicLoop(){
 }
 
 void fadeTensionIn(){
+  print("fadeTensionIn");
+  /*
   var sound2 = resourceManager.getSound("tensionMusic");
   var soundTransform0 = new SoundTransform(0.1);
   soundChannel2 = sound2.play(false, soundTransform0);
   new Timer(new Duration(milliseconds: 500), fadeTensionLevel1);
+  */
 }
 
 void fadeTensionLevel1(){
@@ -141,7 +138,6 @@ createMenus()
 {
   for (int i=0; i<cities.length; i++)
   {
-    //listOfMenus[i] = new Menu.graph(50, 5 + i*50, 0, 0, 75, 45, cities[i]);
     listOfMenus[i] = new Menu.graph(cities[i].x, cities[i].y, 0, 0, 75, 45, cities[i]);
     stage.addChild(listOfMenus[i]);
     
@@ -151,11 +147,10 @@ createMenus()
 startGame()
 {
   setSelected(cities[10]);
-  turn_start();
-  for(var menu in listOfMenus){
-      menu.updateStatusBar();
-      
   stage.onEnterFrame.listen(_onEnterFrame);
+  
+  for(var menu in listOfMenus){
+    menu.updateStatusBar();
   }
 }
 
@@ -178,10 +173,10 @@ void showCoordinates(MouseEvent e)
 
 void stepTurn(MouseEvent e){
   print("stepTurn");
-  turn_end();
-    for(var menu in listOfMenus){
-      menu.updateStatusBar();
-    }
+  colony.turn_end();
+  for(var menu in listOfMenus){
+    menu.updateStatusBar();
+  }
   setSelected(selectedCity);
 }
 

@@ -54,6 +54,8 @@ class Menu extends DisplayObjectContainer
     hammerPic = new Bitmap(resourceManager.getBitmapData('hammer'));
     hammerPic.y = 23;
     hammerPic.x = 5;
+    hammerPic.width = 30;
+    hammerPic.height = 30;
     
     this.addChild(deceasedBar);
     this.addChild(infectedBar);
