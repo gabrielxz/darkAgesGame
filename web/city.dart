@@ -175,6 +175,7 @@ class Colony
 {
   var resources;
   var remaining_turns;
+  var selected_city;
   
   void Colony()
   {
@@ -205,6 +206,51 @@ class Colony
       city.configure();
     }
     remaining_turns--;
+  }
+  
+  void select(var index)
+  {
+    selected_city = cities[index];
+  }
+  
+  void orbital_strike()
+  {
+    selected_city.wipeout();
+  }
+  
+  void cull()
+  {
+    selected_city.cull();
+  }
+  
+  void uproot()
+  {
+    selected_city.uproot();   
+  }
+  
+  void barricade()
+  {
+    selected_city.set_barricade();
+  }
+  
+  void quarantine()
+  {
+    selected_city.set_quarantine();
+  }
+  
+  void house_arrest()
+  {
+    selected_city.set_quarantine();
+  }
+  
+  void vaccinate()
+  {
+    var required = selected_city.healthy;
+    if (resources < required) {
+      return;
+    }
+    resources -= required;
+    selected_city.medicate();
   }
 }
 
