@@ -21,7 +21,6 @@ Menu listMenu;
 Menu actionMenu;
 Menu spaceShipMenu;
 var listOfMenus = new List(15);
-City selectedCity;
 
 
 Bitmap mapPic;
@@ -154,7 +153,7 @@ startGame()
 
 setSelected(City thisCity)
 {
-  selectedCity = thisCity;
+  colony.select(thisCity);
   actionMenu.cityName.text = thisCity.name;
   actionMenu.deathToll.text = "Death Toll: ${thisCity.dead}";
   actionMenu.infected.text = "${thisCity.infected} Infected";
@@ -175,12 +174,12 @@ void stepTurn(MouseEvent e){
   for(var menu in listOfMenus){
     menu.updateStatusBar();
   }
-  setSelected(selectedCity);
+  
 }
 
 void clickOnBarricade(MouseEvent e)
 {
-  selectedCity.set_barricade();
+  colony.barricade();
   playAudio("culling");
   print("barricade!");
   
@@ -188,5 +187,5 @@ void clickOnBarricade(MouseEvent e)
 
 _onEnterFrame(EnterFrameEvent e) 
 {
-  setSelected(selectedCity);
+  setSelected(colony.selected_city);
 }
