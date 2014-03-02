@@ -33,6 +33,13 @@ void clickOnCull(MouseEvent e)
   
 }
 
+void clickOnVaccinate(MouseEvent e)
+{
+  colony.vaccinate();
+  playAudio("culling");
+  print("vaccinate!");
+  
+}
 void clickOnUproot(MouseEvent e)
 {
   colony.uproot();

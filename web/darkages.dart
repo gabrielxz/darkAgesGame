@@ -37,7 +37,7 @@ void main()
   
   
   resourceManager = new ResourceManager()
-  ..addBitmapData('map', 'images/MapRender-445pm.png')
+  ..addBitmapData('map', 'images/Layout720x1280.jpg')
   ..addBitmapData('hammer', 'images/icon_Wheat.png')
   ..addBitmapData('endTurn', 'images/button_EndTurn.png')
   ..addBitmapData('barricade', 'images/button_Barricade.png')
@@ -46,6 +46,8 @@ void main()
   ..addBitmapData('houseArrest', 'images/button_HouseArrest.png')
   ..addBitmapData('uproot', 'images/button_Uproot.png')
   ..addBitmapData('spaceShip', 'images/ShipTop.png')
+  ..addBitmapData('cull', 'images/button_Cull.png')
+  ..addBitmapData('vaccinate', 'images/button_Vaccinate.png')
   ..addSound('ambientMusic', 'sounds/ambient.mp3')
   ..addSound('tensionMusic', 'sounds/moon_virus_Tension_master.mp3')
   ..addSound('culling', 'sounds/moon_virus_FX_Culling.mp3')
@@ -62,8 +64,8 @@ resourceManager.load().then((result)
 {
   mapPic = new Bitmap(resourceManager.getBitmapData('map'));
   
-  listMenu = new Menu(1060,0,0,0,135,250);
-  actionMenu = new Menu(1060,295,0, 0, 135, 250);
+  listMenu = new Menu(1026,18,0,0,234,225);
+  actionMenu = new Menu(1029,262,0, 0, 233, 450);
   actionMenu.setupAllText();
   //Menu(displayObjectX, displayObjectY, xLoc, yLoc, width, height) 
   
