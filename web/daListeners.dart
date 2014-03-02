@@ -61,4 +61,16 @@ void stepTurn(MouseEvent e){
     menu.updateStatusBar();
   }
   
+  spaceShip.x += 32; //move the spaceship
+  
+  if ((colony.remaining_turns <= 0) || (colony.remaining == 0))
+  {
+    endGame();
+  }
+  
+  if (colony.remaining_turns == 5)
+  {
+    fadeTensionIn();
+  }
+  
 }

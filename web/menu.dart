@@ -6,6 +6,8 @@ class Menu extends DisplayObjectContainer
   int healthyPercent;
   int deadPerfect;
   City thisCity;
+  
+  /* text fields for action menu */
   TextField cityName;
   TextField originalPopulation;
   TextField deathToll;
@@ -13,6 +15,17 @@ class Menu extends DisplayObjectContainer
   TextField uninfected;
   TextField productionRate;
   TextField expectedProduction;
+  /* end text fields for action menu */
+  
+  /* text fields for list menu */
+  TextField resourcesLabel;
+  TextField globalDeathTollLabel;
+  TextField turnsRemainingLabel;
+  /* end text fields for list menu */
+  
+  TextField productTextField;
+  
+  
   var healthyBar = new Shape();
   var infectedBar = new Shape();
   var deceasedBar = new Shape();
@@ -53,14 +66,28 @@ class Menu extends DisplayObjectContainer
     
     hammerPic = new Bitmap(resourceManager.getBitmapData('hammer'));
     hammerPic.y = 23;
-    hammerPic.x = 5;
+    hammerPic.x = 25;
     hammerPic.width = 20;
     hammerPic.height = 20;
+    
+    /* adding production value to display to graph */
+    productTextField = new TextField();
+    productTextField.defaultTextFormat = new TextFormat('Spicy Rice', 12, Color.Azure);
+    productTextField.text = '500K';
+    productTextField.x = 45;
+    productTextField.y = 25;
+    productTextField.width = 50;
+    productTextField.height = 20;
+    productTextField.wordWrap = true;
+    productTextField.type = "DYNAMIC";
+    
+    //end text
     
     this.addChild(deceasedBar);
     this.addChild(infectedBar);
     this.addChild(healthyBar);
     this.addChild(hammerPic);
+    this.addChild(productTextField);
     
     this.onMouseClick.listen(handleClickOnMenu);
     
@@ -69,23 +96,37 @@ class Menu extends DisplayObjectContainer
   
   void setupAllText()
   {
+    /* Start setting actionMenu text */
     cityName = new TextField();
-    setTextFieldValues(cityName, "cityName", 15, 5);
+    setTextFieldValues(cityName, "cityName", 15, 5, actionMenu);
     
     deathToll = new TextField();
-    setTextFieldValues(deathToll, "deathToll", 15, 35);
+    setTextFieldValues(deathToll, "deathToll", 15, 35, actionMenu);
     
     infected = new TextField();
-    setTextFieldValues(infected, "infected", 15, 50);
+    setTextFieldValues(infected, "infected", 15, 50, actionMenu);
     
     uninfected = new TextField();
-    setTextFieldValues(uninfected, "uninfected", 15, 65);
+    setTextFieldValues(uninfected, "uninfected", 15, 65, actionMenu);
     
     productionRate = new TextField();
-    setTextFieldValues(productionRate, "Productivity", 15, 80);
+    setTextFieldValues(productionRate, "Productivity", 15, 80, actionMenu);
     
     expectedProduction = new TextField();
-    setTextFieldValues(expectedProduction, "Production", 15, 95);
+    setTextFieldValues(expectedProduction, "Production", 15, 95, actionMenu);
+    /* end setting actionMenu text */
+    
+    
+    /* Start setting listMenu text */
+    resourcesLabel = new TextField();
+    setTextFieldValues(resourcesLabel, "resourcesLabel", 15, 5, listMenu);
+    
+    globalDeathTollLabel = new TextField();
+    setTextFieldValues(globalDeathTollLabel, "deathTollLabel", 15, 20, listMenu);
+    
+    turnsRemainingLabel = new TextField();
+    setTextFieldValues(turnsRemainingLabel, "turnsRemainingLabel", 15, 35, listMenu);
+    /* end setting listMenu text */
   }
   
   void setupAllButtons()
@@ -98,9 +139,9 @@ class Menu extends DisplayObjectContainer
     setSelected(thisCity);
   }
   
-  TextField setTextFieldValues(var theTextField, var textValue, var xCoord, var yCoord )
+  TextField setTextFieldValues(var theTextField, var textValue, var xCoord, var yCoord, parentObject )
   {
-    theTextField.defaultTextFormat = new TextFormat('Spicy Rice', 13, Color.Red);
+    theTextField.defaultTextFormat = new TextFormat('Spicy Rice', 14, Color.Red);
     theTextField.text = '$textValue';
     theTextField.x = xCoord;
     theTextField.y = yCoord;
@@ -108,7 +149,7 @@ class Menu extends DisplayObjectContainer
     theTextField.height = 50;
     theTextField.wordWrap = true;
     theTextField.type = "DYNAMIC";
-    this.addChild(theTextField);
+    parentObject.addChild(theTextField);
   }
   
   void updateStatusBar(){
@@ -116,6 +157,12 @@ class Menu extends DisplayObjectContainer
     var infectedBarLength = (((thisCity.healthy+thisCity.infected)/thisCity.population)*60);
     healthyBar.width = healthBarLength;
     infectedBar.width = infectedBarLength;
+    
+    //update production text
+    var val = (thisCity.harvest()~/1000);
+    productTextField.text = "${val}K";
   }
+  
+  
 
 }

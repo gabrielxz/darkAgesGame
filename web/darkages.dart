@@ -27,6 +27,7 @@ var listOfMenus = new List(15);
 Bitmap mapPic;
 Bitmap hammerPic;
 Bitmap barricadeButtonPic;
+Bitmap spaceShip;
 
 void main() 
 {
@@ -48,6 +49,7 @@ void main()
   ..addBitmapData('spaceShip', 'images/ShipTop.png')
   ..addBitmapData('cull', 'images/button_Cull.png')
   ..addBitmapData('vaccinate', 'images/button_Vaccinate.png')
+  ..addBitmapData('endScreen', 'images/SplashScreen.jpg')
   ..addSound('ambientMusic', 'sounds/ambient.mp3')
   ..addSound('tensionMusic', 'sounds/moon_virus_Tension_master.mp3')
   ..addSound('culling', 'sounds/moon_virus_FX_Culling.mp3')
@@ -62,6 +64,9 @@ void main()
 
 resourceManager.load().then((result) 
 {
+  city_init();
+  colony = new Colony();
+  
   mapPic = new Bitmap(resourceManager.getBitmapData('map'));
   
   listMenu = new Menu(1026,18,0,0,234,225);
@@ -78,7 +83,7 @@ resourceManager.load().then((result)
   /* End Buttons */
   
   /* stick in the spaceship for later */
-  var spaceShip = new Bitmap(resourceManager.getBitmapData('spaceShip'));
+  spaceShip = new Bitmap(resourceManager.getBitmapData('spaceShip'));
   spaceShip.y = 650;
   spaceShip.x = 22;
   spaceShip.height = 50;
@@ -88,10 +93,9 @@ resourceManager.load().then((result)
   
   musicLoop();
 
-  new Timer(new Duration(seconds: 5), fadeTensionIn);
+  //new Timer(new Duration(seconds: 5), fadeTensionIn);
 
-  city_init();
-  colony = new Colony();
+  
   
   createMenus();
   startGame();
@@ -167,6 +171,15 @@ setSelected(City thisCity)
   actionMenu.uninfected.text = "${thisCity.healthy} Uninfected";
   actionMenu.productionRate.text = "Productivity: ${thisCity.production}";
   actionMenu.expectedProduction.text = "Productivity: ${thisCity.harvest()}";
+  
+  //actionMenu.resourcesLabel.text = "$colony.resources";
+  var testvar = colony.resources;
+  actionMenu.resourcesLabel.text = "Resources left: $testvar";
+  var testvar3 = colony.deathToll();
+  actionMenu.globalDeathTollLabel.text = "Total Dead: $testvar3";
+  //actionMenu.globalDeathTollLabel.text = "LIKE A MILLION";
+  var testvar2 = colony.remaining_turns;
+  actionMenu.turnsRemainingLabel.text = "Turns Left: $testvar2";
 }
 
 
@@ -181,5 +194,25 @@ _onEnterFrame(EnterFrameEvent e)
   for(var menu in listOfMenus){
     menu.updateStatusBar();
   }
+  
+}
+
+endGame()
+{
+  var endScreenPic = new Bitmap(resourceManager.getBitmapData('endScreen'));
+  stage.addChild(endScreenPic);
+  
+  var endText = new TextField();
+  endText.defaultTextFormat = new TextFormat('Spicy Rice', 35, Color.Red);
+  var score = colony.remaining;
+  //var score = colony.deathToll();
+  endText.text = 'Score: $score';
+  endText.x = 770;
+  endText.y = 400;
+  endText.width = 700;
+  endText.height = 150;
+  endText.wordWrap = true;
+  endText.type = "DYNAMIC";
+  stage.addChild(endText);
   
 }

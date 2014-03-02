@@ -186,16 +186,19 @@ class Colony
 {
   var resources;
   var remaining_turns;
+  var remaining;
   var selected_city;
   
   Colony()
   {
     remaining_turns = game_turns;
     resources = 0;
+    remaining = 0;
     
     for (var city in cities) {
       city.metastacize();
       city.configure();
+      remaining += city.population;
     }
   }
   
@@ -213,14 +216,26 @@ class Colony
     for (var city in cities) {
       city.spread_from();
     }
+    
+    remaining = 0;
     for (var city in cities) {
       city.metastacize();
       city.configure();
       if (city.uprooted) {
         city.uprooted = false;
       }
+      remaining += city.population - city.dead;
     }
     remaining_turns--;
+  }
+  
+  int deathToll()
+  {
+    var toll = 0;
+    for (var city in cities) {
+      toll += city.dead;
+    }
+    return toll;
   }
   
   void select(City thisCity)
@@ -322,7 +337,7 @@ void city_init ()
   city.population = 25000;
   city.production = 1.25;
   city.getting_sick = 0.05;
-  city.x = 928;
+  city.x = 881;
   city.y = 134;
 
   city = cities[4];
@@ -338,24 +353,24 @@ void city_init ()
   city.population = 40000;
   city.production = 2.25;
   city.getting_sick = 0;
-  city.x = 401;
-  city.y = 169;
+  city.x = 379;
+  city.y = 155;
 
   city = cities[6];
   city.name = "Paris";
   city.population = 40000;
   city.production = 2.0;
   city.getting_sick = 0;
-  city.x = 798;
-  city.y = 350;
+  city.x = 739;
+  city.y = 290;
   
   city = cities[7];
   city.name = "Cologne";
   city.population = 10000;
   city.production = 1.25;
   city.getting_sick = 0.04;
-  city.x = 936;
-  city.y = 273;
+  city.x = 878;
+  city.y = 240;
 
   city = cities[8];
   city.name = "London";
@@ -363,55 +378,55 @@ void city_init ()
   city.production = 1.75;
   city.getting_sick = 0;
   city.x = 138;
-  city.y = 366;
+  city.y = 318;
 
   city = cities[9];
   city.name = "Copenhagen";
   city.population = 45000;
   city.production = 2.25;
   city.getting_sick = 0;
-  city.x = 352;
-  city.y = 405;
+  city.x = 335;
+  city.y = 380;
 
   city = cities[10];
   city.name = "Stockholm";
   city.population = 500000;
   city.production = 0;
   city.getting_sick = 0;
-  city.x = 502;
-  city.y = 371;
+  city.x = 464;
+  city.y = 351;
 
   city = cities[11];
   city.name = "Moscow";
   city.population = 20000;
   city.production = 1.25;
   city.getting_sick = 0.03;
-  city.x = 60;
-  city.y = 525;
+  city.x = 61;
+  city.y = 490;
 
   city = cities[12];
   city.name = "Kiev";
   city.population = 60000;
   city.production = 2.75;
   city.getting_sick = 0;
-  city.x = 393;
-  city.y = 547;
+  city.x = 361;
+  city.y = 512;
 
   city = cities[13];
   city.name = "Cracow";
   city.population = 50000;
   city.production = 1.75;
   city.getting_sick = 0;
-  city.x = 691;
-  city.y = 565;
+  city.x = 666;
+  city.y = 546;
 
   city = cities[14];
   city.name = "Naples";
   city.population = 35000;
   city.production = 1.5;
   city.getting_sick = 0.04;
-  city.x = 926;
-  city.y = 488;
+  city.x = 857;
+  city.y = 439;
 
   for (city in cities) {
     city.dead = 0;
