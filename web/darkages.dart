@@ -53,6 +53,8 @@ void main()
   ..addSound('culling', 'sounds/moon_virus_FX_Culling.mp3')
   ..addSound('orbitalStrike', 'sounds/moon_virus_FX_Orbital_Strike.mp3')
   ..addSound('houseArrest', 'sounds/moon_virus_FX_House_Arrest.mp3')
+  ..addSound('endTurn', 'sounds/moon_virus_FX_end_turn.mp3')
+  ..addSound('laserBlast', 'sounds/moon_virus_FX_laser_Blast.mp3')
   ..addSound('quarantine', 'sounds/moon_virus_FX_Quaranteen.mp3');
   //..addBitmapData('button', 'images/button.jpg')
   //..addSound('backgroundMusic', 'images/JACKSTEP.mp3');
