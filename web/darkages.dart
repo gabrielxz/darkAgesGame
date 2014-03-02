@@ -113,12 +113,10 @@ void musicLoop(){
 
 void fadeTensionIn(){
   print("fadeTensionIn");
-  /*
   var sound2 = resourceManager.getSound("tensionMusic");
   var soundTransform0 = new SoundTransform(0.1);
   soundChannel2 = sound2.play(false, soundTransform0);
   new Timer(new Duration(milliseconds: 500), fadeTensionLevel1);
-  */
 }
 
 void fadeTensionLevel1(){
@@ -175,15 +173,6 @@ setSelected(City thisCity)
 void showCoordinates(MouseEvent e)
 {
   print("${e.localX} ${e.localY}");
-}
-
-void stepTurn(MouseEvent e){
-  print("stepTurn");
-  colony.turn_end();
-  for(var menu in listOfMenus){
-    menu.updateStatusBar();
-  }
-  
 }
 
 _onEnterFrame(EnterFrameEvent e) 
