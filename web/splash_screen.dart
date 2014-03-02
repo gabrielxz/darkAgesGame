@@ -13,7 +13,7 @@ void main()
   renderLoop.addStage(stage);
   
   resourceManager = new ResourceManager()
-      ..addSound('houseArrest', 'sounds/moon_virus_FX_House_Arrest.mp3')
+      ..addSound('houseArrest', 'sounds/brief.mp3')
       ..addBitmapData('map', 'images/Layout720x1280.jpg');
   
   
@@ -32,7 +32,7 @@ void showCoordinates(MouseEvent e)
 
 SoundChannel playAudio(String trackName){
   var sound = resourceManager.getSound(trackName);
-  var soundTransform = new SoundTransform(0.5);
+  var soundTransform = new SoundTransform(1.0);
   return sound.play(false, soundTransform);
 
 }
