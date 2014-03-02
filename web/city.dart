@@ -180,6 +180,7 @@ class Colony
   Colony()
   {
     remaining_turns = game_turns;
+    resources = 0;
     
     for (var city in cities) {
       city.metastacize();
