@@ -185,4 +185,8 @@ void stepTurn(MouseEvent e){
 _onEnterFrame(EnterFrameEvent e) 
 {
   setSelected(colony.selected_city);
+  for(var menu in listOfMenus){
+    menu.updateStatusBar();
+  }
+  
 }

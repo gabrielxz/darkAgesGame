@@ -3,7 +3,7 @@ part of darkagesgame;
 
 void clickOnBarricade(MouseEvent e)
 {
-  selectedCity.set_barricade();
+  colony.barricade();
   playAudio("culling");
   print("barricade!");
   
@@ -11,7 +11,7 @@ void clickOnBarricade(MouseEvent e)
 
 void clickOnOrbitalStrike(MouseEvent e)
 {
-  selectedCity.set_barricade();
+  colony.orbital_strike();
   playAudio("culling");
   print("barricade!");
   
@@ -19,7 +19,7 @@ void clickOnOrbitalStrike(MouseEvent e)
 
 void clickOnQuarantine(MouseEvent e)
 {
-  selectedCity.set_barricade();
+  colony.quarantine();
   playAudio("quarantine");
   print("barricade!");
   
@@ -27,7 +27,7 @@ void clickOnQuarantine(MouseEvent e)
 
 void clickOnCull(MouseEvent e)
 {
-  selectedCity.set_barricade();
+  colony.cull();
   playAudio("culling");
   print("barricade!");
   
@@ -35,15 +35,14 @@ void clickOnCull(MouseEvent e)
 
 void clickOnUproot(MouseEvent e)
 {
-  selectedCity.set_barricade();
+  colony.uproot();
   playAudio("culling");
   print("barricade!");
-  
 }
 
 void clickOnHouseArrest(MouseEvent e)
 {
-  selectedCity.set_barricade();
+  colony.house_arrest();
   playAudio("culling");
   print("barricade!");
   

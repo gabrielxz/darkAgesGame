@@ -7,10 +7,10 @@ setupButtons()
 {
   createButton ("endTurn", 1067, 245, 60, 140, stepTurn, stage);
   createButton ("barricade", 17, 150, buttonHeight, buttonWidth, clickOnBarricade, actionMenu);
-  createButton ("orbitalStrike", 17, 175, buttonHeight, buttonWidth, clickOnBarricade, actionMenu);
-  createButton ("quarantine", 17, 200, buttonHeight, buttonWidth, clickOnBarricade, actionMenu);
-  createButton ("houseArrest", 17, 250, buttonHeight, buttonWidth, clickOnBarricade, actionMenu);
-  createButton ("uproot", 17, 275, buttonHeight, buttonWidth, clickOnBarricade, actionMenu);
+  createButton ("orbitalStrike", 17, 175, buttonHeight, buttonWidth, clickOnOrbitalStrike, actionMenu);
+  createButton ("quarantine", 17, 200, buttonHeight, buttonWidth, clickOnQuarantine, actionMenu);
+  createButton ("houseArrest", 17, 250, buttonHeight, buttonWidth, clickOnHouseArrest, actionMenu);
+  createButton ("uproot", 17, 275, buttonHeight, buttonWidth, clickOnUproot, actionMenu);
 }
 
 createButton(bitmapName, int xCoord, int yCoord, height, width, listenFunction, parentObject)
