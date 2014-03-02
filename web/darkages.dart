@@ -6,6 +6,7 @@ import 'package:stagexl/stagexl.dart';
 
 part 'menu.dart';
 part 'city.dart';
+part 'actionButtons.dart';
 
 ResourceManager resourceManager;
 
@@ -21,7 +22,6 @@ Menu actionMenu;
 Menu spaceShipMenu;
 var listOfMenus = new List(15);
 City selectedCity;
-//Menu testGraph;
 
 
 Bitmap mapPic;
@@ -41,6 +41,8 @@ void main()
   ..addBitmapData('hammer', 'images/spaceHammer.jpg')
   ..addBitmapData('endTurn', 'images/button_EndTurn.png')
   ..addBitmapData('barricade', 'images/button_Barricade.png')
+    ..addBitmapData('orbitalStrike', 'images/button_OrbitalStrike.png')
+  ..addBitmapData('spaceShip', 'images/ShipTop.png')
   ..addSound('ambientMusic', 'sounds/ambient.mp3')
   ..addSound('tensionMusic', 'sounds/moon_virus_Tension_master.mp3')
   ..addSound('culling', 'sounds/moon_virus_FX_Culling.mp3');
@@ -63,27 +65,18 @@ resourceManager.load().then((result)
   stage.addChild(listMenu);
   stage.addChild(actionMenu);
   
+  /* Buttons */
+  setupButtons();
+  /* End Buttons */
   
-  var endTurnButton = new Bitmap(resourceManager.getBitmapData('endTurn'));
-  endTurnButton.y = 245;
-  endTurnButton.x = 1067;
-  endTurnButton.height = 60;
-  endTurnButton.width = 140;
-  Sprite endTurnSprite = new Sprite();
-  endTurnSprite.addChild(endTurnButton);
-  stage.addChild(endTurnSprite);
-  endTurnSprite.onMouseClick.listen(stepTurn);
-  
-  var barricadeButton = new Bitmap(resourceManager.getBitmapData('barricade'));
-  barricadeButton.y = 150;
-  barricadeButton.x = 17;
-  barricadeButton.height = 50;
-  barricadeButton.width = 110;
-  Sprite barricadeSprite = new Sprite();
-  barricadeSprite.addChild(barricadeButton);
-  actionMenu.addChild(barricadeSprite);
-  barricadeSprite.onMouseClick.listen(clickOnBarricade);
-  
+  /* stick in the spaceship for later */
+  var spaceShip = new Bitmap(resourceManager.getBitmapData('spaceShip'));
+  spaceShip.y = 680;
+  spaceShip.x = 17;
+  spaceShip.height = 50;
+  spaceShip.width = 110;
+  stage.addChild(spaceShip);
+  /* end spaceship stuff */
   
   musicLoop();
 
