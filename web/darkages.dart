@@ -137,7 +137,9 @@ createMenus()
 startGame()
 {
   turn_start();
-  
+  for(var menu in listOfMenus){
+      menu.updateStatusBar();
+  }
 }
 
 setSelected(City thisCity)
