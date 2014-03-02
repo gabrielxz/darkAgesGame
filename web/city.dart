@@ -141,6 +141,7 @@ class City {
 /////////////////////// GABE'S API //////////////////////
 
 void turn_start ()
+
 {
   for (var city in cities) {
     city.configure();
@@ -161,6 +162,7 @@ void turn_end ()
   for (var city in cities) {
     city.harvest();
   }
+  turn_start ();
 }
 
 
@@ -319,7 +321,7 @@ void city_init ()
   }
   
   for (var p in connx) {
-    cities[p[0]].next_to.add(p[1]);
-    cities[p[1]].next_to.add(p[0]);
+    cities[p[0]].next_to.add(cities[p[1]]);
+    cities[p[1]].next_to.add(cities[p[0]]);
   }
 }

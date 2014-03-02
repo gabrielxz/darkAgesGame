@@ -124,6 +124,7 @@ createMenus()
 
 startGame()
 {
+  turn_start();
   
 }
 
@@ -142,13 +143,10 @@ setSelected(City thisCity)
 void showCoordinates(MouseEvent e)
 {
   print("${e.localX} ${e.localY}");
-  endTurn();
-}
-
-void endTurn(){
-  //print("endTurn");
-  for (var i in listOfMenus){
-    //i.city.endTurn();
+  turn_end();
+  for(var menu in listOfMenus){
+    menu.updateStatusBar();
   }
 }
+
 
