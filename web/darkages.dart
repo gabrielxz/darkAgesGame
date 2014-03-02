@@ -49,6 +49,8 @@ void main()
   ..addSound('ambientMusic', 'sounds/ambient.mp3')
   ..addSound('tensionMusic', 'sounds/moon_virus_Tension_master.mp3')
   ..addSound('culling', 'sounds/moon_virus_FX_Culling.mp3')
+  ..addSound('orbitalStrike', 'sounds/moon_virus_FX_Orbital_Strike.mp3')
+  ..addSound('houseArrest', 'sounds/moon_virus_FX_House_Arrest.mp3')
   ..addSound('quarantine', 'sounds/moon_virus_FX_Quaranteen.mp3');
   //..addBitmapData('button', 'images/button.jpg')
   //..addSound('backgroundMusic', 'images/JACKSTEP.mp3');
@@ -82,9 +84,9 @@ resourceManager.load().then((result)
   stage.addChild(spaceShip);
   /* end spaceship stuff */
   
-  musicLoop();
+  //musicLoop();
 
-  new Timer(new Duration(seconds: 5), fadeTensionIn);
+  //new Timer(new Duration(seconds: 5), fadeTensionIn);
 
   city_init();
   colony = new Colony();

@@ -12,7 +12,7 @@ void clickOnBarricade(MouseEvent e)
 void clickOnOrbitalStrike(MouseEvent e)
 {
   colony.orbital_strike();
-  playAudio("culling");
+  playAudio("orbitalStrike");
   print("barricade!");
   
 }
@@ -43,7 +43,7 @@ void clickOnUproot(MouseEvent e)
 void clickOnHouseArrest(MouseEvent e)
 {
   colony.house_arrest();
-  playAudio("culling");
+  playAudio("houseArrest");
   print("barricade!");
   
 }
