@@ -25,27 +25,6 @@ class Menu extends DisplayObjectContainer
     shape.graphics.rect(xLoc, yLoc, width, height);
     shape.graphics.strokeColor(Color.Blue);
     this.addChild(shape);
-    
-    cityName = new TextField();
-    setTextFieldValues(cityName, "cityName", 15, 30);
-    
-    originalPopulation = new TextField();
-    setTextFieldValues(originalPopulation, "originalPopulation", 15, 30);
-    
-    deathToll = new TextField();
-    setTextFieldValues(deathToll, "deathToll", 15, 30);
-    
-    infected = new TextField();
-    setTextFieldValues(infected, "infected", 15, 30);
-    
-    uninfected = new TextField();
-    setTextFieldValues(uninfected, "uninfected", 15, 30);
-    
-    productionRate = new TextField();
-    setTextFieldValues(productionRate, "productionRate", 15, 30);
-    
-    expectedProduction = new TextField();
-    setTextFieldValues(expectedProduction, "expectedProduction", 15, 30);
 
   }
   
@@ -86,6 +65,32 @@ class Menu extends DisplayObjectContainer
     updateStatusBar();
   }
   
+  void setupAllText()
+  {
+    cityName = new TextField();
+    setTextFieldValues(cityName, "cityName", 15, 5);
+    
+    deathToll = new TextField();
+    setTextFieldValues(deathToll, "deathToll", 15, 35);
+    
+    infected = new TextField();
+    setTextFieldValues(infected, "infected", 15, 50);
+    
+    uninfected = new TextField();
+    setTextFieldValues(uninfected, "uninfected", 15, 65);
+    
+    productionRate = new TextField();
+    setTextFieldValues(productionRate, "Productivity", 15, 80);
+    
+    expectedProduction = new TextField();
+    setTextFieldValues(expectedProduction, "Production", 15, 95);
+  }
+  
+  void setupAllButtons()
+  {
+
+  }
+  
   void handleClickOnMenu(MouseEvent e)
   {
     setSelected(thisCity);
@@ -93,11 +98,11 @@ class Menu extends DisplayObjectContainer
   
   TextField setTextFieldValues(var theTextField, var textValue, var xCoord, var yCoord )
   {
-    theTextField.defaultTextFormat = new TextFormat('Spicy Rice', 15, Color.Red);
+    theTextField.defaultTextFormat = new TextFormat('Spicy Rice', 13, Color.Red);
     theTextField.text = '$textValue';
-    theTextField.x = 15;
-    theTextField.y = 30;
-    theTextField.width = 100;
+    theTextField.x = xCoord;
+    theTextField.y = yCoord;
+    theTextField.width = 150;
     theTextField.height = 50;
     theTextField.wordWrap = true;
     theTextField.type = "DYNAMIC";
