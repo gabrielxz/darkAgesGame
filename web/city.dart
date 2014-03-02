@@ -313,24 +313,24 @@ void city_init ()
   city.population = 15000;
   city.production = 1.25;
   city.getting_sick = 0.04;
-  city.x = 48;
-  city.y = 137;
+  city.x = 58;
+  city.y = 126;
 
   city = cities[1];
   city.name = "Rome";
   city.population = 20000;
   city.production = 1.75;
   city.getting_sick = 0.04;
-  city.x = 290;
-  city.y = 64;
+  city.x = 274;
+  city.y = 43;
 
   city = cities[2];
   city.name = "Barcelona";
   city.population = 55000;
   city.production = 1.75;
   city.getting_sick = 0;
-  city.x = 524;
-  city.y = 72;
+  city.x = 492;
+  city.y = 60;
 
   city = cities[3];
   city.name = "Marsailles";
@@ -345,24 +345,29 @@ void city_init ()
   city.population = 30000;
   city.production = 2.0;
   city.getting_sick = 0.03;
-  city.x = 206;
-  city.y = 229;
+  city.x = 880;
+  city.y = 135;
 
   city = cities[5];
   city.name = "Vienna";
   city.population = 40000;
   city.production = 2.25;
   city.getting_sick = 0;
+
   city.x = 379;
   city.y = 155;
+
+
 
   city = cities[6];
   city.name = "Paris";
   city.population = 40000;
   city.production = 2.0;
   city.getting_sick = 0;
+
   city.x = 739;
   city.y = 290;
+
   
   city = cities[7];
   city.name = "Cologne";

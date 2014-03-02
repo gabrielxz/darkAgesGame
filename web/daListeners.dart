@@ -43,7 +43,7 @@ void clickOnVaccinate(MouseEvent e)
 void clickOnUproot(MouseEvent e)
 {
   colony.uproot();
-  playAudio("culling");
+  playAudio("laserBlast");
   print("barricade!");
 }
 
@@ -55,6 +55,7 @@ void clickOnHouseArrest(MouseEvent e)
   
 }
 void stepTurn(MouseEvent e){
+  playAudio("endTurn");
   print("stepTurn");
   colony.turn_end();
   for(var menu in listOfMenus){
