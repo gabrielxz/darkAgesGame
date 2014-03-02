@@ -59,6 +59,18 @@ resourceManager.load().then((result)
   stage.addChild(listMenu);
   stage.addChild(actionMenu);
   
+  var hammerPic1 = new Bitmap(resourceManager.getBitmapData('hammer'));
+  hammerPic1.y = 23;
+  hammerPic1.x = 5;
+  
+  Sprite sprite = new Sprite();
+  sprite.addChild(hammerPic1);
+  
+  
+  
+  stage.addChild(sprite);
+  sprite.onMouseClick.listen(stepTurn);
+  
   
   musicLoop();
 
@@ -143,10 +155,14 @@ setSelected(City thisCity)
 void showCoordinates(MouseEvent e)
 {
   print("${e.localX} ${e.localY}");
+}
+
+void stepTurn(MouseEvent e){
+  print("stepTurn");
   turn_end();
-  for(var menu in listOfMenus){
-    menu.updateStatusBar();
-  }
+    for(var menu in listOfMenus){
+      menu.updateStatusBar();
+    }
 }
 
 
