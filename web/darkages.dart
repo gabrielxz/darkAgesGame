@@ -6,6 +6,7 @@ import 'package:stagexl/stagexl.dart';
 
 part 'menu.dart';
 part 'city.dart';
+part 'daListeners.dart';
 
 ResourceManager resourceManager;
 
@@ -43,7 +44,8 @@ void main()
   ..addBitmapData('barricade', 'images/button_Barricade.png')
   ..addSound('ambientMusic', 'sounds/ambient.mp3')
   ..addSound('tensionMusic', 'sounds/moon_virus_Tension_master.mp3')
-  ..addSound('culling', 'sounds/moon_virus_FX_Culling.mp3');
+  ..addSound('culling', 'sounds/moon_virus_FX_Culling.mp3')
+  ..addSound('quarantine', 'sounds/moon_virus_FX_Quaranteen.mp3');
   //..addBitmapData('button', 'images/button.jpg')
   //..addSound('backgroundMusic', 'images/JACKSTEP.mp3');
   
@@ -181,14 +183,6 @@ void stepTurn(MouseEvent e){
       menu.updateStatusBar();
     }
   setSelected(selectedCity);
-}
-
-void clickOnBarricade(MouseEvent e)
-{
-  selectedCity.set_barricade();
-  playAudio("culling");
-  print("barricade!");
-  
 }
 
 _onEnterFrame(EnterFrameEvent e) 
