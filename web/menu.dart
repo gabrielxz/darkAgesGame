@@ -18,13 +18,14 @@ class Menu extends DisplayObjectContainer
     this.addChild(shape);
     
     cityName = new TextField();
-    cityName.defaultTextFormat = new TextFormat('Spicy Rice', 30, Color.Red);
+    cityName.defaultTextFormat = new TextFormat('Spicy Rice', 15, Color.Red);
     cityName.text = 'null';
     cityName.x = 15;
     cityName.y = 30;
     cityName.width = 100;
     cityName.height = 50;
     cityName.wordWrap = true;
+    cityName.type = "DYNAMIC";
     this.addChild(cityName);
   }
   
@@ -56,7 +57,6 @@ class Menu extends DisplayObjectContainer
   
   void handleClickOnMenu(MouseEvent e)
   {
-    print(thisCity);
     setSelected(thisCity);
   }
   

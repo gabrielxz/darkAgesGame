@@ -17,6 +17,8 @@ class City {
   
   var production;
   var next_to;
+  var x;
+  var y;
   
   // Settings
   var house_arrest;          // Infected don't work
@@ -155,7 +157,12 @@ void city_init ()
                40000,  40000, 10000, 35000, 45000, 
                500000, 20000, 60000, 50000, 35000];
   var prod =  [1.25, 1.75, 1.75, 1.25, 2.0, 2.25, 2.0, 1.25, 1.75, 2.25, 0, 1.25, 2.75, 1.75, 1.5];
-  var inf =   [0.04, 0.04, 0, 0.05, 0.03, 0, 0, 0, 0, 0, 0, 0.03, 0, 0, 0.04];
+  var inf =   [0.04, 0.04, 0, 0.05, 0.03, 0, 0, 0.04, 0, 0, 0, 0.03, 0, 0, 0.04];
+  var loc =   [[53,26],[290,64],[536,116],[873,77],[206,229],
+               [335,193],[782,220],[936,273],[134,378],[296,436],
+               [470,317],[70, 540],[347,579],[654,477],[884,531]];
+  var names = ["Constantinople", "Rome", "Barcelona", "Marsailles", "Milan", "Vienna", "Paris", "Cologne", 
+               "London", "Copenhagen", "Stockholm", "Moscow", "Kiev", "Cracow", "Naples"];
   
   cities = new List(15);
   
@@ -166,7 +173,9 @@ void city_init ()
     cities[c].dead = 0;
     cities[c].infected = pop[c] * inf[c];
     cities[c].healthy = cities[c].population - cities[c].infected;
-    cities[c].name = "David's NAME";
+    cities[c].name = names[c];
+    cities[c].x = loc[c][0];
+    cities[c].y = loc[c][1];
     
     cities[c].spread_to_factor = 1.0;
     cities[c].spread_from_factor = 1.0;

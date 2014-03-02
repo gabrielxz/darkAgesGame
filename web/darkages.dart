@@ -33,7 +33,7 @@ void main()
   renderLoop.addStage(stage);
   
   resourceManager = new ResourceManager()
-  ..addBitmapData('map', 'images/MapRender-Real-1280x720.jpg')
+  ..addBitmapData('map', 'images/MapRender-445pm.png')
   ..addBitmapData('hammer', 'images/spaceHammer.jpg')
   ..addSound('ambientMusic', 'sounds/ambient.mp3');
   //..addBitmapData('button', 'images/button.jpg')
@@ -67,8 +67,9 @@ resourceManager.load().then((result)
   //mapPic.x = 5;
   //mapPic.y = 5;
   
-  listMenu = new Menu(1060,0,0,35,135,250);
-  actionMenu = new Menu(1060,0,0, 295, 135, 250);
+  listMenu = new Menu(1060,0,0,0,135,250);
+  actionMenu = new Menu(1060,295,0, 0, 135, 250);
+  //Menu(displayObjectX, displayObjectY, xLoc, yLoc, width, height) 
   //testGraph = new Menu.graph(335,200,0, 0, 75, 45);
   
   stage.addChild(mapPic);
@@ -82,10 +83,6 @@ resourceManager.load().then((result)
   createMenus();
   startGame();
 });
-
-
-  
-
 
 }
 
@@ -101,7 +98,8 @@ createMenus()
 {
   for (int i=0; i<cities.length; i++)
   {
-    listOfMenus[i] = new Menu.graph(50, 5 + i*50, 0, 0, 75, 45, cities[i]);
+    //listOfMenus[i] = new Menu.graph(50, 5 + i*50, 0, 0, 75, 45, cities[i]);
+    listOfMenus[i] = new Menu.graph(cities[i].x, cities[i].y, 0, 0, 75, 45, cities[i]);
     stage.addChild(listOfMenus[i]);
     
   }
@@ -114,10 +112,10 @@ startGame()
 
 setSelected(City thisCity)
 {
-  print(thisCity);
   selectedCity = thisCity;
-  actionMenu.cityName.text = "change";
+  actionMenu.cityName.text = thisCity.name;
 }
+
 
 void showCoordinates(MouseEvent e)
 {
