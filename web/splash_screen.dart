@@ -14,7 +14,7 @@ void main()
   
   resourceManager = new ResourceManager()
       ..addSound('houseArrest', 'sounds/brief.mp3')
-      ..addBitmapData('map', 'images/Layout720x1280.jpg');
+      ..addBitmapData('map', 'images/BeginningSplashScreen.jpg');
   
   
   stage.onMouseClick.listen(showCoordinates);

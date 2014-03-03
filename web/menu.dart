@@ -6,6 +6,9 @@ class Menu extends DisplayObjectContainer
   int healthyPercent;
   int deadPerfect;
   City thisCity;
+  Bitmap thisBarricade;
+  Bitmap thisQuarantine;
+  Bitmap thisHouseArrest;
   
   /* text fields for action menu */
   TextField cityName;
@@ -37,7 +40,7 @@ class Menu extends DisplayObjectContainer
     var shape = new Shape();
     shape.graphics.rect(xLoc, yLoc, width, height);
     shape.graphics.strokeColor(Color.Blue);
-    this.addChild(shape);
+    //this.addChild(shape);
 
   }
   
@@ -82,6 +85,30 @@ class Menu extends DisplayObjectContainer
     productTextField.type = "DYNAMIC";
     
     //end text
+    
+    thisBarricade = new Bitmap(resourceManager.getBitmapData('barricadeIcon'));
+    thisBarricade.y = 23;
+    thisBarricade.x = 2;
+    thisBarricade.height = 20;
+    thisBarricade.width = 20;
+    this.addChild(thisBarricade);
+    thisBarricade.visible = false;
+    
+    thisQuarantine = new Bitmap(resourceManager.getBitmapData('quarantineIcon'));
+    thisQuarantine.y = 23;
+    thisQuarantine.x = 2;
+    thisQuarantine.height = 20;
+    thisQuarantine.width = 20;
+    this.addChild(thisQuarantine);
+    thisQuarantine.visible = false;
+    
+    thisHouseArrest = new Bitmap(resourceManager.getBitmapData('houseArrestIcon'));
+    thisHouseArrest.y = 23;
+    thisHouseArrest.x = 2;
+    thisHouseArrest.height = 20;
+    thisHouseArrest.width = 20;
+    this.addChild(thisHouseArrest);
+    thisHouseArrest.visible = false;
     
     this.addChild(deceasedBar);
     this.addChild(infectedBar);
@@ -141,7 +168,7 @@ class Menu extends DisplayObjectContainer
   
   TextField setTextFieldValues(var theTextField, var textValue, var xCoord, var yCoord, parentObject )
   {
-    theTextField.defaultTextFormat = new TextFormat('Spicy Rice', 14, Color.Red);
+    theTextField.defaultTextFormat = new TextFormat('Spicy Rice', 13, Color.Red);
     theTextField.text = '$textValue';
     theTextField.x = xCoord;
     theTextField.y = yCoord;
@@ -161,6 +188,10 @@ class Menu extends DisplayObjectContainer
     //update production text
     var val = (thisCity.harvest()~/1000);
     productTextField.text = "${val}K";
+    
+    thisBarricade.visible = thisCity.barricade;
+    thisQuarantine.visible = thisCity.quarantine;
+    thisHouseArrest.visible = thisCity.house_arrest;
   }
   
   

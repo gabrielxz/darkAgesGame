@@ -13,14 +13,15 @@ void clickOnOrbitalStrike(MouseEvent e)
 {
   colony.orbital_strike();
   playAudio("orbitalStrike");
+ 
   print("barricade!");
   
 }
 
 void clickOnQuarantine(MouseEvent e)
 {
-  colony.quarantine();
-  playAudio("quarantine");
+  colony.quarantine()
+    playAudio("quarantine");
   print("barricade!");
   
 }
@@ -64,9 +65,15 @@ void stepTurn(MouseEvent e){
   
   spaceShip.x += 32; //move the spaceship
   
-  if ((colony.remaining_turns <= 0) || (colony.remaining == 0))
+  if (colony.remaining_turns <= 0 )
   {
     endGame();
+    playAudio("victory");
+  }
+  if (colony.remaining == 0)
+  {
+    endGame();
+    playAudio("death");
   }
   
   if (colony.remaining_turns == 5)

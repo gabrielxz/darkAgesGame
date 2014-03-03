@@ -486,7 +486,7 @@ var $$ = {};
     },
     $index: function(receiver, index) {
       if (typeof index !== "number" || Math.floor(index) !== index)
-        throw H.wrapException(P.ArgumentError$(index));
+        throw H.wrapException(new P.ArgumentError(index));
       if (index >= receiver.length || index < 0)
         throw H.wrapException(P.RangeError$value(index));
       return receiver[index];
@@ -515,6 +515,9 @@ var $$ = {};
   },
   JSNumber: {
     "": "num/Interceptor;",
+    get$isNegative: function(receiver) {
+      return receiver === 0 ? 1 / receiver < 0 : receiver < 0;
+    },
     remainder$1: function(receiver, b) {
       return receiver % b;
     },
@@ -550,6 +553,17 @@ var $$ = {};
       if (typeof other !== "number")
         throw H.wrapException(new P.ArgumentError(other));
       return receiver + other;
+    },
+    $mod: function(receiver, other) {
+      var result = receiver % other;
+      if (result === 0)
+        return 0;
+      if (result > 0)
+        return result;
+      if (other < 0)
+        return result - other;
+      else
+        return result + other;
     },
     _tdivFast$1: function(receiver, other) {
       return (receiver | 0) === receiver ? receiver / other | 0 : this.toInt$0(receiver / other);
@@ -602,11 +616,23 @@ var $$ = {};
         throw H.wrapException(new P.ArgumentError(other));
       return receiver + other;
     },
+    replaceAll$2: function(receiver, from, to) {
+      if (typeof to !== "string")
+        H.throwExpression(new P.ArgumentError(to));
+      return H.stringReplaceAllUnchecked(receiver, from, to);
+    },
+    split$1: function(receiver, pattern) {
+      return receiver.split(pattern);
+    },
     substring$2: function(receiver, startIndex, endIndex) {
+      if (typeof startIndex !== "number" || Math.floor(startIndex) !== startIndex)
+        H.throwExpression(P.ArgumentError$(startIndex));
       if (endIndex == null)
         endIndex = receiver.length;
       if (typeof endIndex !== "number" || Math.floor(endIndex) !== endIndex)
         H.throwExpression(P.ArgumentError$(endIndex));
+      if (typeof startIndex !== "number")
+        return startIndex.$lt();
       if (startIndex < 0)
         throw H.wrapException(P.RangeError$value(startIndex));
       if (typeof endIndex !== "number")
@@ -658,7 +684,7 @@ var $$ = {};
     },
     $index: function(receiver, index) {
       if (typeof index !== "number" || Math.floor(index) !== index)
-        throw H.wrapException(P.ArgumentError$(index));
+        throw H.wrapException(new P.ArgumentError(index));
       if (index >= receiver.length || index < 0)
         throw H.wrapException(P.RangeError$value(index));
       return receiver[index];
@@ -837,13 +863,13 @@ var $$ = {};
     return x == null || typeof x === "string" || typeof x === "number" || typeof x === "boolean";
   },
   startRootIsolate_closure: {
-    "": "Closure:9;entry_0",
+    "": "Closure:11;entry_0",
     call$0: function() {
       this.entry_0.call$1([]);
     }
   },
   startRootIsolate_closure0: {
-    "": "Closure:9;entry_1",
+    "": "Closure:11;entry_1",
     call$0: function() {
       this.entry_1.call$2([], null);
     }
@@ -970,7 +996,7 @@ var $$ = {};
     }
   },
   _EventLoop__runHelper_next: {
-    "": "Closure:0;this_0",
+    "": "Closure:1;this_0",
     call$0: function() {
       if (!this.this_0.runIteration$0())
         return;
@@ -987,7 +1013,7 @@ var $$ = {};
     "": "Object;"
   },
   IsolateNatives__processWorkerMessage_closure: {
-    "": "Closure:9;entryPoint_0,args_1,message_2,isSpawnUri_3,replyTo_4",
+    "": "Closure:11;entryPoint_0,args_1,message_2,isSpawnUri_3,replyTo_4",
     call$0: function() {
       var t1, t2, t3, t4, t5, t6, t7;
       t1 = this.entryPoint_0;
@@ -1062,7 +1088,7 @@ var $$ = {};
     $isSendPort: true
   },
   _NativeJsSendPort_send_closure: {
-    "": "Closure:9;box_0,this_1,shouldSerialize_2",
+    "": "Closure:11;box_0,this_1,shouldSerialize_2",
     call$0: function() {
       var t1, t2;
       t1 = this.this_1._receivePort;
@@ -1154,7 +1180,7 @@ var $$ = {};
       t1.close$0(t1);
       t1 = this.__isolate_helper$_controller;
       t1.close$0(t1);
-    }, "call$0", "get$close", 0, 0, 0],
+    }, "call$0", "get$close", 0, 0, 1],
     ReceivePortImpl$fromRawReceivePort$1: function(_rawPort) {
       var t1 = P.StreamController_StreamController(this.get$close(this), null, null, null, true, null);
       this.__isolate_helper$_controller = t1;
@@ -1312,7 +1338,7 @@ var $$ = {};
     }
   },
   _Copier_visitMap_closure: {
-    "": "Closure:10;box_0,this_1",
+    "": "Closure:12;box_0,this_1",
     call$2: function(key, val) {
       var t1 = this.this_1;
       J.$indexSet$ax(this.box_0.copy_0, t1._dispatch$1(key), t1._dispatch$1(val));
@@ -1485,14 +1511,14 @@ var $$ = {};
       }}
   },
   TimerImpl_internalCallback: {
-    "": "Closure:0;this_0,callback_1",
+    "": "Closure:1;this_0,callback_1",
     call$0: function() {
       this.this_0._handle = null;
       this.callback_1.call$0();
     }
   },
   TimerImpl_internalCallback0: {
-    "": "Closure:0;this_2,callback_3",
+    "": "Closure:1;this_2,callback_3",
     call$0: function() {
       this.this_2._handle = null;
       var t1 = init.globalState.topEventLoop;
@@ -1940,6 +1966,20 @@ var $$ = {};
     functions.fixed$length = init;
     reflectionInfo.fixed$length = init;
     return H.Closure_fromTearOff(receiver, functions, reflectionInfo, !!isStatic, jsArguments, $name);
+  },
+  propertyTypeCastError: function(value, property) {
+    var t1 = J.getInterceptor$asx(property);
+    throw H.wrapException(H.CastErrorImplementation$(H.Primitives_objectTypeName(value), t1.substring$2(property, 3, t1.get$length(property))));
+  },
+  interceptedTypeCast: function(value, property) {
+    var t1;
+    if (value != null)
+      t1 = typeof value === "object" && J.getInterceptor(value)[property];
+    else
+      t1 = true;
+    if (t1)
+      return value;
+    H.propertyTypeCastError(value, property);
   },
   throwCyclicInit: function(staticName) {
     throw H.wrapException(P.CyclicInitializationError$("Cyclic initialization for static " + H.S(staticName)));
@@ -2455,7 +2495,7 @@ var $$ = {};
     }
   },
   unwrapException_saveStackTrace: {
-    "": "Closure:11;ex_0",
+    "": "Closure:13;ex_0",
     call$1: function(error) {
       var t1 = J.getInterceptor(error);
       if (typeof error === "object" && error !== null && !!t1.$isError)
@@ -2479,31 +2519,31 @@ var $$ = {};
     }
   },
   invokeClosure_closure: {
-    "": "Closure:9;closure_0",
+    "": "Closure:11;closure_0",
     call$0: function() {
       return this.closure_0.call$0();
     }
   },
   invokeClosure_closure0: {
-    "": "Closure:9;closure_1,arg1_2",
+    "": "Closure:11;closure_1,arg1_2",
     call$0: function() {
       return this.closure_1.call$1(this.arg1_2);
     }
   },
   invokeClosure_closure1: {
-    "": "Closure:9;closure_3,arg1_4,arg2_5",
+    "": "Closure:11;closure_3,arg1_4,arg2_5",
     call$0: function() {
       return this.closure_3.call$2(this.arg1_4, this.arg2_5);
     }
   },
   invokeClosure_closure2: {
-    "": "Closure:9;closure_6,arg1_7,arg2_8,arg3_9",
+    "": "Closure:11;closure_6,arg1_7,arg2_8,arg3_9",
     call$0: function() {
       return this.closure_6.call$3(this.arg1_7, this.arg2_8, this.arg3_9);
     }
   },
   invokeClosure_closure3: {
-    "": "Closure:9;closure_10,arg1_11,arg2_12,arg3_13,arg4_14",
+    "": "Closure:11;closure_10,arg1_11,arg2_12,arg3_13,arg4_14",
     call$0: function() {
       return this.closure_10.call$4(this.arg1_11, this.arg2_12, this.arg3_13, this.arg4_14);
     }
@@ -2569,6 +2609,16 @@ var $$ = {};
           if (template[$name] === fieldName)
             return $name;
         }
+      }}
+  },
+  CastErrorImplementation: {
+    "": "Error;message",
+    toString$0: function(_) {
+      return this.message;
+    },
+    $isError: true,
+    static: {CastErrorImplementation$: function(actualType, expectedType) {
+        return new H.CastErrorImplementation("CastError: Casting value of type " + actualType + " to incompatible type " + H.S(expectedType));
       }}
   },
   RuntimeError: {
@@ -2705,19 +2755,19 @@ var $$ = {};
     $isTypeImpl: true
   },
   initHooks_closure: {
-    "": "Closure:11;getTag_0",
+    "": "Closure:13;getTag_0",
     call$1: function(o) {
       return this.getTag_0(o);
     }
   },
   initHooks_closure0: {
-    "": "Closure:12;getUnknownTag_1",
+    "": "Closure:14;getUnknownTag_1",
     call$2: function(o, tag) {
       return this.getUnknownTag_1(o, tag);
     }
   },
   initHooks_closure1: {
-    "": "Closure:13;prototypeForTag_2",
+    "": "Closure:15;prototypeForTag_2",
     call$1: function(tag) {
       return this.prototypeForTag_2(tag);
     }
@@ -2774,28 +2824,158 @@ var $$ = {};
 }],
 ["darkagesgame", "darkages.dart", , V, {
   "": "",
+  createButton: function(bitmapName, xCoord, yCoord, height, width, listenFunction, parentObject) {
+    var t1, t2, thisButton, thisSprite;
+    t1 = $.resourceManager.getBitmapData$1(bitmapName);
+    t2 = $.DisplayObject__nextID;
+    $.DisplayObject__nextID = t2 + 1;
+    thisButton = new Z.Bitmap(t1, null, t2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, Z.Matrix$fromIdentity(), Z.Matrix$fromIdentity(), true, null, null);
+    thisButton.set$y(thisButton, yCoord);
+    thisButton.set$x(thisButton, xCoord);
+    thisButton.set$height(thisButton, height);
+    thisButton.set$width(thisButton, width);
+    t2 = H.setRuntimeTypeInfo([], [Z.DisplayObject]);
+    t1 = $.DisplayObject__nextID;
+    $.DisplayObject__nextID = t1 + 1;
+    thisSprite = new Z.Sprite(false, false, null, null, null, t2, true, true, false, true, true, 0, t1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, Z.Matrix$fromIdentity(), Z.Matrix$fromIdentity(), true, null, null);
+    thisSprite.addChildAt$2(thisButton, t2.length);
+    parentObject.addChildAt$2(thisSprite, parentObject._children.length);
+    thisSprite.on$1(thisSprite, C.EventStreamProvider_click.eventType).listen$1(listenFunction);
+  },
   city_init: function() {
-    var connx, pop, prod, inf, c, t1, t2, t3, p, t4;
-    connx = [[0, 1], [0, 4], [0, 8], [0, 11], [1, 2], [1, 4], [1, 5], [2, 3], [2, 5], [2, 6], [2, 10], [3, 6], [3, 7], [4, 5], [4, 8], [4, 9], [5, 9], [5, 10], [6, 7], [6, 10], [6, 13], [6, 14], [7, 14], [8, 9], [8, 11], [8, 12], [9, 10], [9, 12], [10, 12], [10, 13], [11, 12], [12, 13], [13, 14]];
-    pop = [15000, 20000, 55000, 25000, 30000, 40000, 40000, 10000, 35000, 45000, 500000, 20000, 60000, 50000, 35000];
-    prod = [1.25, 1.75, 1.75, 1.25, 2, 2.25, 2, 1.25, 1.75, 2.25, 0, 1.25, 2.75, 1.75, 1.5];
-    inf = [0.04, 0.04, 0, 0.05, 0.03, 0, 0, 0, 0, 0, 0, 0.03, 0, 0, 0.04];
-    $.cities = Array(15);
-    for (c = 0; c < 15; ++c) {
-      t1 = new V.City(null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-      $.cities[c] = t1;
-      t2 = pop[c];
-      t1.population = t2;
-      t1.dead = 0;
-      t3 = t2 * inf[c];
-      t1.infected = t3;
-      t1.healthy = t2 - t3;
-      t1.name = "David's NAME";
-      t1.set$spread_to(1);
-      t1.set$spread_from(1);
-      t1.set$spread_within(1);
-      t1.production = prod[c];
-      t1.next_to = P.LinkedHashSet_LinkedHashSet(null, null, null, null);
+    var connx, t1, c, city, t2, t3, p, t4, t5;
+    connx = [[0, 1], [0, 4], [0, 8], [1, 2], [1, 4], [1, 5], [2, 3], [2, 5], [2, 6], [2, 10], [3, 6], [3, 7], [4, 5], [4, 8], [4, 9], [5, 9], [5, 10], [6, 7], [6, 10], [6, 13], [6, 14], [7, 14], [8, 9], [8, 11], [8, 12], [9, 10], [9, 12], [10, 12], [10, 13], [11, 12], [12, 13], [13, 14]];
+    t1 = Array(15);
+    $.cities = t1;
+    for (c = 0; c < 15; ++c)
+      t1[c] = new V.City(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    city = t1[0];
+    city.name = "Constantinople";
+    city.population = 15000;
+    city.production = 1.25;
+    city.getting_sick = 0.04;
+    city.x = 58;
+    city.y = 126;
+    city = t1[1];
+    city.name = "Rome";
+    city.population = 20000;
+    city.production = 1.75;
+    city.getting_sick = 0.04;
+    city.x = 274;
+    city.y = 43;
+    city = t1[2];
+    city.name = "Barcelona";
+    city.population = 55000;
+    city.production = 1.75;
+    city.getting_sick = 0;
+    city.x = 492;
+    city.y = 60;
+    city = t1[3];
+    city.name = "Marsailles";
+    city.population = 25000;
+    city.production = 1.25;
+    city.getting_sick = 0.05;
+    city.x = 881;
+    city.y = 134;
+    city = t1[4];
+    city.name = "Milan";
+    city.population = 30000;
+    city.production = 2;
+    city.getting_sick = 0.03;
+    city.x = 182;
+    city.y = 218;
+    city = t1[5];
+    city.name = "Vienna";
+    city.population = 40000;
+    city.production = 2.25;
+    city.getting_sick = 0;
+    city.x = 379;
+    city.y = 155;
+    city = t1[6];
+    city.name = "Paris";
+    city.population = 40000;
+    city.production = 2;
+    city.getting_sick = 0;
+    city.x = 739;
+    city.y = 290;
+    city = t1[7];
+    city.name = "Cologne";
+    city.population = 10000;
+    city.production = 1.25;
+    city.getting_sick = 0.04;
+    city.x = 878;
+    city.y = 240;
+    city = t1[8];
+    city.name = "London";
+    city.population = 35000;
+    city.production = 1.75;
+    city.getting_sick = 0;
+    city.x = 138;
+    city.y = 318;
+    city = t1[9];
+    city.name = "Copenhagen";
+    city.population = 45000;
+    city.production = 2.25;
+    city.getting_sick = 0;
+    city.x = 335;
+    city.y = 380;
+    city = t1[10];
+    city.name = "Stockholm";
+    city.population = 500000;
+    city.production = 0;
+    city.getting_sick = 0;
+    city.x = 464;
+    city.y = 351;
+    city = t1[11];
+    city.name = "Moscow";
+    city.population = 20000;
+    city.production = 1.25;
+    city.getting_sick = 0.03;
+    city.x = 61;
+    city.y = 490;
+    city = t1[12];
+    city.name = "Kiev";
+    city.population = 60000;
+    city.production = 2.75;
+    city.getting_sick = 0;
+    city.x = 361;
+    city.y = 512;
+    city = t1[13];
+    city.name = "Cracow";
+    city.population = 50000;
+    city.production = 1.75;
+    city.getting_sick = 0;
+    city.x = 666;
+    city.y = 546;
+    city = t1[14];
+    city.name = "Naples";
+    city.population = 35000;
+    city.production = 1.5;
+    city.getting_sick = 0.04;
+    city.x = 857;
+    city.y = 439;
+    for (t1 = new H.ListIterator(t1, 15, 0, null); t1.moveNext$0();) {
+      city = t1._current;
+      city.set$dead(0);
+      t2 = city.getting_sick;
+      t3 = city.population;
+      if (typeof t2 !== "number")
+        return t2.$mul();
+      if (typeof t3 !== "number")
+        return H.iae(t3);
+      t3 = C.JSNumber_methods.toInt$0(t2 * t3);
+      city.getting_sick = t3;
+      city.infected = 0;
+      t2 = city.population;
+      if (typeof t2 !== "number")
+        return t2.$sub();
+      city.healthy = t2 - t3;
+      city.quarantine = false;
+      city.house_arrest = false;
+      city.barricade = false;
+      city.next_to = P.LinkedHashSet_LinkedHashSet(null, null, null, null);
+      city.uprooted = false;
+      city.configure$0();
     }
     for (t1 = new H.ListIterator(connx, connx.length, 0, null); t1.moveNext$0();) {
       p = t1._current;
@@ -2806,16 +2986,149 @@ var $$ = {};
       if (t4 >>> 0 !== t4 || t4 >= 15)
         return H.ioore(t2, t4);
       t4 = t2[t4].next_to;
-      t4.add$1(t4, t3.$index(p, 1));
-      t4 = $.cities;
+      t2 = $.cities;
+      t5 = t3.$index(p, 1);
+      t2.length;
+      if (t5 >>> 0 !== t5 || t5 >= 15)
+        return H.ioore(t2, t5);
+      t4.add$1(t4, t2[t5]);
+      t5 = $.cities;
       t2 = t3.$index(p, 1);
-      t4.length;
+      t5.length;
       if (t2 >>> 0 !== t2 || t2 >= 15)
-        return H.ioore(t4, t2);
-      t2 = t4[t2].next_to;
-      t2.add$1(t2, t3.$index(p, 0));
+        return H.ioore(t5, t2);
+      t2 = t5[t2].next_to;
+      t5 = $.cities;
+      t3 = t3.$index(p, 0);
+      t5.length;
+      if (t3 >>> 0 !== t3 || t3 >= 15)
+        return H.ioore(t5, t3);
+      t2.add$1(t2, t5[t3]);
     }
   },
+  clickOnBarricade: [function(e) {
+    var t1 = $.colony.selected_city;
+    if (t1.barricade !== true) {
+      t1.house_arrest = false;
+      t1.barricade = true;
+      t1.quarantine = false;
+    } else
+      t1.barricade = false;
+    t1.configure$0();
+    V.playAudio("culling");
+    P.print("barricade!");
+  }, "call$1", "clickOnBarricade$closure", 2, 0, 0],
+  clickOnOrbitalStrike: [function(e) {
+    var t1 = $.colony.selected_city;
+    t1.kill$2(t1.infected, t1.healthy);
+    t1.house_arrest = false;
+    t1.quarantine = false;
+    V.playAudio("orbitalStrike");
+    P.print("barricade!");
+  }, "call$1", "clickOnOrbitalStrike$closure", 2, 0, 0],
+  clickOnQuarantine: [function(e) {
+    var t1 = $.colony.selected_city;
+    if (t1.quarantine !== true) {
+      t1.house_arrest = false;
+      t1.barricade = false;
+      t1.quarantine = true;
+    } else
+      t1.quarantine = false;
+    t1.configure$0();
+    V.playAudio("quarantine");
+    P.print("barricade!");
+  }, "call$1", "clickOnQuarantine$closure", 2, 0, 0],
+  clickOnCull: [function(e) {
+    var t1, t2, t3;
+    t1 = $.colony.selected_city;
+    t2 = t1.infected;
+    if (typeof t2 !== "number")
+      return t2.$mul();
+    t3 = t1.healthy;
+    if (typeof t3 !== "number")
+      return t3.$mul();
+    t1.kill$2(t2 * 0.85, t3 * 0.05);
+    t3 = t1.workforce;
+    if (typeof t3 !== "number")
+      return t3.$mul();
+    t1.workforce = t3 * 0.5;
+    V.playAudio("culling");
+    P.print("barricade!");
+  }, "call$1", "clickOnCull$closure", 2, 0, 0],
+  clickOnVaccinate: [function(e) {
+    $.colony.vaccinate$0();
+    V.playAudio("culling");
+    P.print("vaccinate!");
+  }, "call$1", "clickOnVaccinate$closure", 2, 0, 0],
+  clickOnUproot: [function(e) {
+    var t1, t2;
+    t1 = $.colony.selected_city;
+    t2 = t1.workforce;
+    if (typeof t2 !== "number")
+      return t2.$mul();
+    t1.workforce = C.JSNumber_methods.toInt$0(t2 * 1.5);
+    t1.uprooted = true;
+    V.playAudio("laserBlast");
+    P.print("barricade!");
+  }, "call$1", "clickOnUproot$closure", 2, 0, 0],
+  clickOnHouseArrest: [function(e) {
+    var t1 = $.colony.selected_city;
+    if (t1.house_arrest !== true) {
+      t1.house_arrest = true;
+      t1.barricade = false;
+      t1.quarantine = false;
+    } else
+      t1.house_arrest = false;
+    t1.configure$0();
+    V.playAudio("houseArrest");
+    P.print("barricade!");
+  }, "call$1", "clickOnHouseArrest$closure", 2, 0, 0],
+  stepTurn: [function(e) {
+    var t1, t2, t3, t4, t5, endText, sound2;
+    V.playAudio("endTurn");
+    P.print("stepTurn");
+    $.colony.turn_end$0();
+    for (t1 = $.get$listOfMenus(), t1.length, t1 = new H.ListIterator(t1, 15, 0, null); t1.moveNext$0();)
+      t1._current.updateStatusBar$0();
+    t1 = $.spaceShip;
+    t1.set$x(t1, t1._x + 32);
+    t1 = $.colony;
+    if (t1.remaining_turns <= 0 || t1.remaining === 0) {
+      t1 = $.resourceManager.getBitmapData$1("endScreen");
+      t2 = $.DisplayObject__nextID;
+      $.DisplayObject__nextID = t2 + 1;
+      t3 = Z.Matrix$fromIdentity();
+      t4 = Z.Matrix$fromIdentity();
+      t5 = $.stage;
+      t5.addChildAt$2(new Z.Bitmap(t1, null, t2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, t3, t4, true, null, null), t5._children.length);
+      endText = Z.TextField$(null, null);
+      t5 = new Z.TextFormat("Spicy Rice", 35, 4294901760, false, false, false, "left", 0, 0, 0, 0, 0, 0);
+      endText._defaultTextFormat = t5.clone$0(t5);
+      endText._refreshPending = endText._refreshPending | 3;
+      endText.set$text(endText, "Score: " + H.S($.colony.remaining));
+      endText.set$x(endText, 770);
+      endText.set$y(endText, 400);
+      endText._width = 700;
+      t5 = endText._refreshPending | 3;
+      endText._refreshPending = t5;
+      endText._height = 150;
+      t5 |= 3;
+      endText._refreshPending = t5;
+      endText._wordWrap = true;
+      t5 |= 3;
+      endText._refreshPending = t5;
+      endText._type = "DYNAMIC";
+      endText._refreshPending = t5 | 3;
+      t5 = $.stage;
+      t5.addChildAt$2(endText, t5._children.length);
+    }
+    if ($.colony.remaining_turns === 5) {
+      P.print("fadeTensionIn");
+      sound2 = $.resourceManager.getSound$1("tensionMusic");
+      $.soundChannel2 = sound2.play$2(sound2, false, new Z.SoundTransform(0.1, 0));
+      P.Timer_Timer(P.Duration$(0, 0, 0, 500, 0, 0), V.fadeTensionLevel1$closure());
+    }
+  }, "call$1", "stepTurn$closure", 2, 0, 0],
   main: [function() {
     var t1, t2, renderLoop, t3;
     t1 = document.querySelector("#canvas");
@@ -2841,67 +3154,508 @@ var $$ = {};
     t2.push(t1);
     t1._renderLoop = renderLoop;
     t1 = new Z.ResourceManager(P.LinkedHashMap_LinkedHashMap(null, null, null, J.JSString, Z.ResourceManagerResource), null);
-    t1._addResource$4("BitmapData", "map", "images/MapRender-Real-1280x720.jpg", Z.BitmapData_load("images/MapRender-Real-1280x720.jpg", null));
-    t1._addResource$4("BitmapData", "hammer", "images/spaceHammer.jpg", Z.BitmapData_load("images/spaceHammer.jpg", null));
+    t1._addResource$4("BitmapData", "map", "images/touch_up_map.png", Z.BitmapData_load("images/touch_up_map.png", null));
+    t1._addResource$4("BitmapData", "hammer", "images/icon_Wheat.png", Z.BitmapData_load("images/icon_Wheat.png", null));
+    t1._addResource$4("BitmapData", "endTurn", "images/button_EndTurn.png", Z.BitmapData_load("images/button_EndTurn.png", null));
+    t1._addResource$4("BitmapData", "barricade", "images/button_Barricade.png", Z.BitmapData_load("images/button_Barricade.png", null));
+    t1._addResource$4("BitmapData", "orbitalStrike", "images/button_OrbitalStrike.png", Z.BitmapData_load("images/button_OrbitalStrike.png", null));
+    t1._addResource$4("BitmapData", "quarantine", "images/button_Quarrantine.png", Z.BitmapData_load("images/button_Quarrantine.png", null));
+    t1._addResource$4("BitmapData", "houseArrest", "images/button_HouseArrest.png", Z.BitmapData_load("images/button_HouseArrest.png", null));
+    t1._addResource$4("BitmapData", "uproot", "images/button_Uproot.png", Z.BitmapData_load("images/button_Uproot.png", null));
+    t1._addResource$4("BitmapData", "spaceShip", "images/ShipTop.png", Z.BitmapData_load("images/ShipTop.png", null));
+    t1._addResource$4("BitmapData", "cull", "images/button_Cull.png", Z.BitmapData_load("images/button_Cull.png", null));
+    t1._addResource$4("BitmapData", "vaccinate", "images/button_Vaccinate.png", Z.BitmapData_load("images/button_Vaccinate.png", null));
+    t1._addResource$4("BitmapData", "endScreen", "images/SplashScreen.jpg", Z.BitmapData_load("images/SplashScreen.jpg", null));
+    t1._addResource$4("BitmapData", "barricadeIcon", "images/icons_Barricade.png", Z.BitmapData_load("images/icons_Barricade.png", null));
+    t1._addResource$4("BitmapData", "quarantineIcon", "images/icons_Quarrantine.png", Z.BitmapData_load("images/icons_Quarrantine.png", null));
+    t1._addResource$4("BitmapData", "houseArrestIcon", "images/icons_HouseArrest.png", Z.BitmapData_load("images/icons_HouseArrest.png", null));
     t1._addResource$4("Sound", "ambientMusic", "sounds/ambient.mp3", Z.Sound_load("sounds/ambient.mp3", null));
+    t1._addResource$4("Sound", "tensionMusic", "sounds/moon_virus_Tension_master.mp3", Z.Sound_load("sounds/moon_virus_Tension_master.mp3", null));
+    t1._addResource$4("Sound", "culling", "sounds/moon_virus_FX_Culling.mp3", Z.Sound_load("sounds/moon_virus_FX_Culling.mp3", null));
+    t1._addResource$4("Sound", "orbitalStrike", "sounds/moon_virus_FX_Orbital_Strike.mp3", Z.Sound_load("sounds/moon_virus_FX_Orbital_Strike.mp3", null));
+    t1._addResource$4("Sound", "houseArrest", "sounds/moon_virus_FX_House_Arrest.mp3", Z.Sound_load("sounds/moon_virus_FX_House_Arrest.mp3", null));
+    t1._addResource$4("Sound", "endTurn", "sounds/moon_virus_FX_end_turn.mp3", Z.Sound_load("sounds/moon_virus_FX_end_turn.mp3", null));
+    t1._addResource$4("Sound", "laserBlast", "sounds/moon_virus_FX_laser_Blast.mp3", Z.Sound_load("sounds/moon_virus_FX_laser_Blast.mp3", null));
+    t1._addResource$4("Sound", "quarantine", "sounds/moon_virus_FX_Quaranteen.mp3", Z.Sound_load("sounds/moon_virus_FX_Quaranteen.mp3", null));
     $.resourceManager = t1;
+    t1 = $.stage;
+    t1.on$1(t1, C.EventStreamProvider_click.eventType).listen$1(V.showCoordinates$closure());
+    t1 = $.resourceManager;
     t1.load$0(t1).then$1(new V.main_closure());
-  }, "call$0", "main$closure", 0, 0, 0],
+  }, "call$0", "main$closure", 0, 0, 1],
+  playAudio: function(trackName) {
+    var sound = $.resourceManager.getSound$1(trackName);
+    return sound.play$2(sound, false, new Z.SoundTransform(0.5, 0));
+  },
   musicLoop: [function() {
-    var value, t1;
-    P.print("musicLoop");
-    value = $.resourceManager._getResourceValue$2("Sound", "ambientMusic");
-    t1 = J.getInterceptor$x(value);
-    if (typeof value !== "object" || value === null || !t1.$isSound)
-      H.throwExpression("dart2js_hint");
-    $.soundChannel = t1.play$2(value, false, new Z.SoundTransform(0.5, 0));
-    P.Timer_Timer(P.Duration$(0, 0, 0, 0, 0, 10), V.musicLoop$closure());
-  }, "call$0", "musicLoop$closure", 0, 0, 0],
+    V.playAudio("ambientMusic");
+    P.Timer_Timer(P.Duration$(0, 0, 0, 0, 0, 116), V.musicLoop$closure());
+  }, "call$0", "musicLoop$closure", 0, 0, 1],
+  fadeTensionLevel1: [function() {
+    $.soundChannel2.set$soundTransform(new Z.SoundTransform(0.2, 0));
+    P.Timer_Timer(P.Duration$(0, 0, 0, 500, 0, 0), V.fadeTensionLevel2$closure());
+  }, "call$0", "fadeTensionLevel1$closure", 0, 0, 1],
+  fadeTensionLevel2: [function() {
+    $.soundChannel2.set$soundTransform(new Z.SoundTransform(0.3, 0));
+    P.Timer_Timer(P.Duration$(0, 0, 0, 500, 0, 0), V.fadeTensionLevel3$closure());
+  }, "call$0", "fadeTensionLevel2$closure", 0, 0, 1],
+  fadeTensionLevel3: [function() {
+    $.soundChannel2.set$soundTransform(new Z.SoundTransform(0.4, 0));
+    P.Timer_Timer(P.Duration$(0, 0, 0, 500, 0, 0), V.fadeTensionLevel4$closure());
+  }, "call$0", "fadeTensionLevel3$closure", 0, 0, 1],
+  fadeTensionLevel4: [function() {
+    $.soundChannel2.set$soundTransform(new Z.SoundTransform(0.5, 0));
+  }, "call$0", "fadeTensionLevel4$closure", 0, 0, 1],
   createMenus: function() {
-    var i, t1, t2, t3, t4;
+    var i, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12;
     for (i = 0; t1 = $.cities, t1.length, i < 15; ++i) {
       t2 = $.get$listOfMenus();
       t1 = t1[i];
-      t3 = [];
-      t3.$builtinTypeInfo = [Z.DisplayObject];
-      t4 = $.DisplayObject__nextID;
-      $.DisplayObject__nextID = t4 + 1;
-      t4 = new V.Menu(null, null, null, null, t3, true, true, false, true, true, 0, t4, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, new Z.Matrix(1, 0, 0, 1, 0, 0, 1), new Z.Matrix(1, 0, 0, 1, 0, 0, 1), true, null, null);
-      t4.Menu$graph$7(50, 5 + i * 50, 0, 0, 75, 45, t1);
-      t2[i] = t4;
-      t4 = $.stage;
-      t4.addChildAt$2($.get$listOfMenus()[i], t4._children.length);
+      t3 = t1.x;
+      t4 = t1.y;
+      t5 = [];
+      t5.$builtinTypeInfo = [Z._GraphicsCommand];
+      t6 = $.DisplayObject__nextID;
+      $.DisplayObject__nextID = t6 + 1;
+      t7 = [];
+      t7.$builtinTypeInfo = [Z._GraphicsCommand];
+      t8 = $.DisplayObject__nextID;
+      $.DisplayObject__nextID = t8 + 1;
+      t9 = [];
+      t9.$builtinTypeInfo = [Z._GraphicsCommand];
+      t10 = $.DisplayObject__nextID;
+      $.DisplayObject__nextID = t10 + 1;
+      t11 = [];
+      t11.$builtinTypeInfo = [Z.DisplayObject];
+      t12 = $.DisplayObject__nextID;
+      $.DisplayObject__nextID = t12 + 1;
+      t12 = new V.Menu(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Z.Shape(new Z.Graphics(t5, new Z.Rectangle0(0, 0, 0, 0), true), t6, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, new Z.Matrix(1, 0, 0, 1, 0, 0, 1), new Z.Matrix(1, 0, 0, 1, 0, 0, 1), true, null, null), new Z.Shape(new Z.Graphics(t7, new Z.Rectangle0(0, 0, 0, 0), true), t8, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, new Z.Matrix(1, 0, 0, 1, 0, 0, 1), new Z.Matrix(1, 0, 0, 1, 0, 0, 1), true, null, null), new Z.Shape(new Z.Graphics(t9, new Z.Rectangle0(0, 0, 0, 0), true), t10, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, new Z.Matrix(1, 0, 0, 1, 0, 0, 1), new Z.Matrix(1, 0, 0, 1, 0, 0, 1), true, null, null), t11, true, true, false, true, true, 0, t12, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, new Z.Matrix(1, 0, 0, 1, 0, 0, 1), new Z.Matrix(1, 0, 0, 1, 0, 0, 1), true, null, null);
+      t12.Menu$graph$7(t3, t4, 0, 0, 75, 45, t1);
+      t2[i] = t12;
+      t12 = $.stage;
+      t12.addChildAt$2($.get$listOfMenus()[i], t12._children.length);
     }
   },
+  startGame: function() {
+    V.setSelected($.cities[10]);
+    var t1 = $.stage;
+    t1.on$1(t1, C.EventStreamProvider_enterFrame.eventType).listen$1(V._onEnterFrame$closure());
+    for (t1 = $.get$listOfMenus(), t1.length, t1 = new H.ListIterator(t1, 15, 0, null); t1.moveNext$0();)
+      t1._current.updateStatusBar$0();
+  },
+  setSelected: function(thisCity) {
+    var t1, t2, t3, testvar, testvar3, testvar2;
+    $.colony.selected_city = thisCity;
+    t1 = $.actionMenu.cityName;
+    t1.set$text(t1, thisCity.name);
+    t1 = $.actionMenu.deathToll;
+    t1.set$text(t1, "Death Toll: " + H.S(thisCity.dead));
+    t1 = $.actionMenu.infected;
+    t1.set$text(t1, H.S(thisCity.infected) + " Infected");
+    t1 = $.actionMenu.uninfected;
+    t1.set$text(t1, H.S(thisCity.healthy) + " Uninfected");
+    t1 = $.actionMenu.productionRate;
+    t1.set$text(t1, "Productivity: " + H.S(thisCity.production));
+    t1 = $.actionMenu.expectedProduction;
+    t2 = thisCity.workforce;
+    t3 = thisCity.production;
+    if (typeof t2 !== "number")
+      return t2.$mul();
+    if (typeof t3 !== "number")
+      return H.iae(t3);
+    t1.set$text(t1, "Productivity: " + C.JSNumber_methods.toInt$0(t2 * t3));
+    testvar = $.colony.resources;
+    t3 = $.actionMenu.resourcesLabel;
+    t3.set$text(t3, "Resources left: " + H.S(testvar));
+    testvar3 = $.colony.deathToll$0();
+    t3 = $.actionMenu.globalDeathTollLabel;
+    t3.set$text(t3, "Total Dead: " + H.S(testvar3));
+    testvar2 = $.colony.remaining_turns;
+    t3 = $.actionMenu.turnsRemainingLabel;
+    t3.set$text(t3, "Turns Left: " + testvar2);
+  },
+  showCoordinates: [function(e) {
+    P.print(H.S(e.get$localX()) + " " + H.S(e.get$localY()));
+  }, "call$1", "showCoordinates$closure", 2, 0, 0],
+  _onEnterFrame: [function(e) {
+    var t1;
+    V.setSelected($.colony.selected_city);
+    for (t1 = $.get$listOfMenus(), t1.length, t1 = new H.ListIterator(t1, 15, 0, null); t1.moveNext$0();)
+      t1._current.updateStatusBar$0();
+  }, "call$1", "_onEnterFrame$closure", 2, 0, 2],
   City: {
-    "": "Object;population,dead,infected,healthy,name,spread_from_factor,spread_to_factor,spread_within_factor,death_rate,workforce,production,next_to,house_arrest,quarantine"
+    "": "Object;population,dead@,infected,getting_sick,healthy,name,spread_from_factor,spread_to_factor<,spread_within_factor,death_rate,workforce,production,next_to,x,y,house_arrest,quarantine,barricade,uprooted",
+    configure$0: function() {
+      var t1, t2;
+      this.spread_to_factor = 1;
+      this.spread_from_factor = 1;
+      this.spread_within_factor = 1;
+      this.death_rate = 1;
+      t1 = this.population;
+      t2 = this.dead;
+      if (typeof t1 !== "number")
+        return t1.$sub();
+      if (typeof t2 !== "number")
+        return H.iae(t2);
+      t2 = t1 - t2;
+      this.workforce = t2;
+      if (this.house_arrest === true) {
+        this.spread_within_factor = 0.5;
+        this.spread_from_factor = 0.5;
+        t1 = this.infected;
+        if (typeof t1 !== "number")
+          return H.iae(t1);
+        t1 = t2 - t1;
+        this.workforce = t1;
+        t2 = t1;
+        t1 = 0.5;
+      } else
+        t1 = 1;
+      if (this.quarantine === true) {
+        this.spread_to_factor = 0.01;
+        this.spread_from_factor = t1 * 0.01;
+        this.workforce = 0;
+        t1 = 0.01;
+        t2 = 0;
+      } else
+        t1 = 1;
+      if (this.barricade === true) {
+        this.spread_to_factor = t1 * 0.15;
+        this.workforce = t2 * 0.5;
+      }
+      if (this.uprooted === true)
+        this.workforce = 0;
+    },
+    kill$2: function(infected_cnt, healthy_cnt) {
+      var t1, t2;
+      infected_cnt.toString;
+      infected_cnt = C.JSInt_methods.toInt$0(C.JSNumber_methods.toInt$0(Math.ceil(infected_cnt)));
+      healthy_cnt = J.toInt$0$n(healthy_cnt);
+      t1 = this.dead;
+      if (typeof t1 !== "number")
+        return t1.$add();
+      t1 += infected_cnt;
+      this.dead = t1;
+      t2 = this.infected;
+      if (typeof t2 !== "number")
+        return t2.$sub();
+      this.infected = t2 - infected_cnt;
+      this.dead = t1 + healthy_cnt;
+      t1 = this.healthy;
+      if (typeof t1 !== "number")
+        return t1.$sub();
+      this.healthy = t1 - healthy_cnt;
+    },
+    infect$2: function(spread_factor, adjust) {
+      var infection, t1;
+      if (typeof adjust !== "number")
+        return H.iae(adjust);
+      infection = spread_factor * adjust;
+      t1 = this.healthy;
+      if (typeof t1 !== "number")
+        return H.iae(t1);
+      if (infection > t1)
+        infection = t1;
+      infection = C.JSNumber_methods.toInt$0(infection);
+      t1 = this.getting_sick;
+      if (typeof t1 !== "number")
+        return t1.$add();
+      this.getting_sick = t1 + infection;
+      t1 = this.healthy;
+      if (typeof t1 !== "number")
+        return t1.$sub();
+      this.healthy = t1 - infection;
+    },
+    spread_within$0: function() {
+      var t1, t2;
+      t1 = this.infected;
+      t2 = this.spread_within_factor;
+      if (typeof t1 !== "number")
+        return t1.$mul();
+      if (typeof t2 !== "number")
+        return H.iae(t2);
+      this.infect$2(5, t1 * t2);
+    },
+    spread_from$0: function() {
+      var t1, t2, from_rate, to_city;
+      t1 = this.infected;
+      t2 = this.spread_from_factor;
+      if (typeof t1 !== "number")
+        return t1.$mul();
+      if (typeof t2 !== "number")
+        return H.iae(t2);
+      from_rate = t1 * t2 * 3;
+      for (t1 = this.next_to, t2 = new P.LinkedHashSetIterator(t1, t1._modifications, null, null), t2._cell = t1._first; t2.moveNext$0();) {
+        to_city = t2._collection$_current;
+        to_city.infect$2(from_rate, to_city.get$spread_to_factor());
+      }
+    },
+    succumb$0: function() {
+      var t1, t2, deaths;
+      t1 = this.infected;
+      if (typeof t1 !== "number")
+        return t1.$mul();
+      t2 = this.death_rate;
+      if (typeof t2 !== "number")
+        return H.iae(t2);
+      deaths = t1 * 0.85 * t2;
+      if (deaths > t1)
+        deaths = t1;
+      this.kill$2(deaths, 0);
+    },
+    metastacize$0: function() {
+      var t1, t2;
+      t1 = this.infected;
+      t2 = this.getting_sick;
+      if (typeof t1 !== "number")
+        return t1.$add();
+      if (typeof t2 !== "number")
+        return H.iae(t2);
+      this.infected = t1 + t2;
+      this.getting_sick = 0;
+    },
+    harvest$0: function() {
+      var t1, t2;
+      t1 = this.workforce;
+      t2 = this.production;
+      if (typeof t1 !== "number")
+        return t1.$mul();
+      if (typeof t2 !== "number")
+        return H.iae(t2);
+      return C.JSNumber_methods.toInt$0(t1 * t2);
+    }
+  },
+  Colony: {
+    "": "Object;resources,remaining_turns,remaining,selected_city",
+    turn_end$0: function() {
+      var t1, city, t2, t3, t4;
+      for (t1 = $.cities, t1.length, t1 = new H.ListIterator(t1, 15, 0, null); t1.moveNext$0();) {
+        city = t1._current;
+        this.resources = this.resources + city.harvest$0();
+      }
+      for (t1 = $.cities, t1.length, t1 = new H.ListIterator(t1, 15, 0, null); t1.moveNext$0();)
+        t1._current.spread_within$0();
+      for (t1 = $.cities, t1.length, t1 = new H.ListIterator(t1, 15, 0, null); t1.moveNext$0();)
+        t1._current.succumb$0();
+      for (t1 = $.cities, t1.length, t1 = new H.ListIterator(t1, 15, 0, null); t1.moveNext$0();)
+        t1._current.spread_from$0();
+      this.remaining = 0;
+      for (t1 = $.cities, t1.length, t1 = new H.ListIterator(t1, 15, 0, null); t1.moveNext$0();) {
+        city = t1._current;
+        city.metastacize$0();
+        city.configure$0();
+        if (city.uprooted === true)
+          city.uprooted = false;
+        t2 = this.remaining;
+        t3 = city.population;
+        t4 = city.dead;
+        if (typeof t3 !== "number")
+          return t3.$sub();
+        if (typeof t4 !== "number")
+          return H.iae(t4);
+        if (typeof t2 !== "number")
+          return t2.$add();
+        this.remaining = t2 + (t3 - t4);
+      }
+      this.remaining_turns = this.remaining_turns - 1;
+    },
+    deathToll$0: function() {
+      var t1, toll, t2;
+      for (t1 = $.cities, t1.length, t1 = new H.ListIterator(t1, 15, 0, null), toll = 0; t1.moveNext$0();) {
+        t2 = t1._current.get$dead();
+        if (typeof t2 !== "number")
+          return H.iae(t2);
+        toll += t2;
+      }
+      return toll;
+    },
+    vaccinate$0: function() {
+      var t1, required, t2;
+      t1 = this.selected_city;
+      required = t1.healthy;
+      t2 = this.resources;
+      if (typeof required !== "number")
+        return H.iae(required);
+      if (t2 < required)
+        return;
+      this.resources = t2 - required;
+      t2 = t1.spread_to_factor;
+      if (typeof t2 !== "number")
+        return t2.$mul();
+      t1.spread_to_factor = t2 * 0.5;
+      t2 = t1.spread_from_factor;
+      if (typeof t2 !== "number")
+        return t2.$mul();
+      t1.spread_from_factor = t2 * 0.5;
+      t2 = t1.spread_within_factor;
+      if (typeof t2 !== "number")
+        return t2.$mul();
+      t1.spread_within_factor = t2 * 0.5;
+    },
+    Colony$0: function() {
+      var t1, city, t2, t3;
+      this.remaining_turns = 25;
+      this.resources = 0;
+      this.remaining = 0;
+      for (t1 = $.cities, t1.length, t1 = new H.ListIterator(t1, 15, 0, null); t1.moveNext$0();) {
+        city = t1._current;
+        city.metastacize$0();
+        city.configure$0();
+        t2 = this.remaining;
+        t3 = city.population;
+        if (typeof t2 !== "number")
+          return t2.$add();
+        if (typeof t3 !== "number")
+          return H.iae(t3);
+        this.remaining = t2 + t3;
+      }
+    },
+    static: {Colony$: function() {
+        var t1 = new V.Colony(null, null, null, null);
+        t1.Colony$0();
+        return t1;
+      }}
   },
   main_closure: {
-    "": "Closure:11;",
+    "": "Closure:13;",
     call$1: function(result) {
       var t1, t2;
+      V.city_init();
+      $.colony = V.Colony$();
       t1 = $.resourceManager.getBitmapData$1("map");
       t2 = $.DisplayObject__nextID;
       $.DisplayObject__nextID = t2 + 1;
+      $.mapPic = new Z.Bitmap(t1, null, t2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, Z.Matrix$fromIdentity(), Z.Matrix$fromIdentity(), true, null, null);
+      $.listMenu = V.Menu$(1026, 18, 0, 0, 234, 225);
+      t2 = V.Menu$(1029, 262, 0, 0, 233, 450);
+      $.actionMenu = t2;
+      t1 = Z.TextField$(null, null);
+      t2.cityName = t1;
+      t2.setTextFieldValues$5(t1, "cityName", 15, 5, $.actionMenu);
+      t1 = Z.TextField$(null, null);
+      t2.deathToll = t1;
+      t2.setTextFieldValues$5(t1, "deathToll", 15, 35, $.actionMenu);
+      t1 = Z.TextField$(null, null);
+      t2.infected = t1;
+      t2.setTextFieldValues$5(t1, "infected", 15, 50, $.actionMenu);
+      t1 = Z.TextField$(null, null);
+      t2.uninfected = t1;
+      t2.setTextFieldValues$5(t1, "uninfected", 15, 65, $.actionMenu);
+      t1 = Z.TextField$(null, null);
+      t2.productionRate = t1;
+      t2.setTextFieldValues$5(t1, "Productivity", 15, 80, $.actionMenu);
+      t1 = Z.TextField$(null, null);
+      t2.expectedProduction = t1;
+      t2.setTextFieldValues$5(t1, "Production", 15, 95, $.actionMenu);
+      t1 = Z.TextField$(null, null);
+      t2.resourcesLabel = t1;
+      t2.setTextFieldValues$5(t1, "resourcesLabel", 15, 5, $.listMenu);
+      t1 = Z.TextField$(null, null);
+      t2.globalDeathTollLabel = t1;
+      t2.setTextFieldValues$5(t1, "deathTollLabel", 15, 20, $.listMenu);
+      t1 = Z.TextField$(null, null);
+      t2.turnsRemainingLabel = t1;
+      t2.setTextFieldValues$5(t1, "turnsRemainingLabel", 15, 35, $.listMenu);
+      t1 = $.stage;
+      t1.addChildAt$2($.mapPic, t1._children.length);
+      t1 = $.stage;
+      t1.addChildAt$2($.listMenu, t1._children.length);
+      t1 = $.stage;
+      t1.addChildAt$2($.actionMenu, t1._children.length);
+      V.createButton("endTurn", 50, 165, 60, 140, V.stepTurn$closure(), $.listMenu);
+      V.createButton("barricade", 17, 150, $.buttonHeight, $.buttonWidth, V.clickOnBarricade$closure(), $.actionMenu);
+      V.createButton("orbitalStrike", 17, 190, $.buttonHeight, $.buttonWidth, V.clickOnOrbitalStrike$closure(), $.actionMenu);
+      V.createButton("quarantine", 17, 230, $.buttonHeight, $.buttonWidth, V.clickOnQuarantine$closure(), $.actionMenu);
+      V.createButton("houseArrest", 17, 270, $.buttonHeight, $.buttonWidth, V.clickOnHouseArrest$closure(), $.actionMenu);
+      V.createButton("uproot", 17, 310, $.buttonHeight, $.buttonWidth, V.clickOnUproot$closure(), $.actionMenu);
+      V.createButton("vaccinate", 17, 350, $.buttonHeight, $.buttonWidth, V.clickOnVaccinate$closure(), $.actionMenu);
+      V.createButton("cull", 17, 390, $.buttonHeight, $.buttonWidth, V.clickOnCull$closure(), $.actionMenu);
+      t1 = $.resourceManager.getBitmapData$1("spaceShip");
+      t2 = $.DisplayObject__nextID;
+      $.DisplayObject__nextID = t2 + 1;
       t2 = new Z.Bitmap(t1, null, t2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, Z.Matrix$fromIdentity(), Z.Matrix$fromIdentity(), true, null, null);
-      $.mapPic = t2;
-      t2.set$x(t2, 5);
-      t2.set$y(t2, 5);
-      $.listMenu = V.Menu$(1060, 0, 0, 35, 135, 250);
-      $.actionMenu = V.Menu$(1060, 0, 0, 295, 135, 250);
+      $.spaceShip = t2;
+      t2.set$y(t2, 650);
+      t2.set$x(t2, 22);
+      t2.set$height(t2, 50);
+      t2 = $.spaceShip;
+      t2.set$width(t2, 110);
       t2 = $.stage;
-      t2.addChildAt$2($.mapPic, t2._children.length);
-      t2 = $.stage;
-      t2.addChildAt$2($.listMenu, t2._children.length);
-      t2 = $.stage;
-      t2.addChildAt$2($.actionMenu, t2._children.length);
+      t2.addChildAt$2($.spaceShip, t2._children.length);
       V.musicLoop();
-      V.city_init();
       V.createMenus();
+      V.startGame();
     }
   },
   Menu: {
-    "": "DisplayObjectContainer;infectedPercent,healthyPercent,deadPerfect,thisCity,_children,_mouseChildren,_tabChildren,doubleClickEnabled,mouseEnabled,tabEnabled,tabIndex,_stagexl$_id,_x,_y,_pivotX,_pivotY,_scaleX,_scaleY,_skewX,_skewY,_rotation,_alpha,_visible,_off,_mask,_cacheTexture,_cacheRectangle,_cacheDebugBorder,_filters,_shadow,_compositeOperation,_stagexl$_name,_parent,_tmpMatrix,_transformationMatrix,_transformationMatrixRefresh,userData,_eventStreams",
+    "": "DisplayObjectContainer;infectedPercent,healthyPercent,deadPerfect,thisCity,thisBarricade,thisQuarantine,thisHouseArrest,cityName,originalPopulation,deathToll,infected,uninfected,productionRate,expectedProduction,resourcesLabel,globalDeathTollLabel,turnsRemainingLabel,productTextField,healthyBar,infectedBar,deceasedBar,_children,_mouseChildren,_tabChildren,doubleClickEnabled,mouseEnabled,tabEnabled,tabIndex,_stagexl$_id,_x,_y,_pivotX,_pivotY,_scaleX,_scaleY,_skewX,_skewY,_rotation,_alpha,_visible,_off,_mask,_cacheTexture,_cacheRectangle,_cacheDebugBorder,_filters,_shadow,_compositeOperation,_stagexl$_name,_parent,_tmpMatrix,_transformationMatrix,_transformationMatrixRefresh,userData,_eventStreams",
+    handleClickOnMenu$1: [function(e) {
+      V.setSelected(this.thisCity);
+    }, "call$1", "get$handleClickOnMenu", 2, 0, 0],
+    setTextFieldValues$5: function(theTextField, textValue, xCoord, yCoord, parentObject) {
+      var t1 = new Z.TextFormat("Spicy Rice", 13, 4294901760, false, false, false, "left", 0, 0, 0, 0, 0, 0);
+      theTextField.toString;
+      theTextField._defaultTextFormat = t1.clone$0(t1);
+      theTextField._refreshPending = theTextField._refreshPending | 3;
+      theTextField.set$text(theTextField, textValue);
+      theTextField.set$x(theTextField, xCoord);
+      theTextField.set$y(theTextField, yCoord);
+      theTextField._width = 150;
+      t1 = theTextField._refreshPending | 3;
+      theTextField._refreshPending = t1;
+      theTextField._height = 50;
+      t1 |= 3;
+      theTextField._refreshPending = t1;
+      theTextField._wordWrap = true;
+      t1 |= 3;
+      theTextField._refreshPending = t1;
+      theTextField._type = "DYNAMIC";
+      theTextField._refreshPending = t1 | 3;
+      parentObject.addChildAt$2(theTextField, parentObject._children.length);
+    },
+    updateStatusBar$0: function() {
+      var t1, t2, t3, t4, val;
+      t1 = this.thisCity;
+      t2 = t1.healthy;
+      t3 = t1.population;
+      if (typeof t2 !== "number")
+        return t2.$div();
+      if (typeof t3 !== "number")
+        return H.iae(t3);
+      t1 = t1.infected;
+      if (typeof t1 !== "number")
+        return H.iae(t1);
+      t4 = this.healthyBar;
+      t4.set$width(t4, t2 / t3 * 60);
+      t4 = this.infectedBar;
+      t4.set$width(t4, (t2 + t1) / t3 * 60);
+      t3 = this.thisCity;
+      t1 = t3.workforce;
+      t3 = t3.production;
+      if (typeof t1 !== "number")
+        return t1.$mul();
+      if (typeof t3 !== "number")
+        return H.iae(t3);
+      val = C.JSInt_methods._tdivFast$1(C.JSNumber_methods.toInt$0(t1 * t3), 1000);
+      t3 = this.productTextField;
+      t3.set$text(t3, "" + val + "K");
+      t3 = this.thisBarricade;
+      t1 = this.thisCity;
+      t2 = t1.barricade;
+      t3.toString;
+      if (typeof t2 === "boolean")
+        t3._visible = t2;
+      t2 = this.thisQuarantine;
+      t3 = t1.quarantine;
+      t2.toString;
+      if (typeof t3 === "boolean")
+        t2._visible = t3;
+      t2 = this.thisHouseArrest;
+      t1 = t1.house_arrest;
+      t2.toString;
+      if (typeof t1 === "boolean")
+        t2._visible = t1;
+    },
     Menu$6: function(displayObjectX, displayObjectY, xLoc, yLoc, width, height) {
       var t1, t2, t3, t4, t5, t6, t7;
       this.set$x(this, displayObjectX);
@@ -2925,7 +3679,7 @@ var $$ = {};
       this.addChildAt$2(new Z.Shape(t2, t3, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, t4, t5, true, null, null), this._children.length);
     },
     Menu$graph$7: function(displayObjectX, displayObjectY, xLoc, yLoc, width, height, city) {
-      var t1, t2, t3, shape, t4, t5, t6, t7, t8, t9, infectedGraph;
+      var t1, t2, t3, shape, t4, t5, t6, t7, t8, t9;
       this.thisCity = city;
       this.set$x(this, displayObjectX);
       this.set$y(this, displayObjectY);
@@ -2980,36 +3734,147 @@ var $$ = {};
       shape.set$alpha(shape, 0.5);
       t2 = this._children;
       this.addChildAt$2(shape, t2.length);
-      t3 = H.setRuntimeTypeInfo([], [Z._GraphicsCommand]);
-      t1 = new Z.Graphics(t3, new Z.Rectangle0(0, 0, 0, 0), true);
-      t8 = $.DisplayObject__nextID;
-      $.DisplayObject__nextID = t8 + 1;
-      infectedGraph = new Z.Shape(t1, t8, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, Z.Matrix$fromIdentity(), Z.Matrix$fromIdentity(), true, null, null);
-      t3.push(Z._GraphicsCommandRect$(5, 5, 60, 15));
+      t3 = this.healthyBar;
+      t1 = t3._graphics;
+      t1._commands.push(Z._GraphicsCommandRect$(5, 5, 60, 9));
       t1._identityRectangleRefresh = true;
+      t1 = t3._graphics;
       t8 = new Z._GraphicsCommandFillColor(null);
-      t8._color = Z._color2rgba(4278255615);
-      t3.push(t8);
+      t8._color = Z._color2rgba(4278255360);
+      t1._commands.push(t8);
       t1._identityRectangleRefresh = true;
-      infectedGraph.set$alpha(infectedGraph, 0.55);
-      t1 = $.resourceManager.getBitmapData$1("hammer");
-      t8 = $.DisplayObject__nextID;
-      $.DisplayObject__nextID = t8 + 1;
-      t8 = new Z.Bitmap(t1, null, t8, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, Z.Matrix$fromIdentity(), Z.Matrix$fromIdentity(), true, null, null);
-      $.hammerPic = t8;
-      t8.set$y(t8, 23);
-      t8.set$x(t8, 5);
-      this.addChildAt$2(infectedGraph, t2.length);
+      t3.set$alpha(t3, 1);
+      t1 = this.infectedBar;
+      t8 = t1._graphics;
+      t8._commands.push(Z._GraphicsCommandRect$(5, 5, 60, 9));
+      t8._identityRectangleRefresh = true;
+      t8 = t1._graphics;
+      t6 = new Z._GraphicsCommandFillColor(null);
+      t6._color = Z._color2rgba(4294967040);
+      t8._commands.push(t6);
+      t8._identityRectangleRefresh = true;
+      t1.set$alpha(t1, 1);
+      t8 = this.deceasedBar;
+      t6 = t8._graphics;
+      t6._commands.push(Z._GraphicsCommandRect$(5, 5, 60, 9));
+      t6._identityRectangleRefresh = true;
+      t6 = t8._graphics;
+      t7 = new Z._GraphicsCommandFillColor(null);
+      t7._color = Z._color2rgba(4294901760);
+      t6._commands.push(t7);
+      t6._identityRectangleRefresh = true;
+      t8.set$alpha(t8, 1);
+      t6 = $.resourceManager.getBitmapData$1("hammer");
+      t7 = $.DisplayObject__nextID;
+      $.DisplayObject__nextID = t7 + 1;
+      t7 = new Z.Bitmap(t6, null, t7, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, Z.Matrix$fromIdentity(), Z.Matrix$fromIdentity(), true, null, null);
+      $.hammerPic = t7;
+      t7.set$y(t7, 23);
+      t7.set$x(t7, 25);
+      t7.set$width(t7, 20);
+      t7 = $.hammerPic;
+      t7.set$height(t7, 20);
+      t7 = Z.TextField$(null, null);
+      this.productTextField = t7;
+      t6 = new Z.TextFormat("Spicy Rice", 12, 4293984255, false, false, false, "left", 0, 0, 0, 0, 0, 0);
+      t7._defaultTextFormat = t6.clone$0(t6);
+      t7._refreshPending = t7._refreshPending | 3;
+      t7.set$text(t7, "500K");
+      t7 = this.productTextField;
+      t7.set$x(t7, 45);
+      t7 = this.productTextField;
+      t7.set$y(t7, 25);
+      t7 = this.productTextField;
+      t7._width = 50;
+      t6 = t7._refreshPending | 3;
+      t7._refreshPending = t6;
+      t7._height = 20;
+      t6 |= 3;
+      t7._refreshPending = t6;
+      t7._wordWrap = true;
+      t6 |= 3;
+      t7._refreshPending = t6;
+      t7._type = "DYNAMIC";
+      t7._refreshPending = t6 | 3;
+      t6 = $.resourceManager.getBitmapData$1("barricadeIcon");
+      t7 = $.DisplayObject__nextID;
+      $.DisplayObject__nextID = t7 + 1;
+      t7 = new Z.Bitmap(t6, null, t7, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, Z.Matrix$fromIdentity(), Z.Matrix$fromIdentity(), true, null, null);
+      this.thisBarricade = t7;
+      t7.set$y(t7, 23);
+      t7 = this.thisBarricade;
+      t7.set$x(t7, 2);
+      t7 = this.thisBarricade;
+      t7.set$height(t7, 20);
+      t7 = this.thisBarricade;
+      t7.set$width(t7, 20);
+      this.addChildAt$2(this.thisBarricade, t2.length);
+      t7 = this.thisBarricade;
+      t7.toString;
+      t7._visible = false;
+      t4 = $.resourceManager.getBitmapData$1("quarantineIcon");
+      t5 = $.DisplayObject__nextID;
+      $.DisplayObject__nextID = t5 + 1;
+      t5 = new Z.Bitmap(t4, null, t5, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, Z.Matrix$fromIdentity(), Z.Matrix$fromIdentity(), true, null, null);
+      this.thisQuarantine = t5;
+      t5.set$y(t5, 23);
+      t5 = this.thisQuarantine;
+      t5.set$x(t5, 2);
+      t5 = this.thisQuarantine;
+      t5.set$height(t5, 20);
+      t5 = this.thisQuarantine;
+      t5.set$width(t5, 20);
+      this.addChildAt$2(this.thisQuarantine, t2.length);
+      t5 = this.thisQuarantine;
+      t5.toString;
+      t5._visible = false;
+      t4 = $.resourceManager.getBitmapData$1("houseArrestIcon");
+      t5 = $.DisplayObject__nextID;
+      $.DisplayObject__nextID = t5 + 1;
+      t5 = new Z.Bitmap(t4, null, t5, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, Z.Matrix$fromIdentity(), Z.Matrix$fromIdentity(), true, null, null);
+      this.thisHouseArrest = t5;
+      t5.set$y(t5, 23);
+      t5 = this.thisHouseArrest;
+      t5.set$x(t5, 2);
+      t5 = this.thisHouseArrest;
+      t5.set$height(t5, 20);
+      t5 = this.thisHouseArrest;
+      t5.set$width(t5, 20);
+      this.addChildAt$2(this.thisHouseArrest, t2.length);
+      t5 = this.thisHouseArrest;
+      t5.toString;
+      t5._visible = false;
+      this.addChildAt$2(t8, t2.length);
+      this.addChildAt$2(t1, t2.length);
+      this.addChildAt$2(t3, t2.length);
       this.addChildAt$2($.hammerPic, t2.length);
+      this.addChildAt$2(this.productTextField, t2.length);
+      this.on$1(this, C.EventStreamProvider_click.eventType).listen$1(this.get$handleClickOnMenu());
+      this.updateStatusBar$0();
     },
     static: {Menu$: function(displayObjectX, displayObjectY, xLoc, yLoc, width, height) {
-        var t1, t2;
-        t1 = H.setRuntimeTypeInfo([], [Z.DisplayObject]);
+        var t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14;
+        t1 = H.setRuntimeTypeInfo([], [Z._GraphicsCommand]);
         t2 = $.DisplayObject__nextID;
         $.DisplayObject__nextID = t2 + 1;
-        t2 = new V.Menu(null, null, null, null, t1, true, true, false, true, true, 0, t2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, Z.Matrix$fromIdentity(), Z.Matrix$fromIdentity(), true, null, null);
-        t2.Menu$6(displayObjectX, displayObjectY, xLoc, yLoc, width, height);
-        return t2;
+        t3 = Z.Matrix$fromIdentity();
+        t4 = Z.Matrix$fromIdentity();
+        t5 = H.setRuntimeTypeInfo([], [Z._GraphicsCommand]);
+        t6 = $.DisplayObject__nextID;
+        $.DisplayObject__nextID = t6 + 1;
+        t7 = Z.Matrix$fromIdentity();
+        t8 = Z.Matrix$fromIdentity();
+        t9 = H.setRuntimeTypeInfo([], [Z._GraphicsCommand]);
+        t10 = $.DisplayObject__nextID;
+        $.DisplayObject__nextID = t10 + 1;
+        t11 = Z.Matrix$fromIdentity();
+        t12 = Z.Matrix$fromIdentity();
+        t13 = H.setRuntimeTypeInfo([], [Z.DisplayObject]);
+        t14 = $.DisplayObject__nextID;
+        $.DisplayObject__nextID = t14 + 1;
+        t14 = new V.Menu(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, new Z.Shape(new Z.Graphics(t1, new Z.Rectangle0(0, 0, 0, 0), true), t2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, t3, t4, true, null, null), new Z.Shape(new Z.Graphics(t5, new Z.Rectangle0(0, 0, 0, 0), true), t6, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, t7, t8, true, null, null), new Z.Shape(new Z.Graphics(t9, new Z.Rectangle0(0, 0, 0, 0), true), t10, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, t11, t12, true, null, null), t13, true, true, false, true, true, 0, t14, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, Z.Matrix$fromIdentity(), Z.Matrix$fromIdentity(), true, null, null);
+        t14.Menu$6(displayObjectX, displayObjectY, xLoc, yLoc, width, height);
+        return t14;
       }}
   }
 },
@@ -3049,6 +3914,8 @@ var $$ = {};
     $length = end - start;
     if ($length === 0)
       return;
+    if (skipCount < 0)
+      throw H.wrapException(new P.ArgumentError(skipCount));
     if (skipCount + $length > from.length)
       throw H.wrapException(P.StateError$("Not enough elements"));
     H.Lists_copy(from, skipCount, list, start, $length);
@@ -3057,13 +3924,13 @@ var $$ = {};
     var i, j, t1;
     if (srcStart < dstStart)
       for (i = srcStart + count - 1, j = dstStart + count - 1; i >= srcStart; --i, --j) {
-        if (i >= src.length)
+        if (i < 0 || i >= src.length)
           return H.ioore(src, i);
         C.JSArray_methods.$indexSet(dst, j, src[i]);
       }
     else
       for (t1 = srcStart + count, j = dstStart, i = srcStart; i < t1; ++i, ++j) {
-        if (i >= src.length)
+        if (i < 0 || i >= src.length)
           return H.ioore(src, i);
         C.JSArray_methods.$indexSet(dst, j, src[i]);
       }
@@ -3288,7 +4155,7 @@ var $$ = {};
 
     }
     $._callbacksAreEnqueued = false;
-  }, "call$0", "_asyncRunCallback$closure", 0, 0, 0],
+  }, "call$0", "_asyncRunCallback$closure", 0, 0, 1],
   _scheduleAsyncCallback: function(callback) {
     $.get$_asyncCallbacks()._add$1(callback);
     if (!$._callbacksAreEnqueued) {
@@ -3332,17 +4199,17 @@ var $$ = {};
 
   },
   _nullDataHandler: [function(value) {
-  }, "call$1", "_nullDataHandler$closure", 2, 0, 1],
+  }, "call$1", "_nullDataHandler$closure", 2, 0, 3],
   _nullErrorHandler: [function(error, stackTrace) {
     var t1 = $.Zone__current;
     t1.toString;
     P._rootHandleUncaughtError(t1, null, t1, error, stackTrace);
   }, function(error) {
     return P._nullErrorHandler(error, null);
-  }, null, "call$2", "call$1", "_nullErrorHandler$closure", 2, 2, 2, 3],
+  }, null, "call$2", "call$1", "_nullErrorHandler$closure", 2, 2, 4, 5],
   _nullDoneHandler: [function() {
     return;
-  }, "call$0", "_nullDoneHandler$closure", 0, 0, 0],
+  }, "call$0", "_nullDoneHandler$closure", 0, 0, 1],
   _runUserCode: function(userCode, onSuccess, onError) {
     var e, s, exception, t1;
     try {
@@ -3450,10 +4317,10 @@ var $$ = {};
     },
     _onPause$0: [function() {
       return;
-    }, "call$0", "get$_onPause", 0, 0, 0],
+    }, "call$0", "get$_onPause", 0, 0, 1],
     _onResume$0: [function() {
       return;
-    }, "call$0", "get$_onResume", 0, 0, 0],
+    }, "call$0", "get$_onResume", 0, 0, 1],
     $as_ControllerSubscription: null,
     static: {"": "_BroadcastSubscription__STATE_EVENT_ID,_BroadcastSubscription__STATE_FIRING,_BroadcastSubscription__STATE_REMOVE_AFTER_FIRING"}
   },
@@ -3476,7 +4343,7 @@ var $$ = {};
       subscription._async$_previous = subscription;
       subscription._async$_next = subscription;
     },
-    _subscribe$1: function(cancelOnError) {
+    _async$_subscribe$1: function(cancelOnError) {
       var t1, t2, subscription;
       if ((this._state & 4) !== 0)
         throw H.wrapException(new P.StateError("Subscribing to closed stream"));
@@ -3695,7 +4562,7 @@ var $$ = {};
       }
     }, function(error) {
       return this.addError$2(error, null);
-    }, "addError$1", "call$2", "call$1", "get$addError", 2, 2, 14, 3],
+    }, "addError$1", "call$2", "call$1", "get$addError", 2, 2, 16, 5],
     close$0: [function(_) {
       var t1 = this._state;
       if ((t1 & 4) === 0 && (t1 & 2) !== 0) {
@@ -3704,7 +4571,7 @@ var $$ = {};
         return P._BroadcastStreamController.prototype.get$done.call(this);
       }
       return P._BroadcastStreamController.prototype.close$0.call(this, this);
-    }, "call$0", "get$close", 0, 0, 15],
+    }, "call$0", "get$close", 0, 0, 17],
     _callOnCancel$0: function() {
       var t1 = this._pending;
       if (t1 != null && t1.lastPendingEvent != null) {
@@ -3723,7 +4590,7 @@ var $$ = {};
     $isFuture: true
   },
   Future_wait_handleError: {
-    "": "Closure:10;box_0,eagerError_1",
+    "": "Closure:12;box_0,eagerError_1",
     call$2: function(theError, theStackTrace) {
       var t1, t2, remaining;
       t1 = this.box_0;
@@ -3743,7 +4610,7 @@ var $$ = {};
     }
   },
   Future_wait_closure: {
-    "": "Closure:16;box_0,eagerError_2,pos_3",
+    "": "Closure:18;box_0,eagerError_2,pos_3",
     call$1: function(value) {
       var t1, remaining, t2, t3;
       t1 = this.box_0;
@@ -3777,7 +4644,7 @@ var $$ = {};
       t1._asyncComplete$1(value);
     }, function($receiver) {
       return this.complete$1($receiver, null);
-    }, "complete$0", "call$1", "call$0", "get$complete", 0, 2, 17, 3],
+    }, "complete$0", "call$1", "call$0", "get$complete", 0, 2, 19, 5],
     completeError$2: [function(error, stackTrace) {
       var t1;
       if (error == null)
@@ -3788,7 +4655,7 @@ var $$ = {};
       t1._asyncCompleteError$2(error, stackTrace);
     }, function(error) {
       return this.completeError$2(error, null);
-    }, "completeError$1", "call$2", "call$1", "get$completeError", 2, 2, 14, 3],
+    }, "completeError$1", "call$2", "call$1", "get$completeError", 2, 2, 16, 5],
     $as_Completer: null
   },
   _Future: {
@@ -3901,7 +4768,7 @@ var $$ = {};
       P._Future__propagateToListeners(this, listeners);
     }, function(error) {
       return this._completeError$2(error, null);
-    }, "_completeError$1", "call$2", "call$1", "get$_completeError", 2, 2, 2, 3],
+    }, "_completeError$1", "call$2", "call$1", "get$_completeError", 2, 2, 4, 5],
     _asyncComplete$1: function(value) {
       var t1, t2;
       t1 = J.getInterceptor(value);
@@ -4063,19 +4930,19 @@ var $$ = {};
       }}
   },
   _Future__addListener_closure: {
-    "": "Closure:9;this_0,listener_1",
+    "": "Closure:11;this_0,listener_1",
     call$0: function() {
       P._Future__propagateToListeners(this.this_0, this.listener_1);
     }
   },
   _Future__chainFutures_closure: {
-    "": "Closure:11;target_0",
+    "": "Closure:13;target_0",
     call$1: function(value) {
       this.target_0._complete$1(value);
     }
   },
   _Future__chainFutures_closure0: {
-    "": "Closure:18;target_1",
+    "": "Closure:20;target_1",
     call$2: function(error, stackTrace) {
       this.target_1._completeError$2(error, stackTrace);
     },
@@ -4084,25 +4951,25 @@ var $$ = {};
     }
   },
   _Future__asyncComplete_closure: {
-    "": "Closure:9;this_0,value_1",
+    "": "Closure:11;this_0,value_1",
     call$0: function() {
       this.this_0._complete$1(this.value_1);
     }
   },
   _Future__asyncCompleteError_closure: {
-    "": "Closure:9;this_0,error_1,stackTrace_2",
+    "": "Closure:11;this_0,error_1,stackTrace_2",
     call$0: function() {
       this.this_0._completeError$2(this.error_1, this.stackTrace_2);
     }
   },
   _Future__propagateToListeners_closure: {
-    "": "Closure:9;box_2,listener_3",
+    "": "Closure:11;box_2,listener_3",
     call$0: function() {
       P._Future__propagateToListeners(this.box_2.source_4, this.listener_3);
     }
   },
   _Future__propagateToListeners_closure0: {
-    "": "Closure:9;box_2,box_1,hasError_4,listener_5",
+    "": "Closure:11;box_2,box_1,hasError_4,listener_5",
     call$0: function() {
       var t1, value, asyncError, test, matchesTest, errorCallback, e, s, t2, t3, t4, t5, completeResult, exception;
       t1 = {};
@@ -4175,13 +5042,13 @@ var $$ = {};
     }
   },
   _Future__propagateToListeners__closure: {
-    "": "Closure:11;box_2,listener_6",
+    "": "Closure:13;box_2,listener_6",
     call$1: function(ignored) {
       P._Future__propagateToListeners(this.box_2.source_4, this.listener_6);
     }
   },
   _Future__propagateToListeners__closure0: {
-    "": "Closure:18;box_0,listener_7",
+    "": "Closure:20;box_0,listener_7",
     call$2: function(error, stackTrace) {
       var t1, t2, t3, completeResult;
       t1 = this.box_0;
@@ -4246,31 +5113,31 @@ var $$ = {};
     }
   },
   Stream_forEach__closure: {
-    "": "Closure:9;action_4,element_5",
+    "": "Closure:11;action_4,element_5",
     call$0: function() {
       return this.action_4.call$1(this.element_5);
     }
   },
   Stream_forEach__closure0: {
-    "": "Closure:11;",
+    "": "Closure:13;",
     call$1: function(_) {
     }
   },
   Stream_forEach_closure0: {
-    "": "Closure:9;future_6",
+    "": "Closure:11;future_6",
     call$0: function() {
       this.future_6._complete$1(null);
     }
   },
   Stream_length_closure: {
-    "": "Closure:11;box_0",
+    "": "Closure:13;box_0",
     call$1: function(_) {
       var t1 = this.box_0;
       t1.count_0 = t1.count_0 + 1;
     }
   },
   Stream_length_closure0: {
-    "": "Closure:9;box_0,future_1",
+    "": "Closure:11;box_0,future_1",
     call$0: function() {
       this.future_1._complete$1(this.box_0.count_0);
     }
@@ -4348,7 +5215,7 @@ var $$ = {};
       }
       return this._doneFuture;
     },
-    _subscribe$1: function(cancelOnError) {
+    _async$_subscribe$1: function(cancelOnError) {
       var t1, t2, subscription, pendingEvents, addState;
       if ((this._state & 3) !== 0)
         throw H.wrapException(new P.StateError("Stream has already been listened to."));
@@ -4397,13 +5264,13 @@ var $$ = {};
     }
   },
   _StreamController__subscribe_closure: {
-    "": "Closure:9;this_0",
+    "": "Closure:11;this_0",
     call$0: function() {
       P._runGuarded(this.this_0.get$_onListen());
     }
   },
   _StreamController__recordCancel_complete: {
-    "": "Closure:0;this_0",
+    "": "Closure:1;this_0",
     call$0: function() {
       var t1 = this.this_0._doneFuture;
       if (t1 != null && t1._state === 0)
@@ -4474,7 +5341,7 @@ var $$ = {};
   _ControllerStream: {
     "": "_StreamImpl;_controller",
     _createSubscription$1: function(cancelOnError) {
-      return this._controller._subscribe$1(cancelOnError);
+      return this._controller._async$_subscribe$1(cancelOnError);
     },
     get$hashCode: function(_) {
       return (H.Primitives_objectHashCode(this._controller) ^ 892482866) >>> 0;
@@ -4500,10 +5367,10 @@ var $$ = {};
     },
     _onPause$0: [function() {
       this.get$_controller()._recordPause$1(this);
-    }, "call$0", "get$_onPause", 0, 0, 0],
+    }, "call$0", "get$_onPause", 0, 0, 1],
     _onResume$0: [function() {
       this.get$_controller()._recordResume$1(this);
-    }, "call$0", "get$_onResume", 0, 0, 0],
+    }, "call$0", "get$_onResume", 0, 0, 1],
     $as_BufferingStreamSubscription: null
   },
   _EventSink: {
@@ -4620,9 +5487,9 @@ var $$ = {};
         this._addPending$1(C.C__DelayedDone);
     },
     _onPause$0: [function() {
-    }, "call$0", "get$_onPause", 0, 0, 0],
+    }, "call$0", "get$_onPause", 0, 0, 1],
     _onResume$0: [function() {
-    }, "call$0", "get$_onResume", 0, 0, 0],
+    }, "call$0", "get$_onResume", 0, 0, 1],
     _onCancel$0: function() {
     },
     _addPending$1: function($event) {
@@ -4731,7 +5598,7 @@ var $$ = {};
     static: {"": "_BufferingStreamSubscription__STATE_CANCEL_ON_ERROR,_BufferingStreamSubscription__STATE_CLOSED,_BufferingStreamSubscription__STATE_INPUT_PAUSED,_BufferingStreamSubscription__STATE_CANCELED,_BufferingStreamSubscription__STATE_WAIT_FOR_CANCEL,_BufferingStreamSubscription__STATE_IN_CALLBACK,_BufferingStreamSubscription__STATE_HAS_PENDING,_BufferingStreamSubscription__STATE_PAUSE_COUNT,_BufferingStreamSubscription__STATE_PAUSE_COUNT_SHIFT"}
   },
   _BufferingStreamSubscription__sendError_sendError: {
-    "": "Closure:0;this_0,error_1,stackTrace_2",
+    "": "Closure:1;this_0,error_1,stackTrace_2",
     call$0: function() {
       var t1, t2, t3, t4, t5;
       t1 = this.this_0;
@@ -4759,7 +5626,7 @@ var $$ = {};
     }
   },
   _BufferingStreamSubscription__sendDone_sendDone: {
-    "": "Closure:0;this_0",
+    "": "Closure:1;this_0",
     call$0: function() {
       var t1, t2;
       t1 = this.this_0;
@@ -4840,7 +5707,7 @@ var $$ = {};
     }
   },
   _PendingEvents_schedule_closure: {
-    "": "Closure:9;this_0,dispatch_1",
+    "": "Closure:11;this_0,dispatch_1",
     call$0: function() {
       var t1, oldState;
       t1 = this.this_0;
@@ -4898,7 +5765,7 @@ var $$ = {};
         t3 = this._controller;
         this._subscription = this._async$_source.listen$3$onDone$onError(t1, t3.get$close(t3), t2);
       }
-      result = this._controller._subscribe$1(true === cancelOnError);
+      result = this._controller._async$_subscribe$1(true === cancelOnError);
       result.onData$1(onData);
       result.onError$1(result, onError);
       result.onDone$1(onDone);
@@ -4927,7 +5794,7 @@ var $$ = {};
           this._subscription = null;
         }
       }
-    }, "call$0", "get$_onCancel", 0, 0, 0],
+    }, "call$0", "get$_onCancel", 0, 0, 1],
     _onListen$0: [function() {
       var t1, t2;
       t1 = this._onListenHandler;
@@ -4936,8 +5803,8 @@ var $$ = {};
         t2.toString;
         P._rootRunUnary(t2, null, t2, t1, new P._BroadcastSubscriptionWrapper(this));
       }
-    }, "call$0", "get$_onListen", 0, 0, 0],
-    _cancelSubscription$0: function() {
+    }, "call$0", "get$_onListen", 0, 0, 1],
+    _async$_cancelSubscription$0: function() {
       var t1 = this._subscription;
       if (t1 == null)
         return;
@@ -4956,18 +5823,18 @@ var $$ = {};
   _BroadcastSubscriptionWrapper: {
     "": "Object;_stream",
     cancel$0: function() {
-      this._stream._cancelSubscription$0();
+      this._stream._async$_cancelSubscription$0();
       return;
     }
   },
   _cancelAndError_closure: {
-    "": "Closure:9;future_0,error_1,stackTrace_2",
+    "": "Closure:11;future_0,error_1,stackTrace_2",
     call$0: function() {
       return this.future_0._completeError$2(this.error_1, this.stackTrace_2);
     }
   },
   _cancelAndErrorClosure_closure: {
-    "": "Closure:19;subscription_0,future_1",
+    "": "Closure:21;subscription_0,future_1",
     call$2: function(error, stackTrace) {
       return P._cancelAndError(this.subscription_0, this.future_1, error, stackTrace);
     }
@@ -5032,37 +5899,37 @@ var $$ = {};
     }
   },
   _BaseZone_bindCallback_closure: {
-    "": "Closure:9;this_0,registered_1",
+    "": "Closure:11;this_0,registered_1",
     call$0: function() {
       return this.this_0.runGuarded$1(this.registered_1);
     }
   },
   _BaseZone_bindCallback_closure0: {
-    "": "Closure:9;this_2,registered_3",
+    "": "Closure:11;this_2,registered_3",
     call$0: function() {
       return this.this_2.run$1(this.registered_3);
     }
   },
   _BaseZone_bindUnaryCallback_closure: {
-    "": "Closure:11;this_0,registered_1",
+    "": "Closure:13;this_0,registered_1",
     call$1: function(arg) {
       return this.this_0.runUnaryGuarded$2(this.registered_1, arg);
     }
   },
   _BaseZone_bindUnaryCallback_closure0: {
-    "": "Closure:11;this_2,registered_3",
+    "": "Closure:13;this_2,registered_3",
     call$1: function(arg) {
       return this.this_2.runUnary$2(this.registered_3, arg);
     }
   },
   _rootHandleUncaughtError_closure: {
-    "": "Closure:9;error_0,stackTrace_1",
+    "": "Closure:11;error_0,stackTrace_1",
     call$0: function() {
       P._scheduleAsyncCallback(new P._rootHandleUncaughtError__closure(this.error_0, this.stackTrace_1));
     }
   },
   _rootHandleUncaughtError__closure: {
-    "": "Closure:9;error_2,stackTrace_3",
+    "": "Closure:11;error_2,stackTrace_3",
     call$0: function() {
       var t1, trace, t2;
       t1 = this.error_2;
@@ -5107,18 +5974,12 @@ var $$ = {};
 }],
 ["dart.collection", "dart:collection", , P, {
   "": "",
-  _HashSet__newHashTable: function() {
-    var table = Object.create(null);
-    table["<non-identifier-key>"] = table;
-    delete table["<non-identifier-key>"];
-    return table;
-  },
   _defaultEquals: [function(a, b) {
     return J.$eq(a, b);
-  }, "call$2", "_defaultEquals$closure", 4, 0, 4],
+  }, "call$2", "_defaultEquals$closure", 4, 0, 6],
   _defaultHashCode: [function(a) {
     return J.get$hashCode$(a);
-  }, "call$1", "_defaultHashCode$closure", 2, 0, 5],
+  }, "call$1", "_defaultHashCode$closure", 2, 0, 7],
   HashMap_HashMap: function(equals, hashCode, isValidKey, $K, $V) {
     return H.setRuntimeTypeInfo(new P._HashMap(0, null, null, null, null), [$K, $V]);
   },
@@ -5419,7 +6280,7 @@ var $$ = {};
       }}
   },
   _HashMap_values_closure: {
-    "": "Closure:11;this_0",
+    "": "Closure:13;this_0",
     call$1: function(each) {
       var t1 = this.this_0;
       return t1.$index(t1, each);
@@ -5663,7 +6524,7 @@ var $$ = {};
       }}
   },
   _LinkedHashMap_values_closure: {
-    "": "Closure:11;this_0",
+    "": "Closure:13;this_0",
     call$1: function(each) {
       var t1 = this.this_0;
       return t1.$index(t1, each);
@@ -5762,24 +6623,49 @@ var $$ = {};
       return J.$index$asx(bucket, index);
     },
     add$1: function(_, element) {
-      var rest, hash, bucket;
-      rest = this._rest;
-      if (rest == null) {
-        rest = P._HashSet__newHashTable();
-        this._rest = rest;
+      var strings, table, nums, rest, hash, bucket;
+      if (typeof element === "string" && element !== "__proto__") {
+        strings = this._strings;
+        if (strings == null) {
+          table = Object.create(null);
+          table["<non-identifier-key>"] = table;
+          delete table["<non-identifier-key>"];
+          this._strings = table;
+          strings = table;
+        }
+        return this._addHashTableEntry$2(strings, element);
+      } else if (typeof element === "number" && (element & 0x3ffffff) === element) {
+        nums = this._nums;
+        if (nums == null) {
+          table = Object.create(null);
+          table["<non-identifier-key>"] = table;
+          delete table["<non-identifier-key>"];
+          this._nums = table;
+          nums = table;
+        }
+        return this._addHashTableEntry$2(nums, element);
+      } else {
+        rest = this._rest;
+        if (rest == null) {
+          table = Object.create(null);
+          table["<non-identifier-key>"] = table;
+          delete table["<non-identifier-key>"];
+          this._rest = table;
+          rest = table;
+        }
+        hash = this._computeHashCode$1(element);
+        bucket = rest[hash];
+        if (bucket == null)
+          rest[hash] = [element];
+        else {
+          if (this._findBucketIndex$2(bucket, element) >= 0)
+            return false;
+          bucket.push(element);
+        }
+        this._collection$_length = this._collection$_length + 1;
+        this._elements = null;
+        return true;
       }
-      hash = this._computeHashCode$1(element);
-      bucket = rest[hash];
-      if (bucket == null)
-        rest[hash] = [element];
-      else {
-        if (this._findBucketIndex$2(bucket, element) >= 0)
-          return false;
-        bucket.push(element);
-      }
-      this._collection$_length = this._collection$_length + 1;
-      this._elements = null;
-      return true;
     },
     remove$1: function(_, object) {
       var rest, bucket, index;
@@ -5836,6 +6722,14 @@ var $$ = {};
       }
       this._elements = result;
       return result;
+    },
+    _addHashTableEntry$2: function(table, element) {
+      if (table[element] != null)
+        return false;
+      table[element] = 0;
+      this._collection$_length = this._collection$_length + 1;
+      this._elements = null;
+      return true;
     },
     _computeHashCode$1: function(element) {
       return J.get$hashCode$(element) & 0x3ffffff;
@@ -5954,26 +6848,35 @@ var $$ = {};
       }
     },
     add$1: function(_, element) {
-      var strings, nums, rest, hash, bucket;
+      var strings, table, nums, rest, hash, bucket;
       if (typeof element === "string" && element !== "__proto__") {
         strings = this._strings;
         if (strings == null) {
-          strings = P._LinkedHashSet__newHashTable();
-          this._strings = strings;
+          table = Object.create(null);
+          table["<non-identifier-key>"] = table;
+          delete table["<non-identifier-key>"];
+          this._strings = table;
+          strings = table;
         }
         return this._addHashTableEntry$2(strings, element);
       } else if (typeof element === "number" && (element & 0x3ffffff) === element) {
         nums = this._nums;
         if (nums == null) {
-          nums = P._LinkedHashSet__newHashTable();
-          this._nums = nums;
+          table = Object.create(null);
+          table["<non-identifier-key>"] = table;
+          delete table["<non-identifier-key>"];
+          this._nums = table;
+          nums = table;
         }
         return this._addHashTableEntry$2(nums, element);
       } else {
         rest = this._rest;
         if (rest == null) {
-          rest = P._LinkedHashSet__newHashTable();
-          this._rest = rest;
+          table = Object.create(null);
+          table["<non-identifier-key>"] = table;
+          delete table["<non-identifier-key>"];
+          this._rest = table;
+          rest = table;
         }
         hash = this._computeHashCode$1(element);
         bucket = rest[hash];
@@ -6023,13 +6926,7 @@ var $$ = {};
       return -1;
     },
     $as_HashSetBase: null,
-    $isEfficientLength: true,
-    static: {_LinkedHashSet__newHashTable: function() {
-        var table = Object.create(null);
-        table["<non-identifier-key>"] = table;
-        delete table["<non-identifier-key>"];
-        return table;
-      }}
+    $isEfficientLength: true
   },
   LinkedHashSetCell: {
     "": "Object;_element<,_next@,_previous@"
@@ -6134,7 +7031,7 @@ var $$ = {};
     $isEfficientLength: true
   },
   Maps_mapToString_closure: {
-    "": "Closure:10;box_0,result_1",
+    "": "Closure:12;box_0,result_1",
     call$2: function(k, v) {
       var t1 = this.box_0;
       if (!t1.first_0)
@@ -6188,15 +7085,15 @@ var $$ = {};
       t1 = this._table;
       t2 = this._tail;
       t3 = t1.length;
-      if (t2 >= t3)
+      if (t2 < 0 || t2 >= t3)
         return H.ioore(t1, t2);
       t1[t2] = element;
       t2 = (t2 + 1 & t3 - 1) >>> 0;
       this._tail = t2;
       if (this._head === t2) {
-        t1 = Array(t3 * 2);
-        t1.fixed$length = init;
-        newTable = H.setRuntimeTypeInfo(t1, [H.getTypeArgumentByIndex(this, 0)]);
+        newTable = Array(t3 * 2);
+        newTable.fixed$length = init;
+        newTable.$builtinTypeInfo = [H.getTypeArgumentByIndex(this, 0)];
         t1 = this._table;
         t2 = this._head;
         split = t1.length - t2;
@@ -6307,10 +7204,10 @@ var $$ = {};
   },
   identical: [function(a, b) {
     return a == null ? b == null : a === b;
-  }, "call$2", "identical$closure", 4, 0, 6],
+  }, "call$2", "identical$closure", 4, 0, 8],
   identityHashCode: [function(object) {
     return H.objectHashCode(object);
-  }, "call$1", "identityHashCode$closure", 2, 0, 7],
+  }, "call$1", "identityHashCode$closure", 2, 0, 9],
   List_List$filled: function($length, fill, $E) {
     var result, t1, i;
     result = J.JSArray_JSArray$fixed($length, $E);
@@ -6345,7 +7242,7 @@ var $$ = {};
     H.printString(line);
   },
   NoSuchMethodError_toString_closure: {
-    "": "Closure:20;box_0",
+    "": "Closure:22;box_0",
     call$2: function(key, value) {
       var t1 = this.box_0;
       if (t1.i_1 > 0)
@@ -6400,7 +7297,7 @@ var $$ = {};
       }}
   },
   DateTime_toString_fourDigits: {
-    "": "Closure:21;",
+    "": "Closure:23;",
     call$1: function(n) {
       var absN, sign;
       absN = Math.abs(n);
@@ -6415,7 +7312,7 @@ var $$ = {};
     }
   },
   DateTime_toString_threeDigits: {
-    "": "Closure:21;",
+    "": "Closure:23;",
     call$1: function(n) {
       if (n >= 100)
         return "" + n;
@@ -6425,7 +7322,7 @@ var $$ = {};
     }
   },
   DateTime_toString_twoDigits: {
-    "": "Closure:21;",
+    "": "Closure:23;",
     call$1: function(n) {
       if (n >= 10)
         return "" + n;
@@ -6472,7 +7369,7 @@ var $$ = {};
       }}
   },
   Duration_toString_sixDigits: {
-    "": "Closure:21;",
+    "": "Closure:23;",
     call$1: function(n) {
       if (n >= 100000)
         return "" + n;
@@ -6488,7 +7385,7 @@ var $$ = {};
     }
   },
   Duration_toString_twoDigits: {
-    "": "Closure:21;",
+    "": "Closure:23;",
     call$1: function(n) {
       if (n >= 10)
         return "" + n;
@@ -6730,7 +7627,10 @@ var $$ = {};
       return "mousewheel";
     else
       return "DOMMouseScroll";
-  }, "call$1", "Element__determineMouseWheelEventType$closure", 2, 0, 8],
+  }, "call$1", "Element__determineMouseWheelEventType$closure", 2, 0, 10],
+  _ElementFactoryProvider_createElement_tag: function(tag, typeExtension) {
+    return document.createElement(tag);
+  },
   HttpRequest_request: function(url, method, mimeType, onProgress, requestHeaders, responseType, sendData, withCredentials) {
     var t1, completer, xhr;
     t1 = W.HttpRequest;
@@ -6739,9 +7639,9 @@ var $$ = {};
     C.HttpRequest_methods.open$3$async(xhr, "GET", url, true);
     xhr.responseType = responseType;
     t1 = C.EventStreamProvider_load.forTarget$1(xhr);
-    H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new W.HttpRequest_request_closure(completer, xhr)), t1._useCapture), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
+    H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._html$_eventType, W._wrapZone(new W.HttpRequest_request_closure(completer, xhr)), t1._useCapture), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
     t1 = C.EventStreamProvider_error0.forTarget$1(xhr);
-    H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(completer.get$completeError()), t1._useCapture), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
+    H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._html$_eventType, W._wrapZone(completer.get$completeError()), t1._useCapture), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
     xhr.send();
     return completer.future;
   },
@@ -6877,7 +7777,7 @@ var $$ = {};
     "%": "DOMException"
   },
   Element: {
-    "": "Node;tabIndex%,style=",
+    "": "Node;tabIndex%,offsetTop=,style=",
     get$client: function(receiver) {
       return H.setRuntimeTypeInfo(new P.Rectangle(receiver.clientLeft, receiver.clientTop, receiver.clientWidth, receiver.clientHeight), [null]);
     },
@@ -7019,10 +7919,18 @@ var $$ = {};
     "%": ";DragEvent|MSPointerEvent|MouseEvent|PointerEvent"
   },
   Node: {
-    "": "EventTarget;",
+    "": "EventTarget;text:textContent%",
+    remove$0: function(receiver) {
+      var t1 = receiver.parentNode;
+      if (t1 != null)
+        t1.removeChild(receiver);
+    },
     toString$0: function(receiver) {
       var t1 = receiver.nodeValue;
       return t1 == null ? J.Interceptor.prototype.toString$0.call(this, receiver) : t1;
+    },
+    append$1: function(receiver, newChild) {
+      return receiver.appendChild(newChild);
     },
     "%": "DocumentFragment|DocumentType|Entity|Notation|ShadowRoot;Node"
   },
@@ -7104,6 +8012,10 @@ var $$ = {};
   TextAreaElement: {
     "": "HtmlElement;value=",
     "%": "HTMLTextAreaElement"
+  },
+  TextMetrics: {
+    "": "Interceptor;width=",
+    "%": "TextMetrics"
   },
   Touch: {
     "": "Interceptor;identifier=",
@@ -7289,6 +8201,12 @@ var $$ = {};
     set$cursor: function(receiver, value) {
       this.setProperty$3(receiver, "cursor", value, "");
     },
+    set$display: function(receiver, value) {
+      this.setProperty$3(receiver, "display", value, "");
+    },
+    set$font: function(receiver, value) {
+      this.setProperty$3(receiver, "font", value, "");
+    },
     get$height: function(receiver) {
       return this.getPropertyValue$1(receiver, "height");
     },
@@ -7300,6 +8218,9 @@ var $$ = {};
     },
     set$outline: function(receiver, value) {
       this.setProperty$3(receiver, "outline", value, "");
+    },
+    set$verticalAlign: function(receiver, value) {
+      this.setProperty$3(receiver, "vertical-align", value, "");
     },
     get$width: function(receiver) {
       return this.getPropertyValue$1(receiver, "width");
@@ -7325,13 +8246,13 @@ var $$ = {};
     $isEfficientLength: true
   },
   HttpRequest_request_closure0: {
-    "": "Closure:10;xhr_0",
+    "": "Closure:12;xhr_0",
     call$2: function(header, value) {
       this.xhr_0.setRequestHeader(header, value);
     }
   },
   HttpRequest_request_closure: {
-    "": "Closure:11;completer_1,xhr_2",
+    "": "Closure:13;completer_1,xhr_2",
     call$1: function(e) {
       var t1, t2, t3;
       t1 = this.xhr_2;
@@ -7382,27 +8303,27 @@ var $$ = {};
     $isEfficientLength: true
   },
   EventStreamProvider: {
-    "": "Object;_eventType",
+    "": "Object;_html$_eventType",
     forTarget$2$useCapture: function(e, useCapture) {
-      return H.setRuntimeTypeInfo(new W._EventStream(e, this._eventType, useCapture), [null]);
+      return H.setRuntimeTypeInfo(new W._EventStream(e, this._html$_eventType, useCapture), [null]);
     },
     forTarget$1: function(e) {
       return this.forTarget$2$useCapture(e, false);
     },
     forElement$2$useCapture: function(e, useCapture) {
-      return H.setRuntimeTypeInfo(new W._ElementEventStreamImpl(e, this._eventType, useCapture), [null]);
+      return H.setRuntimeTypeInfo(new W._ElementEventStreamImpl(e, this._html$_eventType, useCapture), [null]);
     },
     forElement$1: function(e) {
       return this.forElement$2$useCapture(e, false);
     }
   },
   _EventStream: {
-    "": "Stream;_html$_target,_eventType,_useCapture",
+    "": "Stream;_html$_target,_html$_eventType,_useCapture",
     get$isBroadcast: function() {
       return true;
     },
     listen$4$cancelOnError$onDone$onError: function(onData, cancelOnError, onDone, onError) {
-      var t1 = new W._EventStreamSubscription(0, this._html$_target, this._eventType, W._wrapZone(onData), this._useCapture);
+      var t1 = new W._EventStreamSubscription(0, this._html$_target, this._html$_eventType, W._wrapZone(onData), this._useCapture);
       t1.$builtinTypeInfo = this.$builtinTypeInfo;
       t1._tryResume$0();
       return t1;
@@ -7416,11 +8337,11 @@ var $$ = {};
     $asStream: null
   },
   _ElementEventStreamImpl: {
-    "": "_EventStream;_html$_target,_eventType,_useCapture",
+    "": "_EventStream;_html$_target,_html$_eventType,_useCapture",
     $as_EventStream: null
   },
   _EventStreamSubscription: {
-    "": "StreamSubscription;_pauseCount,_html$_target,_eventType,_onData,_useCapture",
+    "": "StreamSubscription;_html$_pauseCount,_html$_target,_html$_eventType,_onData,_useCapture",
     cancel$0: function() {
       if (this._html$_target == null)
         return;
@@ -7430,13 +8351,13 @@ var $$ = {};
     },
     _tryResume$0: function() {
       var t1 = this._onData;
-      if (t1 != null && this._pauseCount <= 0)
-        J.addEventListener$3$x(this._html$_target, this._eventType, t1, this._useCapture);
+      if (t1 != null && this._html$_pauseCount <= 0)
+        J.addEventListener$3$x(this._html$_target, this._html$_eventType, t1, this._useCapture);
     },
     _unlisten$0: function() {
       var t1 = this._onData;
       if (t1 != null)
-        J.removeEventListener$3$x(this._html$_target, this._eventType, t1, this._useCapture);
+        J.removeEventListener$3$x(this._html$_target, this._html$_eventType, t1, this._useCapture);
     },
     $asStreamSubscription: null
   },
@@ -7637,7 +8558,7 @@ var $$ = {};
     "%": "AudioParam"
   },
   AudioContext_decodeAudioData_closure: {
-    "": "Closure:11;completer_0",
+    "": "Closure:13;completer_0",
     call$1: function(value) {
       var t1 = this.completer_0.future;
       if (t1._state !== 0)
@@ -7646,7 +8567,7 @@ var $$ = {};
     }
   },
   AudioContext_decodeAudioData_closure0: {
-    "": "Closure:11;completer_1",
+    "": "Closure:13;completer_1",
     call$1: function(error) {
       this.completer_1.completeError$1(error);
     }
@@ -7715,6 +8636,21 @@ var $$ = {};
     hash = 536870911 & hash + ((67108863 & hash) << 3 >>> 0);
     hash ^= hash >>> 11;
     return 536870911 & hash + ((16383 & hash) << 15 >>> 0);
+  },
+  min: function(a, b) {
+    if (a > b)
+      return b;
+    if (a < b)
+      return a;
+    if (typeof b === "number") {
+      if (typeof a === "number")
+        if (a === 0)
+          return (a + b) * a * b;
+      if (a === 0 && C.JSNumber_methods.get$isNegative(b) || isNaN(b))
+        return b;
+      return a;
+    }
+    return a;
   },
   max: function(a, b) {
     var t1;
@@ -8143,13 +9079,13 @@ var $$ = {};
     return imageData;
   },
   convertDartToNative_Dictionary_closure: {
-    "": "Closure:22;object_0",
+    "": "Closure:24;object_0",
     call$2: function(key, value) {
       this.object_0[key] = value;
     }
   },
   convertNativeToDart_AcceptStructuredClone_findSlot: {
-    "": "Closure:5;values_0,copies_1",
+    "": "Closure:7;values_0,copies_1",
     call$1: function(value) {
       var t1, $length, i, t2;
       t1 = this.values_0;
@@ -8165,7 +9101,7 @@ var $$ = {};
     }
   },
   convertNativeToDart_AcceptStructuredClone_readSlot: {
-    "": "Closure:23;copies_2",
+    "": "Closure:25;copies_2",
     call$1: function(i) {
       var t1 = this.copies_2;
       if (i >= t1.length)
@@ -8174,7 +9110,7 @@ var $$ = {};
     }
   },
   convertNativeToDart_AcceptStructuredClone_writeSlot: {
-    "": "Closure:24;copies_3",
+    "": "Closure:26;copies_3",
     call$2: function(i, x) {
       var t1 = this.copies_3;
       if (i >= t1.length)
@@ -8183,7 +9119,7 @@ var $$ = {};
     }
   },
   convertNativeToDart_AcceptStructuredClone_walk: {
-    "": "Closure:11;mustCopy_4,findSlot_5,readSlot_6,writeSlot_7",
+    "": "Closure:13;mustCopy_4,findSlot_5,readSlot_6,writeSlot_7",
     call$1: function(e) {
       var slot, copy, t1, key, $length, t2, i;
       if (e == null)
@@ -8362,6 +9298,9 @@ var $$ = {};
   _color2rgba: function(color) {
     return "rgba(" + (color >>> 16 & 255) + "," + (color >>> 8 & 255) + "," + (color & 255) + "," + (color >>> 24 & 255) / 255 + ")";
   },
+  _ensureBool: function(value) {
+    return value;
+  },
   _ensureInt: function(value) {
     if (typeof value === "number" && Math.floor(value) === value)
       return value;
@@ -8369,6 +9308,12 @@ var $$ = {};
       throw H.wrapException(new P.ArgumentError("The supplied value (" + H.S(value) + ") is not an int."));
   },
   _ensureNum: function(value) {
+    if (typeof value === "number")
+      return value;
+    else
+      throw H.wrapException(new P.ArgumentError("The supplied value (" + H.S(value) + ") is not a number."));
+  },
+  _ensureString: function(value) {
     return value;
   },
   _checkWebpSupport: function() {
@@ -8379,11 +9324,47 @@ var $$ = {};
     t1 = new Z._checkWebpSupport_checkImage(completer, image);
     t2 = J.getInterceptor$x(image);
     t3 = t2.get$onLoad(image);
-    H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t3._html$_target, t3._eventType, W._wrapZone(new Z._checkWebpSupport_closure(t1)), t3._useCapture), [H.getTypeArgumentByIndex(t3, 0)])._tryResume$0();
+    H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t3._html$_target, t3._html$_eventType, W._wrapZone(new Z._checkWebpSupport_closure(t1)), t3._useCapture), [H.getTypeArgumentByIndex(t3, 0)])._tryResume$0();
     t3 = t2.get$onError(image);
-    H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t3._html$_target, t3._eventType, W._wrapZone(new Z._checkWebpSupport_closure0(t1)), t3._useCapture), [H.getTypeArgumentByIndex(t3, 0)])._tryResume$0();
+    H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t3._html$_target, t3._html$_eventType, W._wrapZone(new Z._checkWebpSupport_closure0(t1)), t3._useCapture), [H.getTypeArgumentByIndex(t3, 0)])._tryResume$0();
     t2.set$src(image, "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA");
     return completer.future;
+  },
+  _getBoundsTransformedHelper: function(matrix, width, height, returnRectangle) {
+    var x2, y2, left, x3, $top, y3, left0, top0, right, bottom;
+    x2 = width * matrix._a;
+    y2 = width * matrix._b;
+    left = height * matrix._c;
+    x3 = x2 + left;
+    $top = height * matrix._d;
+    y3 = y2 + $top;
+    left0 = 0 > x2 ? x2 : 0;
+    if (left0 > x3)
+      left0 = x3;
+    if (left0 > left)
+      left0 = left;
+    top0 = 0 > y2 ? y2 : 0;
+    if (top0 > y3)
+      top0 = y3;
+    if (top0 > $top)
+      top0 = $top;
+    right = 0 < x2 ? x2 : 0;
+    if (right < x3)
+      right = x3;
+    if (right < left)
+      right = left;
+    bottom = 0 < y2 ? y2 : 0;
+    if (bottom < y3)
+      bottom = y3;
+    if (bottom < $top)
+      bottom = $top;
+    if (returnRectangle == null)
+      returnRectangle = new Z.Rectangle0(0, 0, 0, 0);
+    returnRectangle._x = matrix._tx + left0;
+    returnRectangle._y = matrix._ty + top0;
+    returnRectangle._width = right - left0;
+    returnRectangle._height = bottom - top0;
+    return returnRectangle;
   },
   _loadImageElement: function(url, webpAvailable) {
     var t1, t2, completer, imageElement, t3, onLoadSubscription, onErrorSubscription;
@@ -8395,11 +9376,11 @@ var $$ = {};
     t1.onErrorSubscription_1 = null;
     t2 = J.getInterceptor$x(imageElement);
     t3 = t2.get$onLoad(imageElement);
-    onLoadSubscription = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t3._html$_target, t3._eventType, W._wrapZone(new Z._loadImageElement_closure(t1, completer, imageElement)), t3._useCapture), [H.getTypeArgumentByIndex(t3, 0)]);
+    onLoadSubscription = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t3._html$_target, t3._html$_eventType, W._wrapZone(new Z._loadImageElement_closure(t1, completer, imageElement)), t3._useCapture), [H.getTypeArgumentByIndex(t3, 0)]);
     onLoadSubscription._tryResume$0();
     t1.onLoadSubscription_0 = onLoadSubscription;
     t2 = t2.get$onError(imageElement);
-    onErrorSubscription = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(new Z._loadImageElement_closure0(t1, completer)), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)]);
+    onErrorSubscription = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._html$_eventType, W._wrapZone(new Z._loadImageElement_closure0(t1, completer)), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)]);
     onErrorSubscription._tryResume$0();
     t1.onErrorSubscription_1 = onErrorSubscription;
     $.get$_isWebpSupported().then$1(new Z._loadImageElement_closure1(url, webpAvailable, imageElement));
@@ -8433,42 +9414,8 @@ var $$ = {};
   Bitmap: {
     "": "DisplayObject;bitmapData,clipRectangle,_stagexl$_id,_x,_y,_pivotX,_pivotY,_scaleX,_scaleY,_skewX,_skewY,_rotation,_alpha,_visible,_off,_mask,_cacheTexture,_cacheRectangle,_cacheDebugBorder,_filters,_shadow,_compositeOperation,_stagexl$_name,_parent,_tmpMatrix,_transformationMatrix,_transformationMatrixRefresh,userData,_eventStreams",
     getBoundsTransformed$2: function(matrix, returnRectangle) {
-      var width, height, x2, y2, left, x3, $top, y3, left0, top0, right, bottom;
-      width = this.bitmapData._width;
-      height = this.bitmapData._height;
-      x2 = width * matrix._a;
-      y2 = width * matrix._b;
-      left = height * matrix._c;
-      x3 = x2 + left;
-      $top = height * matrix._d;
-      y3 = y2 + $top;
-      left0 = 0 > x2 ? x2 : 0;
-      if (left0 > x3)
-        left0 = x3;
-      if (left0 > left)
-        left0 = left;
-      top0 = 0 > y2 ? y2 : 0;
-      if (top0 > y3)
-        top0 = y3;
-      if (top0 > $top)
-        top0 = $top;
-      right = 0 < x2 ? x2 : 0;
-      if (right < x3)
-        right = x3;
-      if (right < left)
-        right = left;
-      bottom = 0 < y2 ? y2 : 0;
-      if (bottom < y3)
-        bottom = y3;
-      if (bottom < $top)
-        bottom = $top;
-      if (returnRectangle == null)
-        returnRectangle = new Z.Rectangle0(0, 0, 0, 0);
-      returnRectangle._x = matrix._tx + left0;
-      returnRectangle._y = matrix._ty + top0;
-      returnRectangle._width = right - left0;
-      returnRectangle._height = bottom - top0;
-      return returnRectangle;
+      var width = this.bitmapData._width;
+      return Z._getBoundsTransformedHelper(matrix, width, this.bitmapData._height, returnRectangle);
     },
     getBoundsTransformed$1: function(matrix) {
       return this.getBoundsTransformed$2(matrix, null);
@@ -8512,7 +9459,7 @@ var $$ = {};
       }}
   },
   BitmapData_load_closure: {
-    "": "Closure:11;",
+    "": "Closure:13;",
     call$1: function(renderTexture) {
       var t1 = new Z.BitmapData(0, 0, null, null);
       t1.BitmapData$fromRenderTextureQuad$3(renderTexture.get$quad(), null, null);
@@ -8524,6 +9471,9 @@ var $$ = {};
   },
   DisplayObject: {
     "": "EventDispatcher;_x<,_y<",
+    get$x: function(_) {
+      return this._x;
+    },
     get$root: function() {
       var currentObject, currentObject0;
       for (currentObject = this; currentObject0 = currentObject._parent, currentObject0 != null; currentObject = currentObject0)
@@ -8537,11 +9487,21 @@ var $$ = {};
       return typeof root === "object" && root !== null && !!t1.$isStage ? root : null;
     },
     set$x: function(_, value) {
-      this._x = value;
+      if (typeof value === "number")
+        this._x = value;
       this._transformationMatrixRefresh = true;
     },
     set$y: function(_, value) {
-      this._y = value;
+      if (typeof value === "number")
+        this._y = value;
+      this._transformationMatrixRefresh = true;
+    },
+    set$scaleX: function(value) {
+      this._scaleX = value;
+      this._transformationMatrixRefresh = true;
+    },
+    set$scaleY: function(value) {
+      this._scaleY = value;
       this._transformationMatrixRefresh = true;
     },
     set$alpha: function(_, value) {
@@ -8554,6 +9514,18 @@ var $$ = {};
     },
     get$height: function(_) {
       return this.getBoundsTransformed$1(this.get$transformationMatrix())._height;
+    },
+    set$width: function(_, value) {
+      var normalWidth;
+      this.set$scaleX(1);
+      normalWidth = this.get$width(this);
+      this.set$scaleX(normalWidth !== 0 ? value / normalWidth : 1);
+    },
+    set$height: function(_, value) {
+      var normalHeight;
+      this.set$scaleY(1);
+      normalHeight = this.get$height(this);
+      this.set$scaleY(normalHeight !== 0 ? value / normalHeight : 1);
     },
     get$transformationMatrix: function() {
       var t1, t2, skewXrotation, skewYrotation, scaleX, scaleY, pivotX, pivotY, cosX, sinX, a, b, c, d;
@@ -8568,9 +9540,9 @@ var $$ = {};
         pivotX = this._pivotX;
         pivotY = this._pivotY;
         if (scaleX > -0.0001 && scaleX < 0.0001)
-          scaleX = 0.0001;
+          scaleX = scaleX >= 0 ? 0.0001 : -0.0001;
         if (scaleY > -0.0001 && scaleY < 0.0001)
-          scaleY = 0.0001;
+          scaleY = scaleY >= 0 ? 0.0001 : -0.0001;
         if (skewXrotation === 0 && skewYrotation === 0)
           this._transformationMatrix.setTo$6(scaleX, 0, 0, scaleY, this._x - pivotX * scaleX, this._y - pivotY * scaleY);
         else {
@@ -8604,8 +9576,14 @@ var $$ = {};
     getBoundsTransformed$1: function(matrix) {
       return this.getBoundsTransformed$2(matrix, null);
     },
+    hitTestInput$2: function(localX, localY) {
+      var t1 = this.getBoundsTransformed$1($.get$_identityMatrix());
+      if (t1.contains$2(t1, localX, localY))
+        return this;
+      return;
+    },
     globalToLocal$1: function(globalPoint) {
-      var t1, current, x, y;
+      var t1, current;
       t1 = this._tmpMatrix;
       t1._a = 1;
       t1._b = 0;
@@ -8617,9 +9595,7 @@ var $$ = {};
       for (current = this; current != null; current = current._parent)
         t1.concat$1(current.get$transformationMatrix());
       t1.invert$0();
-      x = globalPoint._x;
-      y = globalPoint._y;
-      return new Z.Point(x * t1._a + y * t1._c + t1._tx, x * t1._b + y * t1._d + t1._ty);
+      return t1.transformPoint$1(globalPoint);
     },
     dispatchEvent$1: function(_, $event) {
       var t1, ancestor, ancestors, t2, i;
@@ -9144,6 +10120,39 @@ var $$ = {};
       this._graphics.render$1(renderState);
     }
   },
+  Sprite: {
+    "": "DisplayObjectContainer;buttonMode,useHandCursor,hitArea,_graphics,_dropTarget,_children,_mouseChildren,_tabChildren,doubleClickEnabled,mouseEnabled,tabEnabled,tabIndex,_stagexl$_id,_x,_y,_pivotX,_pivotY,_scaleX,_scaleY,_skewX,_skewY,_rotation,_alpha,_visible,_off,_mask,_cacheTexture,_cacheRectangle,_cacheDebugBorder,_filters,_shadow,_compositeOperation,_stagexl$_name,_parent,_tmpMatrix,_transformationMatrix,_transformationMatrixRefresh,userData,_eventStreams",
+    getBoundsTransformed$2: function(matrix, returnRectangle) {
+      var t1, rLeft, rTop;
+      if (returnRectangle == null)
+        returnRectangle = new Z.Rectangle0(0, 0, 0, 0);
+      Z.DisplayObjectContainer.prototype.getBoundsTransformed$2.call(this, matrix, returnRectangle);
+      t1 = this._graphics;
+      if (t1 != null) {
+        t1 = t1._getBoundsTransformed$1(matrix);
+        rLeft = P.min(t1._x, returnRectangle._x);
+        rTop = P.min(t1._y, returnRectangle._y);
+        returnRectangle = new Z.Rectangle0(rLeft, rTop, P.max(t1._x + t1._width, returnRectangle._x + returnRectangle._width) - rLeft, P.max(t1._y + t1._height, returnRectangle._y + returnRectangle._height) - rTop);
+      }
+      return returnRectangle;
+    },
+    getBoundsTransformed$1: function(matrix) {
+      return this.getBoundsTransformed$2(matrix, null);
+    },
+    hitTestInput$2: function(localX, localY) {
+      var target = Z.DisplayObjectContainer.prototype.hitTestInput$2.call(this, localX, localY);
+      if (target == null && this._graphics != null)
+        target = this._graphics._hitTestInput$2(localX, localY) ? this : target;
+      return target;
+    },
+    render$1: function(renderState) {
+      var t1 = this._graphics;
+      if (t1 != null)
+        t1.render$1(renderState);
+      Z.DisplayObjectContainer.prototype.render$1.call(this, renderState);
+    },
+    $isSprite: true
+  },
   _MouseButton: {
     "": "Object;target>,buttonDown,clickTime,clickCount,mouseDownEventType,mouseUpEventType,mouseClickEventType,mouseDoubleClickEventType"
   },
@@ -9153,6 +10162,15 @@ var $$ = {};
   },
   Stage: {
     "": "DisplayObjectContainer;_canvas,_renderContext,_sourceWidth,_sourceHeight,_frameRate,_canvasWidth,_canvasHeight,_contentRectangle,_clientTransformation,_stageTransformation,_renderLoop,_juggler,_focus,_renderState,_stageRenderMode,_stageScaleMode,_stageAlign,_mouseCursor,_mousePosition,_mouseTarget,_touches,_mouseButtons,_touchEventSubscriptions,_children,_mouseChildren,_tabChildren,doubleClickEnabled,mouseEnabled,tabEnabled,tabIndex,_stagexl$_id,_x,_y,_pivotX,_pivotY,_scaleX,_scaleY,_skewX,_skewY,_rotation,_alpha,_visible,_off,_mask,_cacheTexture,_cacheRectangle,_cacheDebugBorder,_filters,_shadow,_compositeOperation,_stagexl$_name,_parent,_tmpMatrix,_transformationMatrix,_transformationMatrixRefresh,userData,_eventStreams",
+    _throwStageException$0: function() {
+      throw H.wrapException(P.UnsupportedError$("Error #2071: The Stage class does not implement this property or method."));
+    },
+    set$scaleX: function(value) {
+      this._throwStageException$0();
+    },
+    set$scaleY: function(value) {
+      this._throwStageException$0();
+    },
     _updateCanvasSize$0: function() {
       var client, t1, t2, t3, t4, t5, clientWidth, clientHeight, sourceWidth, sourceHeight, ratioWidth, ratioHeight, scaleY, scaleX, pivotX, pivotY, contentRectangle, t6, pixelRatio;
       client = this._canvas.getBoundingClientRect();
@@ -9269,9 +10287,9 @@ var $$ = {};
     },
     _onMouseCursorChanged$1: [function(action) {
       J.set$cursor$x(this._canvas.style, Z.Mouse__getCssStyle(this._mouseCursor));
-    }, "call$1", "get$_onMouseCursorChanged", 2, 0, 13],
+    }, "call$1", "get$_onMouseCursorChanged", 2, 0, 15],
     _onMouseEvent$1: [function($event) {
-      var t1, t2, button, stagePoint, mouseButton, target, p, oldTargetList, newTargetList, p0, t3, commonCount, t4, ot, nt, i, target0, mouseEventType, isClick, isDoubleClick, localPoint;
+      var t1, t2, button, stagePoint, mouseButton, target, mouseCursor, p, oldTargetList, newTargetList, p0, t3, t4, commonCount, t5, ot, nt, i, target0, mouseEventType, isClick, isDoubleClick, localPoint;
       t1 = J.getInterceptor$x($event);
       t1.preventDefault$0($event);
       t2 = Date.now();
@@ -9295,9 +10313,13 @@ var $$ = {};
       mouseButton = t1[button];
       this._mousePosition = stagePoint;
       target = $event.type !== "mouseout" ? this.hitTestInput$2(stagePoint._x, stagePoint._y) : null;
-      if (this._mouseCursor !== "arrow") {
-        this._mouseCursor = "arrow";
-        J.set$cursor$x(this._canvas.style, Z.Mouse__getCssStyle("arrow"));
+      t1 = J.getInterceptor(target);
+      mouseCursor = typeof target === "object" && target !== null && !!t1.$isSprite && target.useHandCursor ? "button" : "arrow";
+      if (typeof target === "object" && target !== null && !!t1.$isTextField && target._type === "input")
+        mouseCursor = "ibeam";
+      if (this._mouseCursor !== mouseCursor) {
+        this._mouseCursor = mouseCursor;
+        J.set$cursor$x(this._canvas.style, Z.Mouse__getCssStyle(mouseCursor));
       }
       p = this._mouseTarget;
       if (p == null ? target != null : p !== target) {
@@ -9307,73 +10329,73 @@ var $$ = {};
           oldTargetList.push(p0);
         for (p0 = target; p0 != null; p0 = p0._parent)
           newTargetList.push(p0);
-        for (t1 = oldTargetList.length, t3 = newTargetList.length, commonCount = 0; true; ++commonCount) {
-          if (commonCount === t1)
-            break;
+        for (t3 = oldTargetList.length, t4 = newTargetList.length, commonCount = 0; true; ++commonCount) {
           if (commonCount === t3)
             break;
-          t4 = t1 - commonCount - 1;
-          if (t4 < 0)
-            return H.ioore(oldTargetList, t4);
-          ot = oldTargetList[t4];
-          t4 = t3 - commonCount - 1;
-          if (t4 < 0)
-            return H.ioore(newTargetList, t4);
-          nt = newTargetList[t4];
+          if (commonCount === t4)
+            break;
+          t5 = t3 - commonCount - 1;
+          if (t5 < 0)
+            return H.ioore(oldTargetList, t5);
+          ot = oldTargetList[t5];
+          t5 = t4 - commonCount - 1;
+          if (t5 < 0)
+            return H.ioore(newTargetList, t5);
+          nt = newTargetList[t5];
           if (ot == null ? nt != null : ot !== nt)
             break;
         }
         if (p != null) {
-          t1 = new Z.MouseEvent(0, 0, 0, 0, 0, 0, false, false, false, false, false, 0, "mouseOut", true, 2, null, null, false, false);
-          t3 = p.globalToLocal$1(stagePoint);
-          t1._localX = t3._x;
-          t1._localY = t3._y;
-          t1._stageX = stagePoint._x;
-          t1._stageY = stagePoint._y;
-          t1._buttonDown = mouseButton.buttonDown;
-          p.dispatchEvent$1(p, t1);
+          t3 = new Z.MouseEvent(0, 0, 0, 0, 0, 0, false, false, false, false, false, 0, "mouseOut", true, 2, null, null, false, false);
+          t4 = p.globalToLocal$1(stagePoint);
+          t3._localX = t4._x;
+          t3._localY = t4._y;
+          t3._stageX = stagePoint._x;
+          t3._stageY = stagePoint._y;
+          t3._buttonDown = mouseButton.buttonDown;
+          p.dispatchEvent$1(p, t3);
         }
         for (i = 0; i < oldTargetList.length - commonCount; ++i) {
           target0 = oldTargetList[i];
-          t1 = new Z.MouseEvent(0, 0, 0, 0, 0, 0, false, false, false, false, false, 0, "rollOut", false, 2, null, null, false, false);
-          t3 = target0.globalToLocal$1(stagePoint);
-          t1._localX = t3._x;
-          t1._localY = t3._y;
-          t1._stageX = stagePoint._x;
-          t1._stageY = stagePoint._y;
-          t1._buttonDown = mouseButton.buttonDown;
-          target0.dispatchEvent$1(target0, t1);
+          t3 = new Z.MouseEvent(0, 0, 0, 0, 0, 0, false, false, false, false, false, 0, "rollOut", false, 2, null, null, false, false);
+          t4 = target0.globalToLocal$1(stagePoint);
+          t3._localX = t4._x;
+          t3._localY = t4._y;
+          t3._stageX = stagePoint._x;
+          t3._stageY = stagePoint._y;
+          t3._buttonDown = mouseButton.buttonDown;
+          target0.dispatchEvent$1(target0, t3);
         }
         for (i = newTargetList.length - commonCount - 1; i >= 0; --i) {
           if (i >= newTargetList.length)
             return H.ioore(newTargetList, i);
           target0 = newTargetList[i];
-          t1 = new Z.MouseEvent(0, 0, 0, 0, 0, 0, false, false, false, false, false, 0, "rollOver", false, 2, null, null, false, false);
-          t3 = target0.globalToLocal$1(stagePoint);
-          t1._localX = t3._x;
-          t1._localY = t3._y;
-          t1._stageX = stagePoint._x;
-          t1._stageY = stagePoint._y;
-          t1._buttonDown = mouseButton.buttonDown;
-          target0.dispatchEvent$1(target0, t1);
+          t3 = new Z.MouseEvent(0, 0, 0, 0, 0, 0, false, false, false, false, false, 0, "rollOver", false, 2, null, null, false, false);
+          t4 = target0.globalToLocal$1(stagePoint);
+          t3._localX = t4._x;
+          t3._localY = t4._y;
+          t3._stageX = stagePoint._x;
+          t3._stageY = stagePoint._y;
+          t3._buttonDown = mouseButton.buttonDown;
+          target0.dispatchEvent$1(target0, t3);
         }
         if (target != null) {
-          t1 = new Z.MouseEvent(0, 0, 0, 0, 0, 0, false, false, false, false, false, 0, "mouseOver", true, 2, null, null, false, false);
-          t3 = target.globalToLocal$1(stagePoint);
-          t1._localX = t3._x;
-          t1._localY = t3._y;
-          t1._stageX = stagePoint._x;
-          t1._stageY = stagePoint._y;
-          t1._buttonDown = mouseButton.buttonDown;
-          target.dispatchEvent$1(target, t1);
+          t3 = new Z.MouseEvent(0, 0, 0, 0, 0, 0, false, false, false, false, false, 0, "mouseOver", true, 2, null, null, false, false);
+          t4 = target.globalToLocal$1(stagePoint);
+          t3._localX = t4._x;
+          t3._localY = t4._y;
+          t3._stageX = stagePoint._x;
+          t3._stageY = stagePoint._y;
+          t3._buttonDown = mouseButton.buttonDown;
+          t1.dispatchEvent$1(target, t3);
         }
         this._mouseTarget = target;
       }
       if ($event.type === "mousedown") {
         this._canvas.focus();
         mouseEventType = mouseButton.mouseDownEventType;
-        t1 = mouseButton.target;
-        if ((target == null ? t1 != null : target !== t1) || t2 > mouseButton.clickTime + 500)
+        t3 = mouseButton.target;
+        if ((target == null ? t3 != null : target !== t3) || t2 > mouseButton.clickTime + 500)
           mouseButton.clickCount = 0;
         mouseButton.buttonDown = true;
         mouseButton.target = target;
@@ -9384,51 +10406,51 @@ var $$ = {};
       if ($event.type === "mouseup") {
         mouseEventType = mouseButton.mouseUpEventType;
         mouseButton.buttonDown = false;
-        t1 = mouseButton.target;
-        isClick = t1 == null ? target == null : t1 === target;
+        t3 = mouseButton.target;
+        isClick = t3 == null ? target == null : t3 === target;
         isDoubleClick = isClick && (mouseButton.clickCount & 1) === 0 && t2 < mouseButton.clickTime + 500;
       } else {
         isClick = false;
         isDoubleClick = false;
       }
-      t1 = $event.type;
-      if (t1 === "mousemove")
+      t2 = $event.type;
+      if (t2 === "mousemove")
         mouseEventType = "mouseMove";
-      if (t1 === "contextmenu")
+      if (t2 === "contextmenu")
         mouseEventType = "contextMenu";
       if (mouseEventType != null && target != null) {
         localPoint = target.globalToLocal$1(stagePoint);
-        t1 = new Z.MouseEvent(0, 0, 0, 0, 0, 0, false, false, false, false, false, 0, mouseEventType, true, 2, null, null, false, false);
-        t1._localX = localPoint._x;
-        t1._localY = localPoint._y;
-        t1._stageX = stagePoint._x;
-        t1._stageY = stagePoint._y;
-        t1._buttonDown = mouseButton.buttonDown;
-        t1._clickCount = mouseButton.clickCount;
-        target.dispatchEvent$1(target, t1);
+        t2 = new Z.MouseEvent(0, 0, 0, 0, 0, 0, false, false, false, false, false, 0, mouseEventType, true, 2, null, null, false, false);
+        t2._localX = localPoint._x;
+        t2._localY = localPoint._y;
+        t2._stageX = stagePoint._x;
+        t2._stageY = stagePoint._y;
+        t2._buttonDown = mouseButton.buttonDown;
+        t2._clickCount = mouseButton.clickCount;
+        t1.dispatchEvent$1(target, t2);
         if (isClick) {
-          t1 = isDoubleClick && target.doubleClickEnabled;
-          t2 = localPoint._x;
-          if (t1) {
-            t1 = new Z.MouseEvent(0, 0, 0, 0, 0, 0, false, false, false, false, false, 0, mouseButton.mouseDoubleClickEventType, true, 2, null, null, false, false);
-            t1._localX = t2;
-            t1._localY = localPoint._y;
-            t1._stageX = stagePoint._x;
-            t1._stageY = stagePoint._y;
-            t1._buttonDown = mouseButton.buttonDown;
-            target.dispatchEvent$1(target, t1);
+          t2 = isDoubleClick && target.doubleClickEnabled;
+          t3 = localPoint._x;
+          if (t2) {
+            t2 = new Z.MouseEvent(0, 0, 0, 0, 0, 0, false, false, false, false, false, 0, mouseButton.mouseDoubleClickEventType, true, 2, null, null, false, false);
+            t2._localX = t3;
+            t2._localY = localPoint._y;
+            t2._stageX = stagePoint._x;
+            t2._stageY = stagePoint._y;
+            t2._buttonDown = mouseButton.buttonDown;
+            t1.dispatchEvent$1(target, t2);
           } else {
-            t1 = new Z.MouseEvent(0, 0, 0, 0, 0, 0, false, false, false, false, false, 0, mouseButton.mouseClickEventType, true, 2, null, null, false, false);
-            t1._localX = t2;
-            t1._localY = localPoint._y;
-            t1._stageX = stagePoint._x;
-            t1._stageY = stagePoint._y;
-            t1._buttonDown = mouseButton.buttonDown;
-            target.dispatchEvent$1(target, t1);
+            t2 = new Z.MouseEvent(0, 0, 0, 0, 0, 0, false, false, false, false, false, 0, mouseButton.mouseClickEventType, true, 2, null, null, false, false);
+            t2._localX = t3;
+            t2._localY = localPoint._y;
+            t2._stageX = stagePoint._x;
+            t2._stageY = stagePoint._y;
+            t2._buttonDown = mouseButton.buttonDown;
+            t1.dispatchEvent$1(target, t2);
           }
         }
       }
-    }, "call$1", "get$_onMouseEvent", 2, 0, 25],
+    }, "call$1", "get$_onMouseEvent", 2, 0, 27],
     _onMouseWheelEvent$1: [function($event) {
       var t1, stagePoint, target, mouseEvent, t2;
       t1 = J.getInterceptor$x($event);
@@ -9447,32 +10469,32 @@ var $$ = {};
         if (mouseEvent._stopsPropagation)
           $event.preventDefault();
       }
-    }, "call$1", "get$_onMouseWheelEvent", 2, 0, 26],
+    }, "call$1", "get$_onMouseWheelEvent", 2, 0, 28],
     _onMultitouchInputModeChanged$1: [function(inputMode) {
       var t1, t2, t3, t4, t5, t6;
       H.IterableMixinWorkaround_forEach(this._touchEventSubscriptions, new Z.Stage__onMultitouchInputModeChanged_closure());
       if ($.Multitouch__inputMode === "touchPoint") {
         t1 = C.EventStreamProvider_touchstart.forElement$1(this._canvas);
-        t1 = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(this.get$_onTouchEvent()), t1._useCapture), [H.getTypeArgumentByIndex(t1, 0)]);
+        t1 = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._html$_eventType, W._wrapZone(this.get$_onTouchEvent()), t1._useCapture), [H.getTypeArgumentByIndex(t1, 0)]);
         t1._tryResume$0();
         t2 = C.EventStreamProvider_touchend.forElement$1(this._canvas);
-        t2 = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(this.get$_onTouchEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)]);
+        t2 = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._html$_eventType, W._wrapZone(this.get$_onTouchEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)]);
         t2._tryResume$0();
         t3 = C.EventStreamProvider_touchmove.forElement$1(this._canvas);
-        t3 = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t3._html$_target, t3._eventType, W._wrapZone(this.get$_onTouchEvent()), t3._useCapture), [H.getTypeArgumentByIndex(t3, 0)]);
+        t3 = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t3._html$_target, t3._html$_eventType, W._wrapZone(this.get$_onTouchEvent()), t3._useCapture), [H.getTypeArgumentByIndex(t3, 0)]);
         t3._tryResume$0();
         t4 = C.EventStreamProvider_touchenter.forElement$1(this._canvas);
-        t4 = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t4._html$_target, t4._eventType, W._wrapZone(this.get$_onTouchEvent()), t4._useCapture), [H.getTypeArgumentByIndex(t4, 0)]);
+        t4 = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t4._html$_target, t4._html$_eventType, W._wrapZone(this.get$_onTouchEvent()), t4._useCapture), [H.getTypeArgumentByIndex(t4, 0)]);
         t4._tryResume$0();
         t5 = C.EventStreamProvider_touchleave.forElement$1(this._canvas);
-        t5 = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t5._html$_target, t5._eventType, W._wrapZone(this.get$_onTouchEvent()), t5._useCapture), [H.getTypeArgumentByIndex(t5, 0)]);
+        t5 = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t5._html$_target, t5._html$_eventType, W._wrapZone(this.get$_onTouchEvent()), t5._useCapture), [H.getTypeArgumentByIndex(t5, 0)]);
         t5._tryResume$0();
         t6 = C.EventStreamProvider_touchcancel.forElement$1(this._canvas);
-        t6 = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t6._html$_target, t6._eventType, W._wrapZone(this.get$_onTouchEvent()), t6._useCapture), [H.getTypeArgumentByIndex(t6, 0)]);
+        t6 = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t6._html$_target, t6._html$_eventType, W._wrapZone(this.get$_onTouchEvent()), t6._useCapture), [H.getTypeArgumentByIndex(t6, 0)]);
         t6._tryResume$0();
         this._touchEventSubscriptions = [t1, t2, t3, t4, t5, t6];
       }
-    }, "call$1", "get$_onMultitouchInputModeChanged", 2, 0, 13],
+    }, "call$1", "get$_onMultitouchInputModeChanged", 2, 0, 15],
     _onTouchEvent$1: [function($event) {
       var t1, t2, t3, changedTouch, identifier, t4, stagePoint, target, touch, t5, t6, t7, touchEventType;
       t1 = J.getInterceptor$x($event);
@@ -9552,13 +10574,13 @@ var $$ = {};
           target.dispatchEvent$1(target, t4);
         }
       }
-    }, "call$1", "get$_onTouchEvent", 2, 0, 27],
+    }, "call$1", "get$_onTouchEvent", 2, 0, 29],
     _onKeyEvent$1: [function($event) {
       var t1 = J.getInterceptor$x($event);
       if (t1.get$keyCode($event) === 8)
         t1.preventDefault$0($event);
       return;
-    }, "call$1", "get$_onKeyEvent", 2, 0, 28],
+    }, "call$1", "get$_onKeyEvent", 2, 0, 30],
     Stage$6$color$frameRate$height$webGL$width: function(canvas, color, frameRate, height, webGL, width) {
       var t1, t2, t3, t4, exception;
       t1 = canvas;
@@ -9596,23 +10618,23 @@ var $$ = {};
       this._updateCanvasSize$0();
       P.print("StageXL render engine : " + this._renderContext.get$renderEngine());
       t2 = C.EventStreamProvider_keydown.forElement$1(canvas);
-      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(this.get$_onKeyEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
+      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._html$_eventType, W._wrapZone(this.get$_onKeyEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
       t2 = C.EventStreamProvider_keyup.forElement$1(canvas);
-      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(this.get$_onKeyEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
+      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._html$_eventType, W._wrapZone(this.get$_onKeyEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
       t2 = C.EventStreamProvider_keypress.forElement$1(canvas);
-      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(this.get$_onKeyEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
+      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._html$_eventType, W._wrapZone(this.get$_onKeyEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
       t2 = C.EventStreamProvider_mousedown.forElement$1(canvas);
-      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(this.get$_onMouseEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
+      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._html$_eventType, W._wrapZone(this.get$_onMouseEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
       t2 = C.EventStreamProvider_mouseup.forElement$1(canvas);
-      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(this.get$_onMouseEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
+      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._html$_eventType, W._wrapZone(this.get$_onMouseEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
       t2 = C.EventStreamProvider_mousemove.forElement$1(canvas);
-      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(this.get$_onMouseEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
+      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._html$_eventType, W._wrapZone(this.get$_onMouseEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
       t2 = C.EventStreamProvider_mouseout.forElement$1(canvas);
-      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(this.get$_onMouseEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
+      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._html$_eventType, W._wrapZone(this.get$_onMouseEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
       t2 = C.EventStreamProvider_contextmenu.forElement$1(canvas);
-      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(this.get$_onMouseEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
+      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._html$_eventType, W._wrapZone(this.get$_onMouseEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
       t2 = C._CustomEventStreamProvider__determineMouseWheelEventType.forElement$1(canvas);
-      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(this.get$_onMouseWheelEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
+      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._html$_eventType, W._wrapZone(this.get$_onMouseWheelEvent()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
       $.get$Mouse__onMouseCursorChanged().listen$1(this.get$_onMouseCursorChanged());
       $.get$Multitouch__onInputModeChanged().listen$1(this.get$_onMultitouchInputModeChanged());
       this._onMultitouchInputModeChanged$1(null);
@@ -9636,7 +10658,7 @@ var $$ = {};
       }}
   },
   Stage__onMultitouchInputModeChanged_closure: {
-    "": "Closure:11;",
+    "": "Closure:13;",
     call$1: function(s) {
       return s.cancel$0();
     }
@@ -9710,6 +10732,17 @@ var $$ = {};
         context.drawImage(source, sourceX, sourceY, t1 - sourceX, t2 - sourceY, 0 - t3 - t4, destinationY, t4, destinationHeight);
       }
     },
+    renderTriangle$8: function(x1, y1, x2, y2, x3, y3, matrix, color) {
+      var context = this._renderingContext;
+      context.setTransform(matrix._a, matrix._b, matrix._c, matrix._d, matrix._tx, matrix._ty);
+      context.beginPath();
+      context.moveTo(x1, y1);
+      context.lineTo(x2, y2);
+      context.lineTo(x3, y3);
+      context.closePath();
+      context.fillStyle = Z._color2rgba(color);
+      context.fill();
+    },
     flush$0: function(_) {
     },
     RenderContextCanvas$2: function(canvasElement, backgroundColor) {
@@ -9775,6 +10808,11 @@ var $$ = {};
       this._updateState$2(t1, renderTextureQuad._renderTexture);
       t1.renderQuad$3(renderTextureQuad, matrix, this._globalAlpha);
     },
+    renderTriangle$8: function(x1, y1, x2, y2, x3, y3, matrix, color) {
+      var t1 = this._renderProgramTriangle;
+      this._updateState$2(t1, this._renderTexture);
+      t1.renderTriangle$8(x1, y1, x2, y2, x3, y3, matrix, color);
+    },
     flush$0: function(_) {
       var t1 = this._renderProgram;
       t1.flush$0(t1);
@@ -9815,17 +10853,17 @@ var $$ = {};
     _onContextLost$1: [function(contextEvent) {
       J.preventDefault$0$x(contextEvent);
       this._dispatchEventInternal$3(new Z.Event("contextLost", false, 2, null, null, false, false), this, 2);
-    }, "call$1", "get$_onContextLost", 2, 0, 29],
+    }, "call$1", "get$_onContextLost", 2, 0, 31],
     _onContextRestored$1: [function(contextEvent) {
       this._dispatchEventInternal$3(new Z.Event("contextRestored", false, 2, null, null, false, false), this, 2);
-    }, "call$1", "get$_onContextRestored", 2, 0, 29],
+    }, "call$1", "get$_onContextRestored", 2, 0, 31],
     RenderContextWebGL$2: function(canvasElement, backgroundColor) {
       var t1, t2, options, context;
       t1 = this._canvasElement;
       t2 = C.EventStreamProvider_webglcontextlost.forElement$1(t1);
-      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(this.get$_onContextLost()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
+      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._html$_eventType, W._wrapZone(this.get$_onContextLost()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
       t2 = C.EventStreamProvider_webglcontextrestored.forElement$1(t1);
-      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(this.get$_onContextRestored()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
+      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._html$_eventType, W._wrapZone(this.get$_onContextRestored()), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
       options = H.fillLiteralMap(["alpha", false, "depth", false, "stencil", true, "antialias", false, "premultipliedAlpha", true, "preserveDrawingBuffer", false], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
       context = J.getInterceptor$x(t1).getContext$2(t1, "webgl", options);
       if (context == null)
@@ -9908,7 +10946,7 @@ var $$ = {};
         }
         Z._dispatchBroadcastEvent(this._exitFrameEvent, $.get$_exitFrameSubscriptions());
       }
-    }, "call$1", "get$_onAnimationFrame", 2, 0, 30]
+    }, "call$1", "get$_onAnimationFrame", 2, 0, 32]
   },
   RenderProgram: {
     "": "Object;",
@@ -10033,7 +11071,7 @@ var $$ = {};
     },
     _onContextRestored$1: [function(e) {
       this._program = null;
-    }, "call$1", "get$_onContextRestored", 2, 0, 31],
+    }, "call$1", "get$_onContextRestored", 2, 0, 33],
     RenderProgramQuad$0: function() {
       var t1, t2, i, j, t3, t4;
       for (t1 = this._indexList, t2 = t1.length - 6, i = 0, j = 0; i <= t2; i += 6, j += 4) {
@@ -10078,6 +11116,46 @@ var $$ = {};
       this._renderingContext.vertexAttribPointer(this._aVertexPositionLocation, 2, 5126, false, 24, 0);
       this._renderingContext.vertexAttribPointer(this._aVertexColorLocation, 4, 5126, false, 24, 8);
     },
+    renderTriangle$8: function(x1, y1, x2, y2, x3, y3, matrix, color) {
+      var colorA, colorR, colorG, colorB, a, b, c, d, tx, ty, t1, index, t2;
+      colorA = (color >>> 24 & 255) / 255;
+      colorR = (color >>> 16 & 255) / 255;
+      colorG = (color >>> 8 & 255) / 255;
+      colorB = (color & 255) / 255;
+      a = matrix._a;
+      b = matrix._b;
+      c = matrix._c;
+      d = matrix._d;
+      tx = matrix._tx;
+      ty = matrix._ty;
+      t1 = this._triangleCount;
+      index = t1 * 18;
+      t2 = this._vertexList;
+      if (index > t2.length - 18)
+        return;
+      t2[index + 0] = x1 * a + y1 * c + tx;
+      t2[index + 1] = x1 * b + y1 * d + ty;
+      t2[index + 2] = colorR;
+      t2[index + 3] = colorG;
+      t2[index + 4] = colorB;
+      t2[index + 5] = colorA;
+      t2[index + 6] = x2 * a + y2 * c + tx;
+      t2[index + 7] = x2 * b + y2 * d + ty;
+      t2[index + 8] = colorR;
+      t2[index + 9] = colorG;
+      t2[index + 10] = colorB;
+      t2[index + 11] = colorA;
+      t2[index + 12] = x3 * a + y3 * c + tx;
+      t2[index + 13] = x3 * b + y3 * d + ty;
+      t2[index + 14] = colorR;
+      t2[index + 15] = colorG;
+      t2[index + 16] = colorB;
+      t2[index + 17] = colorA;
+      t1 += 3;
+      this._triangleCount = t1;
+      if (t1 === 256)
+        this.flush$0(this);
+    },
     flush$0: function(_) {
       var vertexUpdate, t1, t2;
       vertexUpdate = this._vertexList;
@@ -10094,7 +11172,7 @@ var $$ = {};
     },
     _onContextRestored$1: [function(e) {
       this._program = null;
-    }, "call$1", "get$_onContextRestored", 2, 0, 31],
+    }, "call$1", "get$_onContextRestored", 2, 0, 33],
     static: {"": "RenderProgramTriangle__maxTriangleCount"}
   },
   _ContextState: {
@@ -10102,6 +11180,10 @@ var $$ = {};
   },
   RenderState: {
     "": "Object;_renderContext,_currentTime,_deltaTime,_firstContextState,_currentContextState",
+    renderTriangle$7: function(x1, y1, x2, y2, x3, y3, color) {
+      var t1 = this._currentContextState;
+      this._renderContext.renderTriangle$8(x1, y1, x2, y2, x3, y3, t1.matrix, (color & 16777215) + (C.JSNumber_methods.toInt$0(C.JSNumber_methods.roundToDouble$0(t1.alpha * 255)) << 24 >>> 0));
+    },
     RenderState$2: function(renderContext, matrix) {
       var t1, viewPortMatrix;
       t1 = new Z._ContextState(Z.Matrix$fromIdentity(), 1, "source-over", null);
@@ -10122,17 +11204,50 @@ var $$ = {};
     get$height: function(_) {
       return this._height;
     },
+    update$0: function() {
+      if (this._texture != null) {
+        this._renderingContext.activeTexture(33994);
+        this._renderingContext.bindTexture(3553, this._texture);
+        J.texImage2D$6$x(this._renderingContext, 3553, 0, 6408, 6408, 5121, this._canvas);
+        this._renderingContext.bindTexture(3553, null);
+      }
+    },
     _onContextRestored$1: [function(e) {
       this._texture = null;
-    }, "call$1", "get$_onContextRestored", 2, 0, 31],
+    }, "call$1", "get$_onContextRestored", 2, 0, 33],
+    RenderTexture$5: function(width, height, transparent, fillColor, storePixelRatio) {
+      var t1, t2, canvasWidth, canvasHeight, context;
+      if (width === 0 && height === 0)
+        throw H.wrapException(new P.ArgumentError(null));
+      t1 = Z._ensureInt(width);
+      this._width = t1;
+      this._height = Z._ensureInt(height);
+      this._transparent = Z._ensureBool(transparent);
+      t2 = Z._ensureNum(storePixelRatio);
+      this._storePixelRatio = t2;
+      this._storeWidth = C.JSNumber_methods.toInt$0(C.JSNumber_methods.roundToDouble$0(t1 * t2));
+      this._storeHeight = C.JSNumber_methods.toInt$0(C.JSNumber_methods.roundToDouble$0(this._height * this._storePixelRatio));
+      t2 = this._storeWidth;
+      t1 = $.get$_backingStorePixelRatio();
+      canvasWidth = C.JSNumber_methods.toInt$0(C.JSNumber_methods.roundToDouble$0(t2 / t1));
+      canvasHeight = C.JSNumber_methods.toInt$0(C.JSNumber_methods.roundToDouble$0(this._storeHeight / t1));
+      this._canvas = W.CanvasElement_CanvasElement(canvasHeight, canvasWidth);
+      this._quad = Z.RenderTextureQuad$(this, 0, 0, 0, 0, 0, this._width, this._height);
+      this._texture = null;
+      if (fillColor !== 0 || !transparent) {
+        context = J.get$context2D$x(this._canvas);
+        context.fillStyle = transparent ? Z._color2rgba(fillColor) : Z._color2rgb(fillColor);
+        context.fillRect(0, 0, canvasWidth, canvasHeight);
+      }
+    },
     RenderTexture$fromImage$2: function(imageElement, imagePixelRatio) {
       var t1, t2, t3, canvasWidth, canvasHeight;
       this._storePixelRatio = Z._ensureNum(imagePixelRatio);
       t1 = J.getInterceptor$x(imageElement);
       this._storeWidth = Z._ensureInt(t1.get$width(imageElement));
       this._storeHeight = Z._ensureInt(t1.get$height(imageElement));
-      this._width = C.JSNumber_methods.toInt$0(C.JSInt_methods.roundToDouble$0(this._storeWidth / this._storePixelRatio));
-      this._height = C.JSNumber_methods.toInt$0(C.JSInt_methods.roundToDouble$0(this._storeHeight / this._storePixelRatio));
+      this._width = C.JSNumber_methods.toInt$0(C.JSNumber_methods.roundToDouble$0(this._storeWidth / this._storePixelRatio));
+      this._height = C.JSNumber_methods.toInt$0(C.JSNumber_methods.roundToDouble$0(this._storeHeight / this._storePixelRatio));
       this._transparent = true;
       t2 = this._storeWidth;
       t3 = $.get$_backingStorePixelRatio();
@@ -10143,7 +11258,11 @@ var $$ = {};
       this._texture = null;
       J.get$context2D$x(this._canvas).drawImage(imageElement, 0, 0, t1.get$width(imageElement), t1.get$height(imageElement), 0, 0, canvasWidth, canvasHeight);
     },
-    static: {RenderTexture_load: function(url, autoHiDpi, webpAvailable) {
+    static: {RenderTexture$: function(width, height, transparent, fillColor, storePixelRatio) {
+        var t1 = new Z.RenderTexture(0, 0, true, 1, 0, 0, null, null, null, null, null);
+        t1.RenderTexture$5(width, height, transparent, fillColor, storePixelRatio);
+        return t1;
+      }, RenderTexture_load: function(url, autoHiDpi, webpAvailable) {
         var hiDpi, t1;
         hiDpi = $.get$Stage_autoHiDpi() === true && autoHiDpi && C.JSString_methods.contains$1(url, "@1x.");
         if (hiDpi)
@@ -10154,7 +11273,7 @@ var $$ = {};
       }}
   },
   RenderTexture_load_closure: {
-    "": "Closure:11;hiDpi_0",
+    "": "Closure:13;hiDpi_0",
     call$1: function(image) {
       var t1, t2;
       t1 = this.hiDpi_0 ? 2 : 1;
@@ -10165,6 +11284,17 @@ var $$ = {};
   },
   RenderTextureQuad: {
     "": "Object;_renderTexture,_uvList,_xyList,_rotation,_offsetX,_offsetY,_textureX,_textureY,_textureWidth,_textureHeight",
+    get$drawMatrix: function() {
+      var scale, angle, c, s, t1, t2, t3;
+      scale = this._renderTexture._storePixelRatio / $.get$_backingStorePixelRatio();
+      angle = this._rotation * 3.141592653589793 / 2;
+      c = scale * Math.cos(angle);
+      s = scale * Math.sin(angle);
+      t1 = this._textureX;
+      t2 = this._offsetX;
+      t3 = this._offsetY;
+      return Z.Matrix$(c, s, -s, c, scale * t1 - t2 * c + t3 * s, scale * this._textureY - t2 * s - t3 * c);
+    },
     RenderTextureQuad$8: function(renderTexture, rotation, offsetX, offsetY, textureX, textureY, textureWidth, textureHeight) {
       var t1, x1, y1, t2, t3, x3, y4, x4, y3, y2, x2, renderTextureWidth, renderTextureHeight, pixelRatio;
       this._renderTexture = renderTexture;
@@ -10294,7 +11424,7 @@ var $$ = {};
     }
   },
   EventStream: {
-    "": "Stream;_stagexl$_target,_stagexl$_eventType,_subscriptions,_capturingSubscriptionCount",
+    "": "Stream;_stagexl$_target,_eventType,_subscriptions,_capturingSubscriptionCount",
     get$isBroadcast: function() {
       return true;
     },
@@ -10302,18 +11432,18 @@ var $$ = {};
       return this._stagexl$_target;
     },
     listen$5$cancelOnError$onDone$onError$priority: function(onData, cancelOnError, onDone, onError, priority) {
-      return this._stagexl$_subscribe$3(onData, false, priority);
-    },
-    listen$4$cancelOnError$onDone$onError: function(onData, cancelOnError, onDone, onError) {
-      return this.listen$5$cancelOnError$onDone$onError$priority(onData, cancelOnError, onDone, onError, 0);
+      return this._subscribe$3(onData, false, priority);
     },
     listen$1: function(onData) {
       return this.listen$5$cancelOnError$onDone$onError$priority(onData, false, null, null, 0);
     },
+    listen$4$cancelOnError$onDone$onError: function(onData, cancelOnError, onDone, onError) {
+      return this.listen$5$cancelOnError$onDone$onError$priority(onData, cancelOnError, onDone, onError, 0);
+    },
     listen$3$onDone$onError: function(onData, onDone, onError) {
       return this.listen$5$cancelOnError$onDone$onError$priority(onData, false, onDone, onError, 0);
     },
-    _stagexl$_subscribe$3: function(eventListener, captures, priority) {
+    _subscribe$3: function(eventListener, captures, priority) {
       var subscription, oldSubscriptions, t1, t2, newSubscriptions, index, o, n, oldSubscription, n0;
       subscription = new Z.EventStreamSubscription(priority, 0, false, captures, this, eventListener);
       subscription.$builtinTypeInfo = this.$builtinTypeInfo;
@@ -10341,7 +11471,7 @@ var $$ = {};
       if (captures)
         this._capturingSubscriptionCount = this._capturingSubscriptionCount + 1;
       else
-        switch (this._stagexl$_eventType) {
+        switch (this._eventType) {
           case "enterFrame":
             $.get$_enterFrameSubscriptions().push(subscription);
             break;
@@ -10355,7 +11485,7 @@ var $$ = {};
         }
       return subscription;
     },
-    _stagexl$_cancelSubscription$1: function(eventStreamSubscription) {
+    _cancelSubscription$1: function(eventStreamSubscription) {
       var oldSubscriptions, t1, t2, newSubscriptions, o, n, oldSubscription, n0;
       eventStreamSubscription._canceled = true;
       oldSubscriptions = this._subscriptions;
@@ -10391,7 +11521,7 @@ var $$ = {};
       subscriptions = this._subscriptions;
       for (t1 = subscriptions.length, t2 = this._stagexl$_target, t3 = eventPhase === 1, i = 0; i < t1; ++i) {
         subscription = subscriptions[i];
-        if (subscription._canceled || subscription._stagexl$_pauseCount > 0 || subscription._captures !== t3)
+        if (subscription._canceled || subscription._pauseCount > 0 || subscription._captures !== t3)
           continue;
         $event._stagexl$_target = target;
         $event._currentTarget = t2;
@@ -10407,7 +11537,7 @@ var $$ = {};
     "": "Object;eventType"
   },
   EventStreamSubscription: {
-    "": "StreamSubscription;_priority,_stagexl$_pauseCount,_canceled,_captures,_eventStream,_eventListener",
+    "": "StreamSubscription;_priority,_pauseCount,_canceled,_captures,_eventStream,_eventListener",
     get$eventListener: function() {
       return this._eventListener;
     },
@@ -10416,19 +11546,37 @@ var $$ = {};
     },
     cancel$0: function() {
       if (!this._canceled)
-        this._eventStream._stagexl$_cancelSubscription$1(this);
+        this._eventStream._cancelSubscription$1(this);
       return;
     },
     $asStreamSubscription: null
   },
+  KeyboardEvent0: {
+    "": "Event;"
+  },
   MouseEvent: {
     "": "Event;_localX,_localY,_stageX,_stageY,_deltaX,_deltaY,_buttonDown,_altKey,_controlKey,_ctrlKey,_shiftKey,_clickCount,_type,_bubbles,_eventPhase,_stagexl$_target,_currentTarget,_stopsPropagation,_stopsImmediatePropagation",
+    get$localX: function() {
+      return this._localX;
+    },
+    get$localY: function() {
+      return this._localY;
+    },
     static: {"": "MouseEvent_CLICK,MouseEvent_DOUBLE_CLICK,MouseEvent_MOUSE_DOWN,MouseEvent_MOUSE_UP,MouseEvent_MOUSE_MOVE,MouseEvent_MOUSE_OUT,MouseEvent_MOUSE_OVER,MouseEvent_MOUSE_WHEEL,MouseEvent_MIDDLE_CLICK,MouseEvent_MIDDLE_MOUSE_DOWN,MouseEvent_MIDDLE_MOUSE_UP,MouseEvent_RIGHT_CLICK,MouseEvent_RIGHT_MOUSE_DOWN,MouseEvent_RIGHT_MOUSE_UP,MouseEvent_CONTEXT_MENU,MouseEvent_ROLL_OUT,MouseEvent_ROLL_OVER"}
+  },
+  TextEvent0: {
+    "": "Event;"
   },
   TouchEvent: {
     "": "Event;_touchPointID,_isPrimaryTouchPoint,_localX,_localY,_stageX,_stageY,_altKey,_controlKey,_ctrlKey,_shiftKey,_pressure,_sizeX,_sizeY,_type,_bubbles,_eventPhase,_stagexl$_target,_currentTarget,_stopsPropagation,_stopsImmediatePropagation",
     get$touchPointID: function() {
       return this._touchPointID;
+    },
+    get$localX: function() {
+      return this._localX;
+    },
+    get$localY: function() {
+      return this._localY;
     },
     static: {"": "TouchEvent_TOUCH_BEGIN,TouchEvent_TOUCH_END,TouchEvent_TOUCH_CANCEL,TouchEvent_TOUCH_MOVE,TouchEvent_TOUCH_OVER,TouchEvent_TOUCH_OUT,TouchEvent_TOUCH_ROLL_OUT,TouchEvent_TOUCH_ROLL_OVER,TouchEvent_TOUCH_TAP"}
   },
@@ -10436,6 +11584,12 @@ var $$ = {};
     "": "Object;_a,_b,_c,_d,_tx,_ty,_det",
     toString$0: function(_) {
       return "Matrix [a=" + H.S(this._a) + ", b=" + H.S(this._b) + ", c=" + H.S(this._c) + ", d=" + H.S(this._d) + ", tx=" + H.S(this._tx) + ", ty=" + H.S(this._ty) + "]";
+    },
+    transformPoint$1: function(p) {
+      var x, y;
+      x = p._x;
+      y = p._y;
+      return new Z.Point(x * this._a + y * this._c + this._tx, x * this._b + y * this._d + this._ty);
     },
     transformVector$1: function(v) {
       var x, y;
@@ -10662,13 +11816,13 @@ var $$ = {};
           break;
         }
       }
-    }, "call$1", "get$_onAudioEnded", 2, 0, 32],
+    }, "call$1", "get$_onAudioEnded", 2, 0, 34],
     AudioElementSound$0: function() {
       this._soundChannels = H.setRuntimeTypeInfo([], [Z.AudioElementSoundChannel]);
       var t1 = W.AudioElement_AudioElement(null);
       this._audio = t1;
       t1 = C.EventStreamProvider_ended.forElement$1(t1);
-      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(this.get$_onAudioEnded()), t1._useCapture), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
+      H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._html$_eventType, W._wrapZone(this.get$_onAudioEnded()), t1._useCapture), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
       t1 = H.setRuntimeTypeInfo([], [W.AudioElement]);
       this._audioPool = t1;
       t1.push(this._audio);
@@ -10695,11 +11849,11 @@ var $$ = {};
         t1.onCanPlaySubscription_1 = null;
         t1.onErrorSubscription_2 = null;
         t2 = C.EventStreamProvider_canplay.forElement$1(audio);
-        onCanPlaySubscription = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(new Z.AudioElementSound_load_onCanPlay(t1, sound, loadCompleter)), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)]);
+        onCanPlaySubscription = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._html$_eventType, W._wrapZone(new Z.AudioElementSound_load_onCanPlay(t1, sound, loadCompleter)), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)]);
         onCanPlaySubscription._tryResume$0();
         t1.onCanPlaySubscription_1 = onCanPlaySubscription;
         t2 = C.EventStreamProvider_error.forElement$1(audio);
-        onErrorSubscription = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(new Z.AudioElementSound_load_onError(t1, url, audio, audioUrls, loadCompleter)), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)]);
+        onErrorSubscription = H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._html$_eventType, W._wrapZone(new Z.AudioElementSound_load_onError(t1, url, audio, audioUrls, loadCompleter)), t2._useCapture), [H.getTypeArgumentByIndex(t2, 0)]);
         onErrorSubscription._tryResume$0();
         t1.onErrorSubscription_2 = onErrorSubscription;
         audio.src = C.JSArray_methods.removeAt$1(audioUrls, 0);
@@ -10708,7 +11862,7 @@ var $$ = {};
       }}
   },
   AudioElementSound_load_onCanPlay: {
-    "": "Closure:11;box_0,sound_1,loadCompleter_2",
+    "": "Closure:13;box_0,sound_1,loadCompleter_2",
     call$1: function($event) {
       var t1 = this.box_0;
       t1.onCanPlaySubscription_1.cancel$0();
@@ -10720,7 +11874,7 @@ var $$ = {};
     }
   },
   AudioElementSound_load_onError: {
-    "": "Closure:11;box_0,url_3,audio_4,audioUrls_5,loadCompleter_6",
+    "": "Closure:13;box_0,url_3,audio_4,audioUrls_5,loadCompleter_6",
     call$1: function($event) {
       var t1, t2;
       t1 = this.audioUrls_5;
@@ -10742,7 +11896,7 @@ var $$ = {};
     }
   },
   AudioElementSound_load_onError_closure: {
-    "": "Closure:11;loadCompleter_7",
+    "": "Closure:13;loadCompleter_7",
     call$1: function(s) {
       var t1 = this.loadCompleter_7.future;
       if (t1._state !== 0)
@@ -10753,6 +11907,10 @@ var $$ = {};
   },
   AudioElementSoundChannel: {
     "": "SoundChannel;_audioElementSound,_audio<,_loop,_soundTransform<,_eventStreams",
+    set$soundTransform: function(value) {
+      this._soundTransform = value;
+      $.SoundMixer__audioElementMixer._updateSoundChannel$1(this);
+    },
     AudioElementSoundChannel$3: function(audioElementSound, loop, soundTransform) {
       var t1, audio;
       this._audioElementSound = audioElementSound;
@@ -10762,7 +11920,7 @@ var $$ = {};
       if (t1.length === 0) {
         audio = audioElementSound._audio.cloneNode(true);
         t1 = J.get$onEnded$x(audio);
-        H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(audioElementSound.get$_onAudioEnded()), t1._useCapture), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
+        H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._html$_eventType, W._wrapZone(audioElementSound.get$_onAudioEnded()), t1._useCapture), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
       } else
         audio = J.removeAt$1$ax(t1, 0);
       $.SoundMixer__audioElementMixer._soundChannels.push(this);
@@ -10787,10 +11945,19 @@ var $$ = {};
     }
   },
   MockSoundChannel: {
-    "": "SoundChannel;_loop,_soundTransform,_eventStreams"
+    "": "SoundChannel;_loop,_soundTransform,_eventStreams",
+    set$soundTransform: function(value) {
+      this._soundTransform = value;
+    }
   },
   WebAudioApiMixer: {
     "": "Object;_inputNode,_volumeNode",
+    applySoundTransform$1: function(soundTransform) {
+      var volume, t1;
+      volume = soundTransform.volume;
+      t1 = this._volumeNode.gain;
+      t1.value = Math.pow(volume, 2);
+    },
     WebAudioApiMixer$1: function(inputNode) {
       var t1;
       this._inputNode = inputNode != null ? inputNode : $.get$WebAudioApiMixer_audioContext().destination;
@@ -10839,14 +12006,14 @@ var $$ = {};
       }}
   },
   WebAudioApiSound_load_audioRequestFinished: {
-    "": "Closure:11;box_0,url_1,sound_2,loadCompleter_3,audioContext_4",
+    "": "Closure:13;box_0,url_1,sound_2,loadCompleter_3,audioContext_4",
     call$1: function(request) {
       var t1 = this.loadCompleter_3;
       J.decodeAudioData$1$x(this.audioContext_4, J.get$response$x(request)).then$1(new Z.WebAudioApiSound_load_audioRequestFinished_closure(this.sound_2, t1)).catchError$1(new Z.WebAudioApiSound_load_audioRequestFinished_closure0(this.box_0, this.url_1, t1));
     }
   },
   WebAudioApiSound_load_audioRequestFinished_closure: {
-    "": "Closure:33;sound_5,loadCompleter_6",
+    "": "Closure:35;sound_5,loadCompleter_6",
     call$1: function(buffer) {
       var t1, t2;
       t1 = this.sound_5;
@@ -10858,7 +12025,7 @@ var $$ = {};
     }
   },
   WebAudioApiSound_load_audioRequestFinished_closure0: {
-    "": "Closure:11;box_0,url_7,loadCompleter_8",
+    "": "Closure:13;box_0,url_7,loadCompleter_8",
     call$1: function(error) {
       if (this.box_0.soundLoadOptions_0.ignoreErrors) {
         if ($.SoundMixer__engine == null)
@@ -10869,7 +12036,7 @@ var $$ = {};
     }
   },
   WebAudioApiSound_load_audioRequestFinished__closure: {
-    "": "Closure:11;loadCompleter_9",
+    "": "Closure:13;loadCompleter_9",
     call$1: function(s) {
       var t1 = this.loadCompleter_9.future;
       if (t1._state !== 0)
@@ -10879,7 +12046,7 @@ var $$ = {};
     }
   },
   WebAudioApiSound_load_audioRequestNext: {
-    "": "Closure:11;box_0,url_10,loadCompleter_11,audioUrls_12,audioRequestFinished_13",
+    "": "Closure:13;box_0,url_10,loadCompleter_11,audioUrls_12,audioRequestFinished_13",
     call$1: function(error) {
       var t1 = this.audioUrls_12;
       if (t1.length > 0)
@@ -10893,7 +12060,7 @@ var $$ = {};
     }
   },
   WebAudioApiSound_load_audioRequestNext_closure: {
-    "": "Closure:11;loadCompleter_14",
+    "": "Closure:13;loadCompleter_14",
     call$1: function(s) {
       var t1 = this.loadCompleter_14.future;
       if (t1._state !== 0)
@@ -10904,16 +12071,19 @@ var $$ = {};
   },
   WebAudioApiSoundChannel: {
     "": "SoundChannel;_soundTransform,_loop,_sourceNode,_webAudioApiSound,_webAudioApiMixer,_eventStreams",
+    set$soundTransform: function(value) {
+      var t1 = this._soundTransform;
+      this._soundTransform = t1 != null ? t1 : new Z.SoundTransform(1, 0);
+      this._webAudioApiMixer.applySoundTransform$1(value);
+    },
     WebAudioApiSoundChannel$3: function(webAudioApiSound, loop, soundTransform) {
-      var t1, volume;
+      var t1;
       this._webAudioApiSound = webAudioApiSound;
       this._soundTransform = soundTransform;
       this._loop = loop;
       t1 = Z.WebAudioApiMixer$($.SoundMixer__webAudioApiMixer._volumeNode);
       this._webAudioApiMixer = t1;
-      volume = this._soundTransform.volume;
-      t1 = t1._volumeNode.gain;
-      t1.value = Math.pow(volume, 2);
+      t1.applySoundTransform$1(this._soundTransform);
       t1 = $.get$WebAudioApiMixer_audioContext().createBufferSource();
       this._sourceNode = t1;
       t1.buffer = this._webAudioApiSound._buffer;
@@ -10939,6 +12109,599 @@ var $$ = {};
   },
   SoundTransform: {
     "": "Object;volume,pan"
+  },
+  _FontStyleMetrics: {
+    "": "Object;fontStyle,ascent<,descent<,height>",
+    _FontStyleMetrics$1: function(fontStyle) {
+      var text, block, div, t1, t2, exception;
+      this.fontStyle = fontStyle;
+      text = W._ElementFactoryProvider_createElement_tag("span", null);
+      J.set$font$x(J.get$style$x(text), this.fontStyle);
+      J.set$text$x(text, "Hg");
+      block = W._ElementFactoryProvider_createElement_tag("div", null);
+      J.set$display$x(J.get$style$x(block), "inline-block");
+      J.set$width$x(J.get$style$x(block), "1px");
+      J.set$height$x(J.get$style$x(block), "0px");
+      div = W._ElementFactoryProvider_createElement_tag("div", null);
+      J.append$1$x(div, block);
+      J.append$1$x(div, text);
+      document.body.appendChild(div);
+      try {
+        J.set$verticalAlign$x(J.get$style$x(block), "baseline");
+        t1 = J.get$offsetTop$x(block);
+        t2 = J.get$offsetTop$x(text);
+        if (typeof t1 !== "number")
+          return t1.$sub();
+        if (typeof t2 !== "number")
+          return H.iae(t2);
+        this.ascent = t1 - t2;
+        J.set$verticalAlign$x(J.get$style$x(block), "bottom");
+        t2 = J.get$offsetTop$x(block);
+        t1 = J.get$offsetTop$x(text);
+        if (typeof t2 !== "number")
+          return t2.$sub();
+        if (typeof t1 !== "number")
+          return H.iae(t1);
+        t1 = t2 - t1;
+        this.height = t1;
+        this.descent = t1 - this.ascent;
+      } catch (exception) {
+        H.unwrapException(exception);
+      }
+ finally {
+        J.remove$0$ax(div);
+      }
+    },
+    static: {_FontStyleMetrics$: function(fontStyle) {
+        var t1 = new Z._FontStyleMetrics(null, 0, 0, 0);
+        t1._FontStyleMetrics$1(fontStyle);
+        return t1;
+      }}
+  },
+  TextField: {
+    "": "InteractiveObject;_text,_defaultTextFormat,_autoSize,_type,_caretIndex,_caretLine,_caretTime,_caretX,_caretY,_caretWidth,_caretHeight,_wordWrap,_multiline,_displayAsPassword,_background,_border,_passwordChar,_backgroundColor,_borderColor,_maxChars,_width,_height,_textWidth,_textHeight,_textLineMetrics,_refreshPending,_cacheAsBitmap,_renderTexture,doubleClickEnabled,mouseEnabled,tabEnabled,tabIndex,_stagexl$_id,_x,_y,_pivotX,_pivotY,_scaleX,_scaleY,_skewX,_skewY,_rotation,_alpha,_visible,_off,_mask,_cacheTexture,_cacheRectangle,_cacheDebugBorder,_filters,_shadow,_compositeOperation,_stagexl$_name,_parent,_tmpMatrix,_transformationMatrix,_transformationMatrixRefresh,userData,_eventStreams",
+    get$text: function(_) {
+      return this._text;
+    },
+    set$text: function(_, value) {
+      var t1;
+      value.toString;
+      t1 = J.replaceAll$2$s(H.stringReplaceAllUnchecked(value, "\r\n", "\n"), "\r", "\n");
+      this._text = t1;
+      this._caretIndex = J.get$length$asx(t1);
+      this._refreshPending = this._refreshPending | 3;
+    },
+    get$width: function(_) {
+      this._refreshTextLineMetrics$0();
+      return this._width;
+    },
+    get$height: function(_) {
+      this._refreshTextLineMetrics$0();
+      return this._height;
+    },
+    get$transformationMatrix: function() {
+      this._refreshTextLineMetrics$0();
+      return Z.DisplayObject.prototype.get$transformationMatrix.call(this);
+    },
+    getBoundsTransformed$2: function(matrix, returnRectangle) {
+      return Z._getBoundsTransformedHelper(matrix, this._width, this._height, returnRectangle);
+    },
+    getBoundsTransformed$1: function(matrix) {
+      return this.getBoundsTransformed$2(matrix, null);
+    },
+    hitTestInput$2: function(localX, localY) {
+      if (localX >= 0 && localY >= 0 && localX < this._width && localY < this._height)
+        return this;
+      return;
+    },
+    render$1: function(renderState) {
+      var renderContext, t1, context, matrix, stage, x1, y1, x3, y3, color;
+      this._refreshTextLineMetrics$0();
+      renderContext = renderState._renderContext;
+      if (!this._cacheAsBitmap) {
+        t1 = J.getInterceptor(renderContext);
+        t1 = typeof renderContext !== "object" || renderContext === null || !t1.$isRenderContextCanvas;
+      } else
+        t1 = true;
+      if (t1) {
+        this._refreshCache$0();
+        renderContext.renderQuad$2(this._renderTexture._quad, renderState._currentContextState.matrix);
+      } else {
+        H.interceptedTypeCast(renderContext, "$isRenderContextCanvas");
+        context = renderContext._renderingContext;
+        matrix = renderState._currentContextState.matrix;
+        context.setTransform(matrix._a, matrix._b, matrix._c, matrix._d, matrix._tx, matrix._ty);
+        context.globalAlpha = renderState._currentContextState.alpha;
+        this._renderText$1(renderContext._renderingContext);
+      }
+      this._caretTime = this._caretTime + renderState._deltaTime;
+      if (this._type === "input") {
+        stage = this.get$stage();
+        if (stage != null) {
+          stage._focus;
+          t1 = false;
+        } else
+          t1 = false;
+        if (t1) {
+          x1 = this._caretX;
+          y1 = this._caretY;
+          x3 = x1 + this._caretWidth;
+          y3 = y1 + this._caretHeight;
+          color = this._defaultTextFormat.color;
+          renderState.renderTriangle$7(x1, y1, x3, y1, x3, y3, color);
+          renderState.renderTriangle$7(x1, y1, x3, y3, x1, y3, color);
+        }
+      }
+    },
+    _refreshTextLineMetrics$0: function() {
+      var t1, t2, textFormatSize, textFormatLeftMargin, textFormatRightMargin, textFormatTopMargin, textFormatBottomMargin, textFormatIndent, textFormatLeading, textFormatAlign, fontStyle, fontStyleMetrics, fontStyleMetricsAscent, fontStyleMetricsDescent, availableWidth, canvasContext, paragraphLines, paragraphs, startIndex, checkLine, validLine, lineWidth, lineIndent, p, paragraph, words, w, word, checkLine0, t3, line, textLineMetrics, indent, offsetX, offsetY, width, t4, autoWidth, autoHeight, text, shiftX, t5, shiftY;
+      t1 = this._refreshPending;
+      if ((t1 & 1) === 0)
+        return;
+      else
+        this._refreshPending = t1 & 254;
+      t1 = this._textLineMetrics;
+      C.JSArray_methods.set$length(t1, 0);
+      t2 = this._defaultTextFormat;
+      textFormatSize = Z._ensureNum(t2.size);
+      textFormatLeftMargin = Z._ensureNum(t2.leftMargin);
+      textFormatRightMargin = Z._ensureNum(t2.rightMargin);
+      textFormatTopMargin = Z._ensureNum(t2.topMargin);
+      textFormatBottomMargin = Z._ensureNum(t2.bottomMargin);
+      textFormatIndent = Z._ensureNum(t2.indent);
+      textFormatLeading = Z._ensureNum(t2.leading);
+      textFormatAlign = Z._ensureString(t2.align);
+      fontStyle = t2.get$_cssFontStyle();
+      t2 = $.get$_fontStyleMetrics();
+      if (!t2.containsKey$1(fontStyle))
+        t2.$indexSet(t2, fontStyle, Z._FontStyleMetrics$(fontStyle));
+      fontStyleMetrics = t2.$index(t2, fontStyle);
+      fontStyleMetricsAscent = Z._ensureNum(fontStyleMetrics.get$ascent());
+      fontStyleMetricsDescent = Z._ensureNum(fontStyleMetrics.get$descent());
+      availableWidth = this._width - textFormatLeftMargin - textFormatRightMargin;
+      canvasContext = $.get$_dummyCanvasContext();
+      paragraphLines = H.setRuntimeTypeInfo([], [J.JSInt]);
+      paragraphs = J.split$1$s(this._text, "\n");
+      canvasContext.font = fontStyle;
+      canvasContext.textAlign = "start";
+      canvasContext.textBaseline = "alphabetic";
+      canvasContext.setTransform(1, 0, 0, 1, 0, 0);
+      for (startIndex = 0, checkLine = "", validLine = "", lineWidth = 0, lineIndent = 0, p = 0; p < paragraphs.length; ++p) {
+        paragraph = paragraphs[p];
+        if (typeof paragraph !== "string")
+          continue;
+        paragraphLines.push(t1.length);
+        if (!this._wordWrap) {
+          t1.push(new Z.TextLineMetrics(paragraph, startIndex, 0, 0, 0, 0, 0, 0, 0, 0));
+          startIndex += paragraph.length + 1;
+        } else {
+          words = paragraph.split(" ");
+          for (lineIndent = textFormatIndent, checkLine = null, w = 0; w < words.length; ++w) {
+            word = words[w];
+            if (typeof word !== "string")
+              continue;
+            t2 = checkLine == null;
+            checkLine0 = this._passwordEncoder$1(t2 ? word : checkLine + " " + word);
+            lineWidth = canvasContext.measureText(checkLine0).width;
+            lineWidth.toString;
+            if (typeof lineWidth !== "number")
+              return H.iae(lineWidth);
+            if (lineIndent + lineWidth >= availableWidth) {
+              if (t2) {
+                t1.push(new Z.TextLineMetrics(checkLine0, startIndex, 0, 0, 0, 0, 0, 0, 0, 0));
+                startIndex += checkLine0.length + 1;
+                checkLine0 = null;
+              } else {
+                t1.push(new Z.TextLineMetrics(checkLine, startIndex, 0, 0, 0, 0, 0, 0, 0, 0));
+                startIndex += checkLine.length + 1;
+                checkLine0 = this._passwordEncoder$1(word);
+              }
+              lineIndent = 0;
+            }
+            validLine = checkLine;
+            checkLine = checkLine0;
+          }
+          if (checkLine != null) {
+            t1.push(new Z.TextLineMetrics(checkLine, startIndex, 0, 0, 0, 0, 0, 0, 0, 0));
+            startIndex += checkLine.length + 1;
+          }
+        }
+      }
+      this._textWidth = 0;
+      this._textHeight = 0;
+      for (t2 = textFormatTopMargin + textFormatSize, t3 = textFormatLeading + textFormatSize + fontStyleMetricsDescent, line = 0; line < t1.length; ++line) {
+        textLineMetrics = t1[line];
+        indent = C.JSArray_methods.contains$1(paragraphLines, line) ? textFormatIndent : 0;
+        offsetX = textFormatLeftMargin + indent;
+        offsetY = t2 + line * t3;
+        width = canvasContext.measureText(textLineMetrics._text).width;
+        width.toString;
+        textLineMetrics._x = offsetX;
+        textLineMetrics._y = offsetY;
+        textLineMetrics._width = width;
+        textLineMetrics._height = textFormatSize;
+        textLineMetrics._ascent = fontStyleMetricsAscent;
+        textLineMetrics._descent = fontStyleMetricsDescent;
+        textLineMetrics._leading = textFormatLeading;
+        textLineMetrics._indent = indent;
+        t4 = this._textWidth;
+        if (typeof width !== "number")
+          return H.iae(width);
+        this._textWidth = P.max(t4, offsetX + width + textFormatRightMargin);
+        this._textHeight = offsetY + fontStyleMetricsDescent + textFormatBottomMargin;
+      }
+      autoWidth = this._wordWrap ? this._width : C.JSNumber_methods.toInt$0(Math.ceil(this._textWidth));
+      autoHeight = C.JSNumber_methods.toInt$0(Math.ceil(this._textHeight));
+      t2 = this._width;
+      if (t2 !== autoWidth || this._height !== autoHeight)
+        switch (this._autoSize) {
+          case "left":
+            this._width = autoWidth;
+            this._height = autoHeight;
+            t2 = autoWidth;
+            break;
+          case "right":
+            Z.DisplayObject.prototype.set$x.call(this, this, Z.DisplayObject.prototype.get$x.call(this, this) - (autoWidth - t2));
+            this._width = autoWidth;
+            this._height = autoHeight;
+            t2 = autoWidth;
+            break;
+          case "center":
+            Z.DisplayObject.prototype.set$x.call(this, this, Z.DisplayObject.prototype.get$x.call(this, this) - (autoWidth - t2) / 2);
+            this._width = autoWidth;
+            this._height = autoHeight;
+            t2 = autoWidth;
+            break;
+          default:
+        }
+      availableWidth = t2 - textFormatLeftMargin - textFormatRightMargin;
+      for (line = 0; t2 = t1.length, line < t2; ++line) {
+        textLineMetrics = t1[line];
+        switch (textFormatAlign) {
+          case "center":
+          case "justify":
+            textLineMetrics._x = textLineMetrics._x + (availableWidth - textLineMetrics._width) / 2;
+            break;
+          case "right":
+          case "end":
+            textLineMetrics._x = textLineMetrics._x + (availableWidth - textLineMetrics._width);
+            break;
+          default:
+        }
+      }
+      if (this._type === "input") {
+        for (line = t2 - 1, t2 = this._caretIndex; line >= 0; --line) {
+          textLineMetrics = t1[line];
+          t3 = textLineMetrics._textIndex;
+          if (typeof t2 !== "number")
+            return t2.$ge();
+          if (t2 >= t3) {
+            text = J.substring$2$s(textLineMetrics._text, 0, t2 - t3);
+            this._caretLine = line;
+            t3 = textLineMetrics._x;
+            t4 = canvasContext.measureText(text).width;
+            t4.toString;
+            if (typeof t4 !== "number")
+              return H.iae(t4);
+            this._caretX = t3 + t4;
+            this._caretY = textLineMetrics._y - fontStyleMetricsAscent * 0.9;
+            this._caretWidth = 2;
+            this._caretHeight = textFormatSize;
+            break;
+          }
+        }
+        for (t2 = this._caretX, t3 = this._width, t4 = t3 * 0.2, shiftX = 0; shiftX + t2 > t3;)
+          shiftX -= t4;
+        for (; shiftX + t2 < 0;)
+          shiftX += t4;
+        for (t3 = this._caretY, t4 = this._caretHeight, t5 = this._height, shiftY = 0; shiftY + t3 + t4 > t5;)
+          shiftY -= textFormatSize;
+        for (; shiftY + t3 < 0;)
+          shiftY += textFormatSize;
+        this._caretX = t2 + shiftX;
+        this._caretY = this._caretY + shiftY;
+        for (line = 0; line < t1.length; ++line) {
+          textLineMetrics = t1[line];
+          textLineMetrics._x = textLineMetrics._x + shiftX;
+          textLineMetrics._y = textLineMetrics._y + shiftY;
+        }
+      }
+    },
+    _refreshCache$0: function() {
+      var t1, pixelRatio, width, height, t2, t3, t4, matrix, context;
+      t1 = this._refreshPending;
+      if ((t1 & 2) === 0)
+        return;
+      else
+        this._refreshPending = t1 & 253;
+      pixelRatio = $.get$Stage_autoHiDpi() === true ? $.get$_devicePixelRatio() : 1;
+      width = C.JSNumber_methods.toInt$0(Math.ceil(P.max(1, this._width)));
+      height = C.JSNumber_methods.toInt$0(Math.ceil(P.max(1, this._height)));
+      t1 = this._renderTexture;
+      if (t1 == null)
+        this._renderTexture = Z.RenderTexture$(width, height, true, 16777215, pixelRatio);
+      else if (width !== t1._width || height !== t1._height) {
+        t2 = Z._ensureInt(width);
+        t1._width = t2;
+        t1._height = Z._ensureInt(height);
+        t1._storeWidth = C.JSNumber_methods.toInt$0(C.JSNumber_methods.roundToDouble$0(t2 * t1._storePixelRatio));
+        t1._storeHeight = C.JSNumber_methods.toInt$0(C.JSNumber_methods.roundToDouble$0(t1._height * t1._storePixelRatio));
+        t2 = t1._canvas;
+        t3 = t1._storeWidth;
+        t4 = $.get$_backingStorePixelRatio();
+        J.set$width$x(t2, C.JSNumber_methods.toInt$0(C.JSNumber_methods.roundToDouble$0(t3 / t4)));
+        J.set$height$x(t1._canvas, C.JSNumber_methods.toInt$0(C.JSNumber_methods.roundToDouble$0(t1._storeHeight / t4)));
+        t1._quad = Z.RenderTextureQuad$(t1, 0, 0, 0, 0, 0, t1._width, t1._height);
+      }
+      matrix = this._renderTexture._quad.get$drawMatrix();
+      context = J.get$context2D$x(this._renderTexture._canvas);
+      context.setTransform(matrix._a, matrix._b, matrix._c, matrix._d, matrix._tx, matrix._ty);
+      context.clearRect(0, 0, this._width, this._height);
+      this._renderText$1(context);
+      this._renderTexture.update$0();
+    },
+    _renderText$1: function(context) {
+      var textFormat, t1, t2, lineWidth, i, lm, t3, t4, t5, underlineY;
+      textFormat = this._defaultTextFormat;
+      t1 = textFormat.bold;
+      t2 = textFormat.size;
+      t1 = t1 ? t2 / 10 : t2 / 20;
+      lineWidth = C.JSNumber_methods.toInt$0(Math.ceil(t1));
+      context.save();
+      context.beginPath();
+      context.rect(0, 0, this._width, this._height);
+      context.clip();
+      if (this._background) {
+        context.fillStyle = Z._color2rgb(this._backgroundColor);
+        context.fillRect(0, 0, this._width, this._height);
+      }
+      context.font = textFormat.get$_cssFontStyle();
+      context.textAlign = "start";
+      context.textBaseline = "alphabetic";
+      t1 = Z._color2rgb(textFormat.color);
+      context.strokeStyle = t1;
+      context.fillStyle = t1;
+      context.lineJoin = "round";
+      context.lineCap = "round";
+      context.lineWidth = lineWidth;
+      for (t1 = this._textLineMetrics, t2 = textFormat.underline, i = 0; i < t1.length; ++i) {
+        lm = t1[i];
+        t3 = lm._text;
+        t4 = lm._x;
+        t5 = lm._y;
+        context.fillText(t3, t4, t5);
+        if (t2) {
+          underlineY = C.JSNumber_methods.toInt$0(C.JSNumber_methods.roundToDouble$0(lm._y + lineWidth));
+          if (C.JSInt_methods.$mod(lineWidth, 2) !== 0)
+            underlineY += 0.5;
+          context.beginPath();
+          context.moveTo(lm._x, underlineY);
+          context.lineTo(lm._x + lm._width, underlineY);
+          context.stroke();
+        }
+      }
+      if (this._border) {
+        context.strokeStyle = Z._color2rgb(this._borderColor);
+        context.lineWidth = 1;
+        context.strokeRect(0, 0, this._width, this._height);
+      }
+      context.restore();
+    },
+    _passwordEncoder$1: function(text) {
+      var t1, t2, newText, i;
+      if (!this._displayAsPassword)
+        return text;
+      for (t1 = text.length, t2 = this._passwordChar, newText = "", i = 0; i < t1; ++i)
+        newText += t2;
+      return newText;
+    },
+    _onKeyDown$1: [function(keyboardEvent) {
+      var text, t1, textLength, textLineMetrics, caretIndex, caretLine, caretIndexNew, tlm, tlmFrom, t2, tlmTo;
+      if (this._type === "input") {
+        this._refreshTextLineMetrics$0();
+        text = this._text;
+        t1 = J.getInterceptor$asx(text);
+        textLength = t1.get$length(text);
+        textLineMetrics = this._textLineMetrics;
+        caretIndex = this._caretIndex;
+        caretLine = this._caretLine;
+        switch (J.get$keyCode$x(keyboardEvent)) {
+          case 8:
+            if (typeof caretIndex !== "number")
+              return caretIndex.$gt();
+            if (caretIndex > 0) {
+              caretIndexNew = caretIndex - 1;
+              this._text = t1.substring$2(text, 0, caretIndexNew) + C.JSString_methods.substring$1(text, caretIndex);
+            } else
+              caretIndexNew = -1;
+            break;
+          case 35:
+            if (caretLine < 0 || caretLine >= textLineMetrics.length)
+              return H.ioore(textLineMetrics, caretLine);
+            tlm = textLineMetrics[caretLine];
+            caretIndexNew = tlm._textIndex + tlm._text.length;
+            break;
+          case 36:
+            if (caretLine < 0 || caretLine >= textLineMetrics.length)
+              return H.ioore(textLineMetrics, caretLine);
+            caretIndexNew = textLineMetrics[caretLine]._textIndex;
+            break;
+          case 37:
+            if (typeof caretIndex !== "number")
+              return caretIndex.$gt();
+            caretIndexNew = caretIndex > 0 ? caretIndex - 1 : -1;
+            break;
+          case 38:
+            if (caretLine > 0 && caretLine < textLineMetrics.length) {
+              t1 = textLineMetrics.length;
+              if (caretLine < 0 || caretLine >= t1)
+                return H.ioore(textLineMetrics, caretLine);
+              tlmFrom = textLineMetrics[caretLine];
+              t2 = caretLine - 1;
+              if (t2 < 0 || t2 >= t1)
+                return H.ioore(textLineMetrics, t2);
+              tlmTo = textLineMetrics[t2];
+              if (typeof caretIndex !== "number")
+                return caretIndex.$sub();
+              caretIndexNew = tlmTo._textIndex + P.min(caretIndex - tlmFrom._textIndex, tlmTo._text.length);
+            } else
+              caretIndexNew = 0;
+            break;
+          case 39:
+            if (typeof caretIndex !== "number")
+              return caretIndex.$lt();
+            if (typeof textLength !== "number")
+              return H.iae(textLength);
+            caretIndexNew = caretIndex < textLength ? caretIndex + 1 : -1;
+            break;
+          case 40:
+            if (caretLine >= 0 && caretLine < textLineMetrics.length - 1) {
+              t1 = textLineMetrics.length;
+              if (caretLine < 0 || caretLine >= t1)
+                return H.ioore(textLineMetrics, caretLine);
+              tlmFrom = textLineMetrics[caretLine];
+              t2 = caretLine + 1;
+              if (t2 >= t1)
+                return H.ioore(textLineMetrics, t2);
+              tlmTo = textLineMetrics[t2];
+              if (typeof caretIndex !== "number")
+                return caretIndex.$sub();
+              caretIndexNew = tlmTo._textIndex + P.min(caretIndex - tlmFrom._textIndex, tlmTo._text.length);
+            } else
+              caretIndexNew = textLength;
+            break;
+          case 46:
+            if (typeof caretIndex !== "number")
+              return caretIndex.$lt();
+            if (typeof textLength !== "number")
+              return H.iae(textLength);
+            if (caretIndex < textLength) {
+              this._text = t1.substring$2(text, 0, caretIndex) + C.JSString_methods.substring$1(text, caretIndex + 1);
+              caretIndexNew = caretIndex;
+            } else
+              caretIndexNew = -1;
+            break;
+          default:
+            caretIndexNew = -1;
+        }
+        if (caretIndexNew !== -1) {
+          this._caretIndex = caretIndexNew;
+          this._caretTime = 0;
+          this._refreshPending = this._refreshPending | 3;
+        }
+      }
+    }, "call$1", "get$_onKeyDown", 2, 0, 36],
+    _onTextInput$1: [function(textEvent) {
+      var textLength, caretIndex, newText, t1, t2;
+      if (this._type === "input") {
+        textLength = J.get$length$asx(this._text);
+        caretIndex = this._caretIndex;
+        newText = J.get$text$x(textEvent);
+        if (J.$eq(newText, "\r"))
+          newText = "\n";
+        if (J.$eq(newText, "\n") && !this._multiline)
+          newText = "";
+        t1 = J.getInterceptor(newText);
+        if (t1.$eq(newText, ""))
+          return;
+        t2 = this._maxChars;
+        if (t2 !== 0) {
+          if (typeof textLength !== "number")
+            return textLength.$ge();
+          t2 = textLength >= t2;
+        } else
+          t2 = false;
+        if (t2)
+          return;
+        this._text = C.JSString_methods.$add(J.substring$2$s(this._text, 0, caretIndex), newText) + J.substring$1$s(this._text, caretIndex);
+        t2 = this._caretIndex;
+        t1 = t1.get$length(newText);
+        if (typeof t2 !== "number")
+          return t2.$add();
+        if (typeof t1 !== "number")
+          return H.iae(t1);
+        this._caretIndex = t2 + t1;
+        this._caretTime = 0;
+        this._refreshPending = this._refreshPending | 3;
+      }
+    }, "call$1", "get$_onTextInput", 2, 0, 37],
+    _onMouseDown$1: [function(mouseEvent) {
+      var mouseX, mouseY, canvasContext, t1, line, textLineMetrics, text, lineX, t2, t3, bestDistance, bestIndex, c, width, distance;
+      mouseX = mouseEvent.get$localX();
+      mouseY = mouseEvent.get$localY();
+      canvasContext = $.get$_dummyCanvasContext();
+      canvasContext.setTransform(1, 0, 0, 1, 0, 0);
+      for (t1 = this._textLineMetrics, line = 0; line < t1.length; ++line) {
+        textLineMetrics = t1[line];
+        text = textLineMetrics._text;
+        lineX = textLineMetrics._x;
+        t2 = textLineMetrics._y;
+        t3 = textLineMetrics._descent;
+        if (t2 - textLineMetrics._ascent <= mouseY && t2 + t3 >= mouseY) {
+          for (t2 = text.length, bestDistance = 1 / 0, bestIndex = 0, c = 0; c <= t2; ++c) {
+            width = canvasContext.measureText(C.JSString_methods.substring$2(text, 0, c)).width;
+            width.toString;
+            if (typeof width !== "number")
+              return H.iae(width);
+            distance = Math.abs(lineX + width - mouseX);
+            if (distance < bestDistance) {
+              bestIndex = c;
+              bestDistance = distance;
+            }
+          }
+          this._caretIndex = textLineMetrics._textIndex + bestIndex;
+          this._caretTime = 0;
+          this._refreshPending = this._refreshPending | 3;
+        }
+      }
+    }, "call$1", "get$_onMouseDown", 2, 0, 38],
+    TextField$2: function(text, textFormat) {
+      var t1;
+      this.set$text(this, "");
+      t1 = new Z.TextFormat("Arial", 12, 0, false, false, false, "left", 0, 0, 0, 0, 0, 0);
+      this._defaultTextFormat = t1.clone$0(t1);
+      this._refreshPending = this._refreshPending | 3;
+      this.on$1(this, C.EventStreamProvider_keyDown.eventType).listen$1(this.get$_onKeyDown());
+      this.on$1(this, C.EventStreamProvider_textInput.eventType).listen$1(this.get$_onTextInput());
+      this.on$1(this, C.EventStreamProvider_mouseDown.eventType).listen$1(this.get$_onMouseDown());
+    },
+    $isTextField: true,
+    static: {TextField$: function(text, textFormat) {
+        var t1, t2;
+        t1 = H.setRuntimeTypeInfo([], [Z.TextLineMetrics]);
+        t2 = $.DisplayObject__nextID;
+        $.DisplayObject__nextID = t2 + 1;
+        t2 = new Z.TextField("", null, "none", "dynamic", 0, 0, 0, 0, 0, 0, 0, false, false, false, false, false, "\u2022", 16777215, 0, 0, 100, 100, 0, 0, t1, 3, true, null, false, true, true, 0, t2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, true, false, null, null, null, false, null, null, null, "", null, Z.Matrix$fromIdentity(), Z.Matrix$fromIdentity(), true, null, null);
+        t2.TextField$2(text, textFormat);
+        return t2;
+      }}
+  },
+  TextFormat: {
+    "": "Object;font,size,color,bold,italic,underline,align,topMargin,bottomMargin,leftMargin,rightMargin,indent,leading",
+    clone$0: function(_) {
+      return new Z.TextFormat(this.font, this.size, this.color, this.bold, this.italic, this.underline, this.align, this.topMargin, this.bottomMargin, this.leftMargin, this.rightMargin, this.indent, this.leading);
+    },
+    get$_cssFontStyle: function() {
+      var fontStyle = "" + this.size + "px " + this.font + ", sans-serif";
+      if (this.bold)
+        fontStyle = "bold " + fontStyle;
+      return this.italic ? "italic " + fontStyle : fontStyle;
+    }
+  },
+  TextLineMetrics: {
+    "": "Object;_text,_textIndex,_x<,_y<,_width,_height,_ascent,_descent,_leading,_indent",
+    get$width: function(_) {
+      return this._width;
+    },
+    get$height: function(_) {
+      return this._height;
+    },
+    get$ascent: function() {
+      return this._ascent;
+    },
+    get$descent: function() {
+      return this._descent;
+    }
   },
   ResourceManager: {
     "": "EventDispatcher;_resources,_eventStreams",
@@ -10996,23 +12759,31 @@ var $$ = {};
         throw H.wrapException("dart2js_hint");
       return value;
     },
+    getSound$1: function($name) {
+      var value, t1;
+      value = this._getResourceValue$2("Sound", $name);
+      t1 = J.getInterceptor(value);
+      if (typeof value !== "object" || value === null || !t1.$isSound)
+        throw H.wrapException("dart2js_hint");
+      return value;
+    },
     static: {"": "ResourceManager_progressEvent"}
   },
   ResourceManager__addResource_closure: {
-    "": "Closure:11;this_0",
+    "": "Closure:13;this_0",
     call$1: function(_) {
       var t1 = this.this_0;
       t1._dispatchEventInternal$3(new Z.Event("progress", false, 2, null, null, false, false), t1, 2);
     }
   },
   ResourceManager_load_closure: {
-    "": "Closure:11;",
+    "": "Closure:13;",
     call$1: function(r) {
       return J.get$complete$x(r);
     }
   },
   ResourceManager_load_closure0: {
-    "": "Closure:11;this_0",
+    "": "Closure:13;this_0",
     call$1: function(value) {
       var t1, errors;
       t1 = this.this_0;
@@ -11024,14 +12795,14 @@ var $$ = {};
     }
   },
   ResourceManager_pendingResources_closure: {
-    "": "Closure:11;",
+    "": "Closure:13;",
     call$1: function(r) {
       var t1 = J.getInterceptor$x(r);
       return t1.get$value(r) == null && t1.get$error(r) == null;
     }
   },
   ResourceManager_failedResources_closure: {
-    "": "Closure:11;",
+    "": "Closure:13;",
     call$1: function(r) {
       return J.get$error$x(r) != null;
     }
@@ -11060,19 +12831,19 @@ var $$ = {};
       }}
   },
   ResourceManagerResource_closure: {
-    "": "Closure:11;this_0",
+    "": "Closure:13;this_0",
     call$1: function(resource) {
       this.this_0._stagexl$_value = resource;
     }
   },
   ResourceManagerResource_closure0: {
-    "": "Closure:11;this_1",
+    "": "Closure:13;this_1",
     call$1: function(error) {
       this.this_1._stagexl$_error = error;
     }
   },
   ResourceManagerResource_closure1: {
-    "": "Closure:9;this_2",
+    "": "Closure:11;this_2",
     call$0: function() {
       var t1, t2;
       t1 = this.this_2;
@@ -11083,7 +12854,7 @@ var $$ = {};
     }
   },
   _checkWebpSupport_checkImage: {
-    "": "Closure:0;completer_0,image_1",
+    "": "Closure:1;completer_0,image_1",
     call$0: function() {
       var t1, t2;
       t1 = this.image_1;
@@ -11096,19 +12867,19 @@ var $$ = {};
     }
   },
   _checkWebpSupport_closure: {
-    "": "Closure:11;checkImage_2",
+    "": "Closure:13;checkImage_2",
     call$1: function(e) {
       return this.checkImage_2.call$0();
     }
   },
   _checkWebpSupport_closure0: {
-    "": "Closure:11;checkImage_3",
+    "": "Closure:13;checkImage_3",
     call$1: function(e) {
       return this.checkImage_3.call$0();
     }
   },
   _loadImageElement_closure: {
-    "": "Closure:11;box_0,completer_1,imageElement_2",
+    "": "Closure:13;box_0,completer_1,imageElement_2",
     call$1: function($event) {
       var t1 = this.box_0;
       t1.onLoadSubscription_0.cancel$0();
@@ -11120,7 +12891,7 @@ var $$ = {};
     }
   },
   _loadImageElement_closure0: {
-    "": "Closure:11;box_0,completer_3",
+    "": "Closure:13;box_0,completer_3",
     call$1: function($event) {
       var t1 = this.box_0;
       t1.onLoadSubscription_0.cancel$0();
@@ -11129,7 +12900,7 @@ var $$ = {};
     }
   },
   _loadImageElement_closure1: {
-    "": "Closure:34;url_4,webpAvailable_5,imageElement_6",
+    "": "Closure:39;url_4,webpAvailable_5,imageElement_6",
     call$1: function(webpSupported) {
       var t1, match;
       t1 = this.url_4;
@@ -11140,7 +12911,7 @@ var $$ = {};
     }
   },
   closure: {
-    "": "Closure:9;",
+    "": "Closure:11;",
     call$0: function() {
       var t1, ua;
       t1 = window.navigator.userAgent;
@@ -11158,11 +12929,11 @@ $$ = null;
 J.JSInt.$isint = true;
 J.JSInt.$isnum = true;
 J.JSInt.$isObject = true;
+J.JSDouble.$isnum = true;
+J.JSDouble.$isObject = true;
 W.Node.$isNode = true;
 W.Node.$isEventTarget = true;
 W.Node.$isObject = true;
-J.JSDouble.$isnum = true;
-J.JSDouble.$isObject = true;
 W.Touch.$isObject = true;
 J.JSString.$isString = true;
 J.JSString.$isObject = true;
@@ -11172,9 +12943,24 @@ P.Duration.$isDuration = true;
 P.Duration.$isObject = true;
 Z.Stage.$isObject = true;
 Z.ResourceManagerResource.$isObject = true;
-Z.DisplayObject.$isObject = true;
-Z._GraphicsCommand.$isObject = true;
+Z.MouseEvent.$isMouseEvent = true;
+Z.MouseEvent.$isEvent = true;
+Z.MouseEvent.$isObject = true;
 J.JSArray.$isObject = true;
+Z.EnterFrameEvent.$isEnterFrameEvent = true;
+Z.EnterFrameEvent.$isEvent = true;
+Z.EnterFrameEvent.$isObject = true;
+Z._GraphicsCommand.$isObject = true;
+Z.DisplayObject.$isObject = true;
+Z.TextLineMetrics.$isObject = true;
+Z.KeyboardEvent0.$isKeyboardEvent0 = true;
+Z.KeyboardEvent0.$isEvent = true;
+Z.KeyboardEvent0.$isObject = true;
+Z.TextEvent0.$isTextEvent0 = true;
+Z.TextEvent0.$isEvent = true;
+Z.TextEvent0.$isObject = true;
+Z._FontStyleMetrics.$isObject = true;
+Z.EventStream.$isObject = true;
 Z.Sound.$isObject = true;
 Z.AudioElementSoundChannel.$isAudioElementSoundChannel = true;
 Z.AudioElementSoundChannel.$isObject = true;
@@ -11210,18 +12996,17 @@ W.WheelEvent.$isObject = true;
 W.TouchEvent0.$isTouchEvent0 = true;
 W.TouchEvent0.$isEvent0 = true;
 W.TouchEvent0.$isObject = true;
+Z.Event.$isEvent = true;
+Z.Event.$isObject = true;
 P.ContextEvent.$isContextEvent = true;
 P.ContextEvent.$isEvent0 = true;
 P.ContextEvent.$isObject = true;
-Z.Event.$isEvent = true;
-Z.Event.$isObject = true;
-Z.EventStream.$isObject = true;
 H.RawReceivePortImpl.$isObject = true;
 H._IsolateEvent.$isObject = true;
 H._IsolateContext.$isObject = true;
+P.Object.$isObject = true;
 P.Symbol.$isSymbol = true;
 P.Symbol.$isObject = true;
-P.Object.$isObject = true;
 P.StackTrace.$isStackTrace = true;
 P.StackTrace.$isObject = true;
 P._BroadcastSubscription.$is_BroadcastSubscription = true;
@@ -11235,14 +13020,18 @@ P._BufferingStreamSubscription.$isStreamSubscription = true;
 P._BufferingStreamSubscription.$isObject = true;
 W.EventTarget.$isEventTarget = true;
 W.EventTarget.$isObject = true;
+P._EventSink.$is_EventSink = true;
+P._EventSink.$isObject = true;
 P.Future.$isFuture = true;
 P.Future.$isObject = true;
 P._DelayedEvent.$is_DelayedEvent = true;
 P._DelayedEvent.$isObject = true;
-P._EventSink.$is_EventSink = true;
-P._EventSink.$isObject = true;
 P.StreamSubscription.$isStreamSubscription = true;
 P.StreamSubscription.$isObject = true;
+Z.Rectangle0.$isRectangle0 = true;
+Z.Rectangle0.$isObject = true;
+Z.Point.$isPoint = true;
+Z.Point.$isObject = true;
 P.Function.$isFunction = true;
 P.Function.$isObject = true;
 W.Element.$isElement = true;
@@ -11251,8 +13040,6 @@ W.Element.$isEventTarget = true;
 W.Element.$isObject = true;
 P.DateTime.$isDateTime = true;
 P.DateTime.$isObject = true;
-Z.Point.$isPoint = true;
-Z.Point.$isObject = true;
 Z.Animatable.$isAnimatable = true;
 Z.Animatable.$isObject = true;
 $.$signature_args2 = {func: "args2", args: [null, null]};
@@ -11371,6 +13158,9 @@ J.$indexSet$ax = function(receiver, a0, a1) {
 J.addEventListener$3$x = function(receiver, a0, a1, a2) {
   return J.getInterceptor$x(receiver).addEventListener$3(receiver, a0, a1, a2);
 };
+J.append$1$x = function(receiver, a0) {
+  return J.getInterceptor$x(receiver).append$1(receiver, a0);
+};
 J.createGain$0$x = function(receiver) {
   return J.getInterceptor$x(receiver).createGain$0(receiver);
 };
@@ -11410,8 +13200,14 @@ J.get$identifier$x = function(receiver) {
 J.get$iterator$ax = function(receiver) {
   return J.getInterceptor$ax(receiver).get$iterator(receiver);
 };
+J.get$keyCode$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$keyCode(receiver);
+};
 J.get$length$asx = function(receiver) {
   return J.getInterceptor$asx(receiver).get$length(receiver);
+};
+J.get$offsetTop$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$offsetTop(receiver);
 };
 J.get$onEnded$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$onEnded(receiver);
@@ -11431,6 +13227,9 @@ J.get$tabIndex$x = function(receiver) {
 J.get$target$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$target(receiver);
 };
+J.get$text$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$text(receiver);
+};
 J.get$width$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$width(receiver);
 };
@@ -11440,17 +13239,29 @@ J.isPointInStroke$2$x = function(receiver, a0, a1) {
 J.preventDefault$0$x = function(receiver) {
   return J.getInterceptor$x(receiver).preventDefault$0(receiver);
 };
+J.remove$0$ax = function(receiver) {
+  return J.getInterceptor$ax(receiver).remove$0(receiver);
+};
 J.removeAt$1$ax = function(receiver, a0) {
   return J.getInterceptor$ax(receiver).removeAt$1(receiver, a0);
 };
 J.removeEventListener$3$x = function(receiver, a0, a1, a2) {
   return J.getInterceptor$x(receiver).removeEventListener$3(receiver, a0, a1, a2);
 };
+J.replaceAll$2$s = function(receiver, a0, a1) {
+  return J.getInterceptor$s(receiver).replaceAll$2(receiver, a0, a1);
+};
 J.send$1$x = function(receiver, a0) {
   return J.getInterceptor$x(receiver).send$1(receiver, a0);
 };
 J.set$cursor$x = function(receiver, value) {
   return J.getInterceptor$x(receiver).set$cursor(receiver, value);
+};
+J.set$display$x = function(receiver, value) {
+  return J.getInterceptor$x(receiver).set$display(receiver, value);
+};
+J.set$font$x = function(receiver, value) {
+  return J.getInterceptor$x(receiver).set$font(receiver, value);
 };
 J.set$height$x = function(receiver, value) {
   return J.getInterceptor$x(receiver).set$height(receiver, value);
@@ -11473,8 +13284,20 @@ J.set$src$x = function(receiver, value) {
 J.set$tabIndex$x = function(receiver, value) {
   return J.getInterceptor$x(receiver).set$tabIndex(receiver, value);
 };
+J.set$text$x = function(receiver, value) {
+  return J.getInterceptor$x(receiver).set$text(receiver, value);
+};
+J.set$verticalAlign$x = function(receiver, value) {
+  return J.getInterceptor$x(receiver).set$verticalAlign(receiver, value);
+};
 J.set$width$x = function(receiver, value) {
   return J.getInterceptor$x(receiver).set$width(receiver, value);
+};
+J.split$1$s = function(receiver, a0) {
+  return J.getInterceptor$s(receiver).split$1(receiver, a0);
+};
+J.substring$1$s = function(receiver, a0) {
+  return J.getInterceptor$s(receiver).substring$1(receiver, a0);
 };
 J.substring$2$s = function(receiver, a0, a1) {
   return J.getInterceptor$s(receiver).substring$2(receiver, a0, a1);
@@ -11484,6 +13307,9 @@ J.texImage2D$6$x = function(receiver, a0, a1, a2, a3, a4, a5) {
 };
 J.toDouble$0$n = function(receiver) {
   return J.getInterceptor$n(receiver).toDouble$0(receiver);
+};
+J.toInt$0$n = function(receiver) {
+  return J.getInterceptor$n(receiver).toInt$0(receiver);
 };
 J.toList$0$ax = function(receiver) {
   return J.getInterceptor$ax(receiver).toList$0(receiver);
@@ -11497,20 +13323,25 @@ C.C__RootZone = new P._RootZone();
 C.CanvasElement_methods = W.CanvasElement.prototype;
 C.Duration_0 = new P.Duration(0);
 C.EventStreamProvider_canplay = new W.EventStreamProvider("canplay");
+C.EventStreamProvider_click = new Z.EventStreamProvider0("click");
 C.EventStreamProvider_contextRestored = new Z.EventStreamProvider0("contextRestored");
 C.EventStreamProvider_contextmenu = new W.EventStreamProvider("contextmenu");
 C.EventStreamProvider_ended = new W.EventStreamProvider("ended");
+C.EventStreamProvider_enterFrame = new Z.EventStreamProvider0("enterFrame");
 C.EventStreamProvider_error = new W.EventStreamProvider("error");
 C.EventStreamProvider_error0 = new W.EventStreamProvider("error");
+C.EventStreamProvider_keyDown = new Z.EventStreamProvider0("keyDown");
 C.EventStreamProvider_keydown = new W.EventStreamProvider("keydown");
 C.EventStreamProvider_keypress = new W.EventStreamProvider("keypress");
 C.EventStreamProvider_keyup = new W.EventStreamProvider("keyup");
 C.EventStreamProvider_load = new W.EventStreamProvider("load");
 C.EventStreamProvider_load0 = new W.EventStreamProvider("load");
+C.EventStreamProvider_mouseDown = new Z.EventStreamProvider0("mouseDown");
 C.EventStreamProvider_mousedown = new W.EventStreamProvider("mousedown");
 C.EventStreamProvider_mousemove = new W.EventStreamProvider("mousemove");
 C.EventStreamProvider_mouseout = new W.EventStreamProvider("mouseout");
 C.EventStreamProvider_mouseup = new W.EventStreamProvider("mouseup");
+C.EventStreamProvider_textInput = new Z.EventStreamProvider0("textInput");
 C.EventStreamProvider_touchcancel = new W.EventStreamProvider("touchcancel");
 C.EventStreamProvider_touchend = new W.EventStreamProvider("touchend");
 C.EventStreamProvider_touchenter = new W.EventStreamProvider("touchenter");
@@ -11683,15 +13514,19 @@ $.prototypeForTagFunction = null;
 $.dispatchRecordsForInstanceTags = null;
 $.interceptorsForUncacheableTags = null;
 $.initNativeDispatchFlag = null;
+$.buttonHeight = 30;
+$.buttonWidth = 85;
 $.cities = null;
+$.colony = null;
 $.resourceManager = null;
-$.soundChannel = null;
+$.soundChannel2 = null;
 $.canvas = null;
 $.stage = null;
 $.listMenu = null;
 $.actionMenu = null;
 $.mapPic = null;
 $.hammerPic = null;
+$.spaceShip = null;
 $.printToZone = null;
 $._callbacksAreEnqueued = false;
 $.Zone__current = C.C__RootZone;
@@ -11709,6 +13544,8 @@ $.SoundMixer__audioElementMixer = null;
 $.Mouse__customCursor = "auto";
 $.Mouse__isCursorHidden = false;
 $.Mouse__dragSprite = null;
+$.Mouse__dragSpriteCenter = null;
+$.Mouse__dragSpriteBounds = null;
 $.Multitouch__inputMode = "none";
 Isolate.$lazy($, "globalThis", "globalThis", "get$globalThis", function() {
   return function() { return this; }();
@@ -11840,6 +13677,9 @@ Isolate.$lazy($, "_supportedTypes", "SoundMixer__supportedTypes", "get$SoundMixe
   P.print("StageXL audio types   : " + H.S(supportedTypes));
   return supportedTypes;
 });
+Isolate.$lazy($, "_fontStyleMetrics", "_fontStyleMetrics", "get$_fontStyleMetrics", function() {
+  return P.LinkedHashMap_LinkedHashMap(null, null, null, J.JSString, Z._FontStyleMetrics);
+});
 Isolate.$lazy($, "_mouseCursorChangedEvent", "Mouse__mouseCursorChangedEvent", "get$Mouse__mouseCursorChangedEvent", function() {
   return P.StreamController_StreamController(null, null, null, null, false, J.JSString);
 });
@@ -11858,6 +13698,9 @@ Isolate.$lazy($, "_onInputModeChanged", "Multitouch__onInputModeChanged", "get$M
 });
 Isolate.$lazy($, "_isWebpSupported", "_isWebpSupported", "get$_isWebpSupported", function() {
   return Z._checkWebpSupport();
+});
+Isolate.$lazy($, "_identityMatrix", "_identityMatrix", "get$_identityMatrix", function() {
+  return Z.Matrix$fromIdentity();
 });
 Isolate.$lazy($, "_dummyCanvas", "_dummyCanvas", "get$_dummyCanvas", function() {
   return W.CanvasElement_CanvasElement(16, 16);
@@ -11898,7 +13741,9 @@ Isolate.$lazy($, "_autoHiDpi", "_autoHiDpi", "get$_autoHiDpi", function() {
 
 init.functionAliases = {};
 ;
-init.metadata = [{func: "void_", void: true},
+init.metadata = [{func: "void__MouseEvent", void: true, args: [Z.MouseEvent]},
+{func: "void_", void: true},
+{func: "dynamic__EnterFrameEvent", args: [Z.EnterFrameEvent]},
 {func: "void__dynamic", void: true, args: [null]},
 {func: "void__dynamic__StackTrace", void: true, args: [null], opt: [P.StackTrace]},
 ,
@@ -11932,6 +13777,9 @@ init.metadata = [{func: "void_", void: true},
 {func: "dynamic__Event", args: [Z.Event]},
 {func: "void__Event", void: true, args: [W.Event0]},
 {func: "dynamic__AudioBuffer", args: [P.AudioBuffer]},
+{func: "dynamic__KeyboardEvent0", args: [Z.KeyboardEvent0]},
+{func: "dynamic__TextEvent", args: [Z.TextEvent0]},
+{func: "dynamic__MouseEvent0", args: [Z.MouseEvent]},
 {func: "dynamic__bool", args: [J.JSBool]},
 ];
 $ = null;
@@ -12675,6 +14523,9 @@ function dart_precompiled($collectedClasses) {
   Element.prototype.set$tabIndex = function(receiver, v) {
     return receiver.tabIndex = v;
   };
+  Element.prototype.get$offsetTop = function(receiver) {
+    return receiver.offsetTop;
+  };
   Element.prototype.get$style = function(receiver) {
     return receiver.style;
   };
@@ -13221,6 +15072,12 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   Node.prototype = $desc;
+  Node.prototype.get$text = function(receiver) {
+    return receiver.textContent;
+  };
+  Node.prototype.set$text = function(receiver, v) {
+    return receiver.textContent = v;
+  };
   function NodeList() {
   }
   NodeList.builtin$cls = "NodeList";
@@ -13677,6 +15534,18 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   TextEvent.prototype = $desc;
+  function TextMetrics() {
+  }
+  TextMetrics.builtin$cls = "TextMetrics";
+  if (!"name" in TextMetrics)
+    TextMetrics.name = "TextMetrics";
+  $desc = $collectedClasses.TextMetrics;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  TextMetrics.prototype = $desc;
+  TextMetrics.prototype.get$width = function(receiver) {
+    return receiver.width;
+  };
   function TitleElement() {
   }
   TitleElement.builtin$cls = "TitleElement";
@@ -15858,6 +17727,16 @@ function dart_precompiled($collectedClasses) {
   BoundClosure.prototype.get$_receiver = function() {
     return this._receiver;
   };
+  function CastErrorImplementation(message) {
+    this.message = message;
+  }
+  CastErrorImplementation.builtin$cls = "CastErrorImplementation";
+  if (!"name" in CastErrorImplementation)
+    CastErrorImplementation.name = "CastErrorImplementation";
+  $desc = $collectedClasses.CastErrorImplementation;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  CastErrorImplementation.prototype = $desc;
   function RuntimeError(message) {
     this.message = message;
   }
@@ -15963,10 +17842,11 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   _MatchImplementation.prototype = $desc;
-  function City(population, dead, infected, healthy, name, spread_from_factor, spread_to_factor, spread_within_factor, death_rate, workforce, production, next_to, house_arrest, quarantine) {
+  function City(population, dead, infected, getting_sick, healthy, name, spread_from_factor, spread_to_factor, spread_within_factor, death_rate, workforce, production, next_to, x, y, house_arrest, quarantine, barricade, uprooted) {
     this.population = population;
     this.dead = dead;
     this.infected = infected;
+    this.getting_sick = getting_sick;
     this.healthy = healthy;
     this.name = name;
     this.spread_from_factor = spread_from_factor;
@@ -15976,8 +17856,12 @@ function dart_precompiled($collectedClasses) {
     this.workforce = workforce;
     this.production = production;
     this.next_to = next_to;
+    this.x = x;
+    this.y = y;
     this.house_arrest = house_arrest;
     this.quarantine = quarantine;
+    this.barricade = barricade;
+    this.uprooted = uprooted;
   }
   City.builtin$cls = "City";
   if (!"name" in City)
@@ -15986,6 +17870,28 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   City.prototype = $desc;
+  City.prototype.get$dead = function() {
+    return this.dead;
+  };
+  City.prototype.set$dead = function(v) {
+    return this.dead = v;
+  };
+  City.prototype.get$spread_to_factor = function() {
+    return this.spread_to_factor;
+  };
+  function Colony(resources, remaining_turns, remaining, selected_city) {
+    this.resources = resources;
+    this.remaining_turns = remaining_turns;
+    this.remaining = remaining;
+    this.selected_city = selected_city;
+  }
+  Colony.builtin$cls = "Colony";
+  if (!"name" in Colony)
+    Colony.name = "Colony";
+  $desc = $collectedClasses.Colony;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  Colony.prototype = $desc;
   function main_closure() {
   }
   main_closure.builtin$cls = "main_closure";
@@ -15995,11 +17901,28 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   main_closure.prototype = $desc;
-  function Menu(infectedPercent, healthyPercent, deadPerfect, thisCity, _children, _mouseChildren, _tabChildren, doubleClickEnabled, mouseEnabled, tabEnabled, tabIndex, _stagexl$_id, _x, _y, _pivotX, _pivotY, _scaleX, _scaleY, _skewX, _skewY, _rotation, _alpha, _visible, _off, _mask, _cacheTexture, _cacheRectangle, _cacheDebugBorder, _filters, _shadow, _compositeOperation, _stagexl$_name, _parent, _tmpMatrix, _transformationMatrix, _transformationMatrixRefresh, userData, _eventStreams) {
+  function Menu(infectedPercent, healthyPercent, deadPerfect, thisCity, thisBarricade, thisQuarantine, thisHouseArrest, cityName, originalPopulation, deathToll, infected, uninfected, productionRate, expectedProduction, resourcesLabel, globalDeathTollLabel, turnsRemainingLabel, productTextField, healthyBar, infectedBar, deceasedBar, _children, _mouseChildren, _tabChildren, doubleClickEnabled, mouseEnabled, tabEnabled, tabIndex, _stagexl$_id, _x, _y, _pivotX, _pivotY, _scaleX, _scaleY, _skewX, _skewY, _rotation, _alpha, _visible, _off, _mask, _cacheTexture, _cacheRectangle, _cacheDebugBorder, _filters, _shadow, _compositeOperation, _stagexl$_name, _parent, _tmpMatrix, _transformationMatrix, _transformationMatrixRefresh, userData, _eventStreams) {
     this.infectedPercent = infectedPercent;
     this.healthyPercent = healthyPercent;
     this.deadPerfect = deadPerfect;
     this.thisCity = thisCity;
+    this.thisBarricade = thisBarricade;
+    this.thisQuarantine = thisQuarantine;
+    this.thisHouseArrest = thisHouseArrest;
+    this.cityName = cityName;
+    this.originalPopulation = originalPopulation;
+    this.deathToll = deathToll;
+    this.infected = infected;
+    this.uninfected = uninfected;
+    this.productionRate = productionRate;
+    this.expectedProduction = expectedProduction;
+    this.resourcesLabel = resourcesLabel;
+    this.globalDeathTollLabel = globalDeathTollLabel;
+    this.turnsRemainingLabel = turnsRemainingLabel;
+    this.productTextField = productTextField;
+    this.healthyBar = healthyBar;
+    this.infectedBar = infectedBar;
+    this.deceasedBar = deceasedBar;
     this._children = _children;
     this._mouseChildren = _mouseChildren;
     this._tabChildren = _tabChildren;
@@ -17666,8 +19589,8 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   Interceptor_ListMixin_ImmutableListMixin1.prototype = $desc;
-  function EventStreamProvider(_eventType) {
-    this._eventType = _eventType;
+  function EventStreamProvider(_html$_eventType) {
+    this._html$_eventType = _html$_eventType;
   }
   EventStreamProvider.builtin$cls = "EventStreamProvider";
   if (!"name" in EventStreamProvider)
@@ -17676,9 +19599,9 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   EventStreamProvider.prototype = $desc;
-  function _EventStream(_html$_target, _eventType, _useCapture) {
+  function _EventStream(_html$_target, _html$_eventType, _useCapture) {
     this._html$_target = _html$_target;
-    this._eventType = _eventType;
+    this._html$_eventType = _html$_eventType;
     this._useCapture = _useCapture;
   }
   _EventStream.builtin$cls = "_EventStream";
@@ -17688,9 +19611,9 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   _EventStream.prototype = $desc;
-  function _ElementEventStreamImpl(_html$_target, _eventType, _useCapture) {
+  function _ElementEventStreamImpl(_html$_target, _html$_eventType, _useCapture) {
     this._html$_target = _html$_target;
-    this._eventType = _eventType;
+    this._html$_eventType = _html$_eventType;
     this._useCapture = _useCapture;
   }
   _ElementEventStreamImpl.builtin$cls = "_ElementEventStreamImpl";
@@ -17700,10 +19623,10 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   _ElementEventStreamImpl.prototype = $desc;
-  function _EventStreamSubscription(_pauseCount, _html$_target, _eventType, _onData, _useCapture) {
-    this._pauseCount = _pauseCount;
+  function _EventStreamSubscription(_html$_pauseCount, _html$_target, _html$_eventType, _onData, _useCapture) {
+    this._html$_pauseCount = _html$_pauseCount;
     this._html$_target = _html$_target;
-    this._eventType = _eventType;
+    this._html$_eventType = _html$_eventType;
     this._onData = _onData;
     this._useCapture = _useCapture;
   }
@@ -18273,6 +20196,54 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   Shape.prototype = $desc;
+  function Sprite(buttonMode, useHandCursor, hitArea, _graphics, _dropTarget, _children, _mouseChildren, _tabChildren, doubleClickEnabled, mouseEnabled, tabEnabled, tabIndex, _stagexl$_id, _x, _y, _pivotX, _pivotY, _scaleX, _scaleY, _skewX, _skewY, _rotation, _alpha, _visible, _off, _mask, _cacheTexture, _cacheRectangle, _cacheDebugBorder, _filters, _shadow, _compositeOperation, _stagexl$_name, _parent, _tmpMatrix, _transformationMatrix, _transformationMatrixRefresh, userData, _eventStreams) {
+    this.buttonMode = buttonMode;
+    this.useHandCursor = useHandCursor;
+    this.hitArea = hitArea;
+    this._graphics = _graphics;
+    this._dropTarget = _dropTarget;
+    this._children = _children;
+    this._mouseChildren = _mouseChildren;
+    this._tabChildren = _tabChildren;
+    this.doubleClickEnabled = doubleClickEnabled;
+    this.mouseEnabled = mouseEnabled;
+    this.tabEnabled = tabEnabled;
+    this.tabIndex = tabIndex;
+    this._stagexl$_id = _stagexl$_id;
+    this._x = _x;
+    this._y = _y;
+    this._pivotX = _pivotX;
+    this._pivotY = _pivotY;
+    this._scaleX = _scaleX;
+    this._scaleY = _scaleY;
+    this._skewX = _skewX;
+    this._skewY = _skewY;
+    this._rotation = _rotation;
+    this._alpha = _alpha;
+    this._visible = _visible;
+    this._off = _off;
+    this._mask = _mask;
+    this._cacheTexture = _cacheTexture;
+    this._cacheRectangle = _cacheRectangle;
+    this._cacheDebugBorder = _cacheDebugBorder;
+    this._filters = _filters;
+    this._shadow = _shadow;
+    this._compositeOperation = _compositeOperation;
+    this._stagexl$_name = _stagexl$_name;
+    this._parent = _parent;
+    this._tmpMatrix = _tmpMatrix;
+    this._transformationMatrix = _transformationMatrix;
+    this._transformationMatrixRefresh = _transformationMatrixRefresh;
+    this.userData = userData;
+    this._eventStreams = _eventStreams;
+  }
+  Sprite.builtin$cls = "Sprite";
+  if (!"name" in Sprite)
+    Sprite.name = "Sprite";
+  $desc = $collectedClasses.Sprite;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  Sprite.prototype = $desc;
   function _MouseButton(target, buttonDown, clickTime, clickCount, mouseDownEventType, mouseUpEventType, mouseClickEventType, mouseDoubleClickEventType) {
     this.target = target;
     this.buttonDown = buttonDown;
@@ -18659,9 +20630,9 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   EventDispatcher.prototype = $desc;
-  function EventStream(_stagexl$_target, _stagexl$_eventType, _subscriptions, _capturingSubscriptionCount) {
+  function EventStream(_stagexl$_target, _eventType, _subscriptions, _capturingSubscriptionCount) {
     this._stagexl$_target = _stagexl$_target;
-    this._stagexl$_eventType = _stagexl$_eventType;
+    this._eventType = _eventType;
     this._subscriptions = _subscriptions;
     this._capturingSubscriptionCount = _capturingSubscriptionCount;
   }
@@ -18682,9 +20653,9 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   EventStreamProvider0.prototype = $desc;
-  function EventStreamSubscription(_priority, _stagexl$_pauseCount, _canceled, _captures, _eventStream, _eventListener) {
+  function EventStreamSubscription(_priority, _pauseCount, _canceled, _captures, _eventStream, _eventListener) {
     this._priority = _priority;
-    this._stagexl$_pauseCount = _stagexl$_pauseCount;
+    this._pauseCount = _pauseCount;
     this._canceled = _canceled;
     this._captures = _captures;
     this._eventStream = _eventStream;
@@ -18697,6 +20668,15 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   EventStreamSubscription.prototype = $desc;
+  function KeyboardEvent0() {
+  }
+  KeyboardEvent0.builtin$cls = "KeyboardEvent0";
+  if (!"name" in KeyboardEvent0)
+    KeyboardEvent0.name = "KeyboardEvent0";
+  $desc = $collectedClasses.KeyboardEvent0;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  KeyboardEvent0.prototype = $desc;
   function MouseEvent(_localX, _localY, _stageX, _stageY, _deltaX, _deltaY, _buttonDown, _altKey, _controlKey, _ctrlKey, _shiftKey, _clickCount, _type, _bubbles, _eventPhase, _stagexl$_target, _currentTarget, _stopsPropagation, _stopsImmediatePropagation) {
     this._localX = _localX;
     this._localY = _localY;
@@ -18725,6 +20705,15 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   MouseEvent.prototype = $desc;
+  function TextEvent0() {
+  }
+  TextEvent0.builtin$cls = "TextEvent0";
+  if (!"name" in TextEvent0)
+    TextEvent0.name = "TextEvent0";
+  $desc = $collectedClasses.TextEvent0;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  TextEvent0.prototype = $desc;
   function TouchEvent(_touchPointID, _isPrimaryTouchPoint, _localX, _localY, _stageX, _stageY, _altKey, _controlKey, _ctrlKey, _shiftKey, _pressure, _sizeX, _sizeY, _type, _bubbles, _eventPhase, _stagexl$_target, _currentTarget, _stopsPropagation, _stopsImmediatePropagation) {
     this._touchPointID = _touchPointID;
     this._isPrimaryTouchPoint = _isPrimaryTouchPoint;
@@ -19076,6 +21065,143 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   SoundTransform.prototype = $desc;
+  function _FontStyleMetrics(fontStyle, ascent, descent, height) {
+    this.fontStyle = fontStyle;
+    this.ascent = ascent;
+    this.descent = descent;
+    this.height = height;
+  }
+  _FontStyleMetrics.builtin$cls = "_FontStyleMetrics";
+  if (!"name" in _FontStyleMetrics)
+    _FontStyleMetrics.name = "_FontStyleMetrics";
+  $desc = $collectedClasses._FontStyleMetrics;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  _FontStyleMetrics.prototype = $desc;
+  _FontStyleMetrics.prototype.get$ascent = function() {
+    return this.ascent;
+  };
+  _FontStyleMetrics.prototype.get$descent = function() {
+    return this.descent;
+  };
+  _FontStyleMetrics.prototype.get$height = function(receiver) {
+    return this.height;
+  };
+  function TextField(_text, _defaultTextFormat, _autoSize, _type, _caretIndex, _caretLine, _caretTime, _caretX, _caretY, _caretWidth, _caretHeight, _wordWrap, _multiline, _displayAsPassword, _background, _border, _passwordChar, _backgroundColor, _borderColor, _maxChars, _width, _height, _textWidth, _textHeight, _textLineMetrics, _refreshPending, _cacheAsBitmap, _renderTexture, doubleClickEnabled, mouseEnabled, tabEnabled, tabIndex, _stagexl$_id, _x, _y, _pivotX, _pivotY, _scaleX, _scaleY, _skewX, _skewY, _rotation, _alpha, _visible, _off, _mask, _cacheTexture, _cacheRectangle, _cacheDebugBorder, _filters, _shadow, _compositeOperation, _stagexl$_name, _parent, _tmpMatrix, _transformationMatrix, _transformationMatrixRefresh, userData, _eventStreams) {
+    this._text = _text;
+    this._defaultTextFormat = _defaultTextFormat;
+    this._autoSize = _autoSize;
+    this._type = _type;
+    this._caretIndex = _caretIndex;
+    this._caretLine = _caretLine;
+    this._caretTime = _caretTime;
+    this._caretX = _caretX;
+    this._caretY = _caretY;
+    this._caretWidth = _caretWidth;
+    this._caretHeight = _caretHeight;
+    this._wordWrap = _wordWrap;
+    this._multiline = _multiline;
+    this._displayAsPassword = _displayAsPassword;
+    this._background = _background;
+    this._border = _border;
+    this._passwordChar = _passwordChar;
+    this._backgroundColor = _backgroundColor;
+    this._borderColor = _borderColor;
+    this._maxChars = _maxChars;
+    this._width = _width;
+    this._height = _height;
+    this._textWidth = _textWidth;
+    this._textHeight = _textHeight;
+    this._textLineMetrics = _textLineMetrics;
+    this._refreshPending = _refreshPending;
+    this._cacheAsBitmap = _cacheAsBitmap;
+    this._renderTexture = _renderTexture;
+    this.doubleClickEnabled = doubleClickEnabled;
+    this.mouseEnabled = mouseEnabled;
+    this.tabEnabled = tabEnabled;
+    this.tabIndex = tabIndex;
+    this._stagexl$_id = _stagexl$_id;
+    this._x = _x;
+    this._y = _y;
+    this._pivotX = _pivotX;
+    this._pivotY = _pivotY;
+    this._scaleX = _scaleX;
+    this._scaleY = _scaleY;
+    this._skewX = _skewX;
+    this._skewY = _skewY;
+    this._rotation = _rotation;
+    this._alpha = _alpha;
+    this._visible = _visible;
+    this._off = _off;
+    this._mask = _mask;
+    this._cacheTexture = _cacheTexture;
+    this._cacheRectangle = _cacheRectangle;
+    this._cacheDebugBorder = _cacheDebugBorder;
+    this._filters = _filters;
+    this._shadow = _shadow;
+    this._compositeOperation = _compositeOperation;
+    this._stagexl$_name = _stagexl$_name;
+    this._parent = _parent;
+    this._tmpMatrix = _tmpMatrix;
+    this._transformationMatrix = _transformationMatrix;
+    this._transformationMatrixRefresh = _transformationMatrixRefresh;
+    this.userData = userData;
+    this._eventStreams = _eventStreams;
+  }
+  TextField.builtin$cls = "TextField";
+  if (!"name" in TextField)
+    TextField.name = "TextField";
+  $desc = $collectedClasses.TextField;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  TextField.prototype = $desc;
+  function TextFormat(font, size, color, bold, italic, underline, align, topMargin, bottomMargin, leftMargin, rightMargin, indent, leading) {
+    this.font = font;
+    this.size = size;
+    this.color = color;
+    this.bold = bold;
+    this.italic = italic;
+    this.underline = underline;
+    this.align = align;
+    this.topMargin = topMargin;
+    this.bottomMargin = bottomMargin;
+    this.leftMargin = leftMargin;
+    this.rightMargin = rightMargin;
+    this.indent = indent;
+    this.leading = leading;
+  }
+  TextFormat.builtin$cls = "TextFormat";
+  if (!"name" in TextFormat)
+    TextFormat.name = "TextFormat";
+  $desc = $collectedClasses.TextFormat;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  TextFormat.prototype = $desc;
+  function TextLineMetrics(_text, _textIndex, _x, _y, _width, _height, _ascent, _descent, _leading, _indent) {
+    this._text = _text;
+    this._textIndex = _textIndex;
+    this._x = _x;
+    this._y = _y;
+    this._width = _width;
+    this._height = _height;
+    this._ascent = _ascent;
+    this._descent = _descent;
+    this._leading = _leading;
+    this._indent = _indent;
+  }
+  TextLineMetrics.builtin$cls = "TextLineMetrics";
+  if (!"name" in TextLineMetrics)
+    TextLineMetrics.name = "TextLineMetrics";
+  $desc = $collectedClasses.TextLineMetrics;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  TextLineMetrics.prototype = $desc;
+  TextLineMetrics.prototype.get$_x = function() {
+    return this._x;
+  };
+  TextLineMetrics.prototype.get$_y = function() {
+    return this._y;
+  };
   function ResourceManager(_resources, _eventStreams) {
     this._resources = _resources;
     this._eventStreams = _eventStreams;
@@ -19254,5 +21380,5 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   closure.prototype = $desc;
-  return [HtmlElement, AnchorElement, AnimationEvent, AreaElement, AudioElement, AutocompleteErrorEvent, BRElement, BaseElement, BeforeLoadEvent, BeforeUnloadEvent, Blob, BodyElement, ButtonElement, CDataSection, CanvasElement, CanvasGradient, CanvasPattern, CanvasRenderingContext, CanvasRenderingContext2D, CharacterData, CloseEvent, Comment, CompositionEvent, ContentElement, CssFontFaceLoadEvent, CssStyleDeclaration, CustomEvent, DListElement, DataListElement, DetailsElement, DeviceMotionEvent, DeviceOrientationEvent, DialogElement, DivElement, Document, DocumentFragment, DocumentType, DomError, DomException, Element, EmbedElement, ErrorEvent, Event0, EventTarget, FieldSetElement, File, FileError, FocusEvent, FormElement, HRElement, HashChangeEvent, HeadElement, HeadingElement, HtmlCollection, HtmlDocument, HtmlFormControlsCollection, HtmlHtmlElement, HtmlOptionsCollection, HttpRequest, HttpRequestEventTarget, IFrameElement, ImageElement, InputElement, KeyboardEvent, KeygenElement, LIElement, LabelElement, LegendElement, LinkElement, MapElement, MediaElement, MediaError, MediaKeyError, MediaKeyEvent, MediaKeyMessageEvent, MediaKeyNeededEvent, MediaStream, MediaStreamEvent, MediaStreamTrackEvent, MenuElement, MessageEvent, MetaElement, MeterElement, MidiConnectionEvent, MidiMessageEvent, ModElement, MouseEvent0, Navigator, NavigatorUserMediaError, Node, NodeList, OListElement, ObjectElement, OptGroupElement, OptionElement, OutputElement, OverflowEvent, PageTransitionEvent, ParagraphElement, ParamElement, PopStateEvent, PositionError, PreElement, ProcessingInstruction, ProgressElement, ProgressEvent, QuoteElement, ResourceProgressEvent, RtcDataChannelEvent, RtcDtmfToneChangeEvent, RtcIceCandidateEvent, Screen, ScriptElement, SecurityPolicyViolationEvent, SelectElement, ShadowElement, ShadowRoot, SourceElement, SpanElement, SpeechInputEvent, SpeechRecognitionError, SpeechRecognitionEvent, SpeechSynthesisEvent, StorageEvent, StyleElement, TableCaptionElement, TableCellElement, TableColElement, TableElement, TableRowElement, TableSectionElement, TemplateElement, Text, TextAreaElement, TextEvent, TitleElement, Touch, TouchEvent0, TouchList, TrackElement, TrackEvent, TransitionEvent, UIEvent, UListElement, UnknownElement, VideoElement, WheelEvent, Window, _Attr, _ClientRect, _Entity, _HTMLAppletElement, _HTMLBaseFontElement, _HTMLDirectoryElement, _HTMLFontElement, _HTMLFrameElement, _HTMLFrameSetElement, _HTMLMarqueeElement, _MutationEvent, _Notation, _XMLHttpRequestProgressEvent, VersionChangeEvent, AElement, AltGlyphElement, AnimateElement, AnimateMotionElement, AnimateTransformElement, AnimatedEnumeration, AnimatedLength, AnimatedLengthList, AnimatedNumber, AnimatedNumberList, AnimatedString, AnimationElement, CircleElement, ClipPathElement, DefsElement, DescElement, EllipseElement, FEBlendElement, FEColorMatrixElement, FEComponentTransferElement, FECompositeElement, FEConvolveMatrixElement, FEDiffuseLightingElement, FEDisplacementMapElement, FEDistantLightElement, FEFloodElement, FEFuncAElement, FEFuncBElement, FEFuncGElement, FEFuncRElement, FEGaussianBlurElement, FEImageElement, FEMergeElement, FEMergeNodeElement, FEMorphologyElement, FEOffsetElement, FEPointLightElement, FESpecularLightingElement, FESpotLightElement, FETileElement, FETurbulenceElement, FilterElement, ForeignObjectElement, GElement, GraphicsElement, ImageElement0, LineElement, LinearGradientElement, MarkerElement, MaskElement, MetadataElement, PathElement, PatternElement, PolygonElement, PolylineElement, RadialGradientElement, Rect, RectElement, ScriptElement0, SetElement, StopElement, StyleElement0, SvgDocument, SvgElement, SvgSvgElement, SwitchElement, SymbolElement, TSpanElement, TextContentElement, TextElement, TextPathElement, TextPositioningElement, TitleElement0, UseElement, ViewElement, ZoomEvent, _GradientElement, _SVGAltGlyphDefElement, _SVGAltGlyphItemElement, _SVGAnimateColorElement, _SVGComponentTransferFunctionElement, _SVGCursorElement, _SVGFEDropShadowElement, _SVGFontElement, _SVGFontFaceElement, _SVGFontFaceFormatElement, _SVGFontFaceNameElement, _SVGFontFaceSrcElement, _SVGFontFaceUriElement, _SVGGlyphElement, _SVGGlyphRefElement, _SVGHKernElement, _SVGMPathElement, _SVGMissingGlyphElement, _SVGVKernElement, AudioBuffer, AudioBufferSourceNode, AudioContext, AudioDestinationNode, AudioNode, AudioParam, AudioProcessingEvent, AudioSourceNode, GainNode, OfflineAudioCompletionEvent, OfflineAudioContext, Buffer, ContextEvent, Program, RenderingContext, Shader, Texture, SqlError, ByteBuffer, TypedData, ByteData, Float32List, Float64List, Int16List, Int32List, Int8List, Uint16List, Uint32List, Uint8ClampedList, Uint8List, JS_CONST, Interceptor, JSBool, JSNull, JavaScriptObject, PlainJavaScriptObject, UnknownJavaScriptObject, JSArray, JSNumber, JSInt, JSDouble, JSString, startRootIsolate_closure, startRootIsolate_closure0, _Manager, _IsolateContext, _EventLoop, _EventLoop__runHelper_next, _IsolateEvent, _MainManagerStub, IsolateNatives__processWorkerMessage_closure, _BaseSendPort, _NativeJsSendPort, _NativeJsSendPort_send_closure, _WorkerSendPort, RawReceivePortImpl, ReceivePortImpl, _JsSerializer, _JsCopier, _JsDeserializer, _JsVisitedMap, _MessageTraverserVisitedMap, _MessageTraverser, _Copier, _Copier_visitMap_closure, _Serializer, _Deserializer, TimerImpl, TimerImpl_internalCallback, TimerImpl_internalCallback0, ReflectionInfo, TypeErrorDecoder, NullError, JsNoSuchMethodError, UnknownJsTypeError, unwrapException_saveStackTrace, _StackTrace, invokeClosure_closure, invokeClosure_closure0, invokeClosure_closure1, invokeClosure_closure2, invokeClosure_closure3, Closure, TearOffClosure, BoundClosure, RuntimeError, RuntimeType, RuntimeFunctionType, DynamicRuntimeType, TypeImpl, initHooks_closure, initHooks_closure0, initHooks_closure1, JSSyntaxRegExp, _MatchImplementation, City, main_closure, Menu, ListIterable, ListIterator, MappedIterable, EfficientLengthMappedIterable, MappedIterator, MappedListIterable, WhereIterable, WhereIterator, FixedLengthListMixin, _AsyncError, _BroadcastSubscription, _BroadcastStreamController, _SyncBroadcastStreamController, _SyncBroadcastStreamController__sendData_closure, _SyncBroadcastStreamController__sendError_closure, _SyncBroadcastStreamController__sendDone_closure, _AsBroadcastStreamController, Future, Future_wait_handleError, Future_wait_closure, _Completer, _AsyncCompleter, _Future, _Future__addListener_closure, _Future__chainFutures_closure, _Future__chainFutures_closure0, _Future__asyncComplete_closure, _Future__asyncCompleteError_closure, _Future__propagateToListeners_closure, _Future__propagateToListeners_closure0, _Future__propagateToListeners__closure, _Future__propagateToListeners__closure0, Stream, Stream_forEach_closure, Stream_forEach__closure, Stream_forEach__closure0, Stream_forEach_closure0, Stream_length_closure, Stream_length_closure0, StreamSubscription, _StreamController, _StreamController__subscribe_closure, _StreamController__recordCancel_complete, _SyncStreamControllerDispatch, _AsyncStreamControllerDispatch, _AsyncStreamController, _StreamController__AsyncStreamControllerDispatch, _SyncStreamController, _StreamController__SyncStreamControllerDispatch, _NoCallbacks, _NoCallbackAsyncStreamController, _StreamController__AsyncStreamControllerDispatch0, _NoCallbackSyncStreamController, _StreamController__SyncStreamControllerDispatch0, _ControllerStream, _ControllerSubscription, _EventSink, _BufferingStreamSubscription, _BufferingStreamSubscription__sendError_sendError, _BufferingStreamSubscription__sendDone_sendDone, _StreamImpl, _DelayedEvent, _DelayedData, _DelayedError, _DelayedDone, _PendingEvents, _PendingEvents_schedule_closure, _StreamImplEvents, _DummyStreamSubscription, _AsBroadcastStream, _BroadcastSubscriptionWrapper, _cancelAndError_closure, _cancelAndErrorClosure_closure, _BaseZone, _BaseZone_bindCallback_closure, _BaseZone_bindCallback_closure0, _BaseZone_bindUnaryCallback_closure, _BaseZone_bindUnaryCallback_closure0, _rootHandleUncaughtError_closure, _rootHandleUncaughtError__closure, _RootZone, _HashMap, _HashMap_values_closure, HashMapKeyIterable, HashMapKeyIterator, _LinkedHashMap, _LinkedHashMap_values_closure, LinkedHashMapCell, LinkedHashMapKeyIterable, LinkedHashMapKeyIterator, _HashSet, _IdentityHashSet, HashSetIterator, _LinkedHashSet, LinkedHashSetCell, LinkedHashSetIterator, _HashSetBase, IterableBase, ListMixin, Maps_mapToString_closure, ListQueue, _ListQueueIterator, NoSuchMethodError_toString_closure, DateTime, DateTime_toString_fourDigits, DateTime_toString_threeDigits, DateTime_toString_twoDigits, Duration, Duration_toString_sixDigits, Duration_toString_twoDigits, Error, NullThrownError, ArgumentError, RangeError, UnsupportedError, UnimplementedError, StateError, ConcurrentModificationError, StackOverflowError, CyclicInitializationError, _ExceptionImplementation, FormatException, Expando, Function, Iterator, Null, Object, StackTrace, StringBuffer, Symbol, Interceptor_CssStyleDeclarationBase, CssStyleDeclarationBase, Interceptor_ListMixin, Interceptor_ListMixin_ImmutableListMixin, HttpRequest_request_closure0, HttpRequest_request_closure, Interceptor_ListMixin0, Interceptor_ListMixin_ImmutableListMixin0, Interceptor_ListMixin1, Interceptor_ListMixin_ImmutableListMixin1, EventStreamProvider, _EventStream, _ElementEventStreamImpl, _EventStreamSubscription, _CustomEventStreamProvider, ImmutableListMixin, FixedSizeListIterator, _DOMWindowCrossFrame, AudioContext_decodeAudioData_closure, AudioContext_decodeAudioData_closure0, Point0, _RectangleBase, Rectangle, _NativeTypedArray, _NativeTypedArrayOfDouble, _NativeTypedArray_ListMixin, _NativeTypedArray_ListMixin_FixedLengthListMixin, _NativeTypedArrayOfInt, _NativeTypedArray_ListMixin0, _NativeTypedArray_ListMixin_FixedLengthListMixin0, convertDartToNative_Dictionary_closure, convertNativeToDart_AcceptStructuredClone_findSlot, convertNativeToDart_AcceptStructuredClone_readSlot, convertNativeToDart_AcceptStructuredClone_writeSlot, convertNativeToDart_AcceptStructuredClone_walk, Animatable, _AnimatableLink, Juggler, Bitmap, BitmapData, BitmapData_load_closure, BitmapDataLoadOptions, DisplayObject, DisplayObjectContainer, Graphics, _GraphicsCommand, _GraphicsBounds, _GraphicsCommandMoveTo, _GraphicsCommandLineTo, _GraphicsCommandQuadraticCurveTo, _GraphicsCommandRect, _GraphicsCommandStroke, _GraphicsCommandStrokeColor, _GraphicsCommandFill, _GraphicsCommandFillColor, InteractiveObject, Shape, _MouseButton, _Touch, Stage, Stage__onMultitouchInputModeChanged_closure, RenderContext, RenderContextCanvas, RenderContextWebGL, RenderLoop, RenderProgram, RenderProgramQuad, RenderProgramTriangle, _ContextState, RenderState, RenderTexture, RenderTexture_load_closure, RenderTextureQuad, BroadcastEvent, EnterFrameEvent, ExitFrameEvent, RenderEvent, Event, EventDispatcher, EventStream, EventStreamProvider0, EventStreamSubscription, MouseEvent, TouchEvent, Matrix, Point, Rectangle0, Vector, AudioElementMixer, AudioElementSound, AudioElementSound_load_onCanPlay, AudioElementSound_load_onError, AudioElementSound_load_onError_closure, AudioElementSoundChannel, MockSound, MockSoundChannel, WebAudioApiMixer, WebAudioApiSound, WebAudioApiSound_load_audioRequestFinished, WebAudioApiSound_load_audioRequestFinished_closure, WebAudioApiSound_load_audioRequestFinished_closure0, WebAudioApiSound_load_audioRequestFinished__closure, WebAudioApiSound_load_audioRequestNext, WebAudioApiSound_load_audioRequestNext_closure, WebAudioApiSoundChannel, Sound, SoundChannel, SoundLoadOptions, SoundTransform, ResourceManager, ResourceManager__addResource_closure, ResourceManager_load_closure, ResourceManager_load_closure0, ResourceManager_pendingResources_closure, ResourceManager_failedResources_closure, ResourceManagerResource, ResourceManagerResource_closure, ResourceManagerResource_closure0, ResourceManagerResource_closure1, _checkWebpSupport_checkImage, _checkWebpSupport_closure, _checkWebpSupport_closure0, _loadImageElement_closure, _loadImageElement_closure0, _loadImageElement_closure1, closure];
+  return [HtmlElement, AnchorElement, AnimationEvent, AreaElement, AudioElement, AutocompleteErrorEvent, BRElement, BaseElement, BeforeLoadEvent, BeforeUnloadEvent, Blob, BodyElement, ButtonElement, CDataSection, CanvasElement, CanvasGradient, CanvasPattern, CanvasRenderingContext, CanvasRenderingContext2D, CharacterData, CloseEvent, Comment, CompositionEvent, ContentElement, CssFontFaceLoadEvent, CssStyleDeclaration, CustomEvent, DListElement, DataListElement, DetailsElement, DeviceMotionEvent, DeviceOrientationEvent, DialogElement, DivElement, Document, DocumentFragment, DocumentType, DomError, DomException, Element, EmbedElement, ErrorEvent, Event0, EventTarget, FieldSetElement, File, FileError, FocusEvent, FormElement, HRElement, HashChangeEvent, HeadElement, HeadingElement, HtmlCollection, HtmlDocument, HtmlFormControlsCollection, HtmlHtmlElement, HtmlOptionsCollection, HttpRequest, HttpRequestEventTarget, IFrameElement, ImageElement, InputElement, KeyboardEvent, KeygenElement, LIElement, LabelElement, LegendElement, LinkElement, MapElement, MediaElement, MediaError, MediaKeyError, MediaKeyEvent, MediaKeyMessageEvent, MediaKeyNeededEvent, MediaStream, MediaStreamEvent, MediaStreamTrackEvent, MenuElement, MessageEvent, MetaElement, MeterElement, MidiConnectionEvent, MidiMessageEvent, ModElement, MouseEvent0, Navigator, NavigatorUserMediaError, Node, NodeList, OListElement, ObjectElement, OptGroupElement, OptionElement, OutputElement, OverflowEvent, PageTransitionEvent, ParagraphElement, ParamElement, PopStateEvent, PositionError, PreElement, ProcessingInstruction, ProgressElement, ProgressEvent, QuoteElement, ResourceProgressEvent, RtcDataChannelEvent, RtcDtmfToneChangeEvent, RtcIceCandidateEvent, Screen, ScriptElement, SecurityPolicyViolationEvent, SelectElement, ShadowElement, ShadowRoot, SourceElement, SpanElement, SpeechInputEvent, SpeechRecognitionError, SpeechRecognitionEvent, SpeechSynthesisEvent, StorageEvent, StyleElement, TableCaptionElement, TableCellElement, TableColElement, TableElement, TableRowElement, TableSectionElement, TemplateElement, Text, TextAreaElement, TextEvent, TextMetrics, TitleElement, Touch, TouchEvent0, TouchList, TrackElement, TrackEvent, TransitionEvent, UIEvent, UListElement, UnknownElement, VideoElement, WheelEvent, Window, _Attr, _ClientRect, _Entity, _HTMLAppletElement, _HTMLBaseFontElement, _HTMLDirectoryElement, _HTMLFontElement, _HTMLFrameElement, _HTMLFrameSetElement, _HTMLMarqueeElement, _MutationEvent, _Notation, _XMLHttpRequestProgressEvent, VersionChangeEvent, AElement, AltGlyphElement, AnimateElement, AnimateMotionElement, AnimateTransformElement, AnimatedEnumeration, AnimatedLength, AnimatedLengthList, AnimatedNumber, AnimatedNumberList, AnimatedString, AnimationElement, CircleElement, ClipPathElement, DefsElement, DescElement, EllipseElement, FEBlendElement, FEColorMatrixElement, FEComponentTransferElement, FECompositeElement, FEConvolveMatrixElement, FEDiffuseLightingElement, FEDisplacementMapElement, FEDistantLightElement, FEFloodElement, FEFuncAElement, FEFuncBElement, FEFuncGElement, FEFuncRElement, FEGaussianBlurElement, FEImageElement, FEMergeElement, FEMergeNodeElement, FEMorphologyElement, FEOffsetElement, FEPointLightElement, FESpecularLightingElement, FESpotLightElement, FETileElement, FETurbulenceElement, FilterElement, ForeignObjectElement, GElement, GraphicsElement, ImageElement0, LineElement, LinearGradientElement, MarkerElement, MaskElement, MetadataElement, PathElement, PatternElement, PolygonElement, PolylineElement, RadialGradientElement, Rect, RectElement, ScriptElement0, SetElement, StopElement, StyleElement0, SvgDocument, SvgElement, SvgSvgElement, SwitchElement, SymbolElement, TSpanElement, TextContentElement, TextElement, TextPathElement, TextPositioningElement, TitleElement0, UseElement, ViewElement, ZoomEvent, _GradientElement, _SVGAltGlyphDefElement, _SVGAltGlyphItemElement, _SVGAnimateColorElement, _SVGComponentTransferFunctionElement, _SVGCursorElement, _SVGFEDropShadowElement, _SVGFontElement, _SVGFontFaceElement, _SVGFontFaceFormatElement, _SVGFontFaceNameElement, _SVGFontFaceSrcElement, _SVGFontFaceUriElement, _SVGGlyphElement, _SVGGlyphRefElement, _SVGHKernElement, _SVGMPathElement, _SVGMissingGlyphElement, _SVGVKernElement, AudioBuffer, AudioBufferSourceNode, AudioContext, AudioDestinationNode, AudioNode, AudioParam, AudioProcessingEvent, AudioSourceNode, GainNode, OfflineAudioCompletionEvent, OfflineAudioContext, Buffer, ContextEvent, Program, RenderingContext, Shader, Texture, SqlError, ByteBuffer, TypedData, ByteData, Float32List, Float64List, Int16List, Int32List, Int8List, Uint16List, Uint32List, Uint8ClampedList, Uint8List, JS_CONST, Interceptor, JSBool, JSNull, JavaScriptObject, PlainJavaScriptObject, UnknownJavaScriptObject, JSArray, JSNumber, JSInt, JSDouble, JSString, startRootIsolate_closure, startRootIsolate_closure0, _Manager, _IsolateContext, _EventLoop, _EventLoop__runHelper_next, _IsolateEvent, _MainManagerStub, IsolateNatives__processWorkerMessage_closure, _BaseSendPort, _NativeJsSendPort, _NativeJsSendPort_send_closure, _WorkerSendPort, RawReceivePortImpl, ReceivePortImpl, _JsSerializer, _JsCopier, _JsDeserializer, _JsVisitedMap, _MessageTraverserVisitedMap, _MessageTraverser, _Copier, _Copier_visitMap_closure, _Serializer, _Deserializer, TimerImpl, TimerImpl_internalCallback, TimerImpl_internalCallback0, ReflectionInfo, TypeErrorDecoder, NullError, JsNoSuchMethodError, UnknownJsTypeError, unwrapException_saveStackTrace, _StackTrace, invokeClosure_closure, invokeClosure_closure0, invokeClosure_closure1, invokeClosure_closure2, invokeClosure_closure3, Closure, TearOffClosure, BoundClosure, CastErrorImplementation, RuntimeError, RuntimeType, RuntimeFunctionType, DynamicRuntimeType, TypeImpl, initHooks_closure, initHooks_closure0, initHooks_closure1, JSSyntaxRegExp, _MatchImplementation, City, Colony, main_closure, Menu, ListIterable, ListIterator, MappedIterable, EfficientLengthMappedIterable, MappedIterator, MappedListIterable, WhereIterable, WhereIterator, FixedLengthListMixin, _AsyncError, _BroadcastSubscription, _BroadcastStreamController, _SyncBroadcastStreamController, _SyncBroadcastStreamController__sendData_closure, _SyncBroadcastStreamController__sendError_closure, _SyncBroadcastStreamController__sendDone_closure, _AsBroadcastStreamController, Future, Future_wait_handleError, Future_wait_closure, _Completer, _AsyncCompleter, _Future, _Future__addListener_closure, _Future__chainFutures_closure, _Future__chainFutures_closure0, _Future__asyncComplete_closure, _Future__asyncCompleteError_closure, _Future__propagateToListeners_closure, _Future__propagateToListeners_closure0, _Future__propagateToListeners__closure, _Future__propagateToListeners__closure0, Stream, Stream_forEach_closure, Stream_forEach__closure, Stream_forEach__closure0, Stream_forEach_closure0, Stream_length_closure, Stream_length_closure0, StreamSubscription, _StreamController, _StreamController__subscribe_closure, _StreamController__recordCancel_complete, _SyncStreamControllerDispatch, _AsyncStreamControllerDispatch, _AsyncStreamController, _StreamController__AsyncStreamControllerDispatch, _SyncStreamController, _StreamController__SyncStreamControllerDispatch, _NoCallbacks, _NoCallbackAsyncStreamController, _StreamController__AsyncStreamControllerDispatch0, _NoCallbackSyncStreamController, _StreamController__SyncStreamControllerDispatch0, _ControllerStream, _ControllerSubscription, _EventSink, _BufferingStreamSubscription, _BufferingStreamSubscription__sendError_sendError, _BufferingStreamSubscription__sendDone_sendDone, _StreamImpl, _DelayedEvent, _DelayedData, _DelayedError, _DelayedDone, _PendingEvents, _PendingEvents_schedule_closure, _StreamImplEvents, _DummyStreamSubscription, _AsBroadcastStream, _BroadcastSubscriptionWrapper, _cancelAndError_closure, _cancelAndErrorClosure_closure, _BaseZone, _BaseZone_bindCallback_closure, _BaseZone_bindCallback_closure0, _BaseZone_bindUnaryCallback_closure, _BaseZone_bindUnaryCallback_closure0, _rootHandleUncaughtError_closure, _rootHandleUncaughtError__closure, _RootZone, _HashMap, _HashMap_values_closure, HashMapKeyIterable, HashMapKeyIterator, _LinkedHashMap, _LinkedHashMap_values_closure, LinkedHashMapCell, LinkedHashMapKeyIterable, LinkedHashMapKeyIterator, _HashSet, _IdentityHashSet, HashSetIterator, _LinkedHashSet, LinkedHashSetCell, LinkedHashSetIterator, _HashSetBase, IterableBase, ListMixin, Maps_mapToString_closure, ListQueue, _ListQueueIterator, NoSuchMethodError_toString_closure, DateTime, DateTime_toString_fourDigits, DateTime_toString_threeDigits, DateTime_toString_twoDigits, Duration, Duration_toString_sixDigits, Duration_toString_twoDigits, Error, NullThrownError, ArgumentError, RangeError, UnsupportedError, UnimplementedError, StateError, ConcurrentModificationError, StackOverflowError, CyclicInitializationError, _ExceptionImplementation, FormatException, Expando, Function, Iterator, Null, Object, StackTrace, StringBuffer, Symbol, Interceptor_CssStyleDeclarationBase, CssStyleDeclarationBase, Interceptor_ListMixin, Interceptor_ListMixin_ImmutableListMixin, HttpRequest_request_closure0, HttpRequest_request_closure, Interceptor_ListMixin0, Interceptor_ListMixin_ImmutableListMixin0, Interceptor_ListMixin1, Interceptor_ListMixin_ImmutableListMixin1, EventStreamProvider, _EventStream, _ElementEventStreamImpl, _EventStreamSubscription, _CustomEventStreamProvider, ImmutableListMixin, FixedSizeListIterator, _DOMWindowCrossFrame, AudioContext_decodeAudioData_closure, AudioContext_decodeAudioData_closure0, Point0, _RectangleBase, Rectangle, _NativeTypedArray, _NativeTypedArrayOfDouble, _NativeTypedArray_ListMixin, _NativeTypedArray_ListMixin_FixedLengthListMixin, _NativeTypedArrayOfInt, _NativeTypedArray_ListMixin0, _NativeTypedArray_ListMixin_FixedLengthListMixin0, convertDartToNative_Dictionary_closure, convertNativeToDart_AcceptStructuredClone_findSlot, convertNativeToDart_AcceptStructuredClone_readSlot, convertNativeToDart_AcceptStructuredClone_writeSlot, convertNativeToDart_AcceptStructuredClone_walk, Animatable, _AnimatableLink, Juggler, Bitmap, BitmapData, BitmapData_load_closure, BitmapDataLoadOptions, DisplayObject, DisplayObjectContainer, Graphics, _GraphicsCommand, _GraphicsBounds, _GraphicsCommandMoveTo, _GraphicsCommandLineTo, _GraphicsCommandQuadraticCurveTo, _GraphicsCommandRect, _GraphicsCommandStroke, _GraphicsCommandStrokeColor, _GraphicsCommandFill, _GraphicsCommandFillColor, InteractiveObject, Shape, Sprite, _MouseButton, _Touch, Stage, Stage__onMultitouchInputModeChanged_closure, RenderContext, RenderContextCanvas, RenderContextWebGL, RenderLoop, RenderProgram, RenderProgramQuad, RenderProgramTriangle, _ContextState, RenderState, RenderTexture, RenderTexture_load_closure, RenderTextureQuad, BroadcastEvent, EnterFrameEvent, ExitFrameEvent, RenderEvent, Event, EventDispatcher, EventStream, EventStreamProvider0, EventStreamSubscription, KeyboardEvent0, MouseEvent, TextEvent0, TouchEvent, Matrix, Point, Rectangle0, Vector, AudioElementMixer, AudioElementSound, AudioElementSound_load_onCanPlay, AudioElementSound_load_onError, AudioElementSound_load_onError_closure, AudioElementSoundChannel, MockSound, MockSoundChannel, WebAudioApiMixer, WebAudioApiSound, WebAudioApiSound_load_audioRequestFinished, WebAudioApiSound_load_audioRequestFinished_closure, WebAudioApiSound_load_audioRequestFinished_closure0, WebAudioApiSound_load_audioRequestFinished__closure, WebAudioApiSound_load_audioRequestNext, WebAudioApiSound_load_audioRequestNext_closure, WebAudioApiSoundChannel, Sound, SoundChannel, SoundLoadOptions, SoundTransform, _FontStyleMetrics, TextField, TextFormat, TextLineMetrics, ResourceManager, ResourceManager__addResource_closure, ResourceManager_load_closure, ResourceManager_load_closure0, ResourceManager_pendingResources_closure, ResourceManager_failedResources_closure, ResourceManagerResource, ResourceManagerResource_closure, ResourceManagerResource_closure0, ResourceManagerResource_closure1, _checkWebpSupport_checkImage, _checkWebpSupport_closure, _checkWebpSupport_closure0, _loadImageElement_closure, _loadImageElement_closure0, _loadImageElement_closure1, closure];
 }

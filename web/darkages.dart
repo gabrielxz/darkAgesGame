@@ -12,6 +12,7 @@ part 'actionButtons.dart';
 ResourceManager resourceManager;
 
 SoundChannel soundChannel2;
+SoundChannel soundChannel1;
 
 
 Sprite countryOneButton;
@@ -28,6 +29,9 @@ Bitmap mapPic;
 Bitmap hammerPic;
 Bitmap barricadeButtonPic;
 Bitmap spaceShip;
+Bitmap barricadePic;
+Bitmap quaranteenPic;
+Bitmap houseArrestPic;
 
 void main() 
 {
@@ -38,7 +42,7 @@ void main()
   
   
   resourceManager = new ResourceManager()
-  ..addBitmapData('map', 'images/Layout720x1280.jpg')
+  ..addBitmapData('map', 'images/touch_up_map.png')
   ..addBitmapData('hammer', 'images/icon_Wheat.png')
   ..addBitmapData('endTurn', 'images/button_EndTurn.png')
   ..addBitmapData('barricade', 'images/button_Barricade.png')
@@ -50,6 +54,9 @@ void main()
   ..addBitmapData('cull', 'images/button_Cull.png')
   ..addBitmapData('vaccinate', 'images/button_Vaccinate.png')
   ..addBitmapData('endScreen', 'images/SplashScreen.jpg')
+  ..addBitmapData('barricadeIcon', 'images/icons_Barricade.png')
+  ..addBitmapData('quarantineIcon', 'images/icons_Quarrantine.png')
+  ..addBitmapData('houseArrestIcon', 'images/icons_HouseArrest.png')
   ..addSound('ambientMusic', 'sounds/ambient.mp3')
   ..addSound('tensionMusic', 'sounds/moon_virus_Tension_master.mp3')
   ..addSound('culling', 'sounds/moon_virus_FX_Culling.mp3')
@@ -57,6 +64,8 @@ void main()
   ..addSound('houseArrest', 'sounds/moon_virus_FX_House_Arrest.mp3')
   ..addSound('endTurn', 'sounds/moon_virus_FX_end_turn.mp3')
   ..addSound('laserBlast', 'sounds/moon_virus_FX_laser_Blast.mp3')
+  ..addSound('victory', 'sounds/Moon_virus_victory.mp3')
+  ..addSound('death', 'sounds/Moon_virus_death.mp3')
   ..addSound('quarantine', 'sounds/moon_virus_FX_Quaranteen.mp3');
   //..addBitmapData('button', 'images/button.jpg')
   //..addSound('backgroundMusic', 'images/JACKSTEP.mp3');
@@ -93,6 +102,7 @@ resourceManager.load().then((result)
   stage.addChild(spaceShip);
   /* end spaceship stuff */
   
+  
   musicLoop();
 
   //new Timer(new Duration(seconds: 5), fadeTensionIn);
@@ -113,8 +123,12 @@ SoundChannel playAudio(String trackName){
 }
 
 void musicLoop(){
-  playAudio("ambientMusic");
+  var sound = resourceManager.getSound("ambientMusic");
+  var soundTransform = new SoundTransform(0.5);
+  soundChannel1 = sound.play(false, soundTransform);
+  
   new Timer(new Duration(seconds: 116), musicLoop);
+  
 }
 
 void fadeTensionIn(){
@@ -216,5 +230,15 @@ endGame()
   endText.wordWrap = true;
   endText.type = "DYNAMIC";
   stage.addChild(endText);
+  
+  if (soundChannel1 != null)
+  {
+    soundChannel1.stop();
+  }
+  
+  if (soundChannel2 != null)
+  {
+    soundChannel2.stop();
+  }
   
 }

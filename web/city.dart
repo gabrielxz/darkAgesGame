@@ -270,7 +270,7 @@ class Colony
   
   void house_arrest()
   {
-    selected_city.set_quarantine();
+    selected_city.set_house_arrest();
   }
   
   void vaccinate()
@@ -345,8 +345,8 @@ void city_init ()
   city.population = 30000;
   city.production = 2.0;
   city.getting_sick = 0.03;
-  city.x = 880;
-  city.y = 135;
+  city.x = 182;
+  city.y = 218;
 
   city = cities[5];
   city.name = "Vienna";

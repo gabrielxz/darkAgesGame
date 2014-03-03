@@ -1,7 +1,7 @@
 part of darkagesgame;
 
 int buttonHeight = 30;
-int buttonWidth = 85;
+int buttonWidth = 115;
 
 setupButtons()
 {
