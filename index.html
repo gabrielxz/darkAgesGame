@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dark Ages</title>
+    <style>
+      /* Self-hosted so the itch.io build needs no external requests. */
+      @font-face {
+        font-family: "Spicy Rice";
+        font-style: normal;
+        font-weight: 400;
+        font-display: block;
+        src: url("./fonts/spicy-rice.woff2") format("woff2");
+      }
+    </style>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: #0a0a0c;
+        overflow: hidden;
+        height: 100%;
+        font-family: "Spicy Rice", "Open Sans", sans-serif;
+      }
+      #app {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      canvas {
+        display: block;
+        max-width: 100%;
+        max-height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
