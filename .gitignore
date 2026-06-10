@@ -5,3 +5,6 @@ dist/
 
 # Build artifact — regenerate with `npm run pack`
 darkages-itch.zip
+
+# Vite local dep cache
+.vite/
