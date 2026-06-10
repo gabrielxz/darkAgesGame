@@ -98,7 +98,7 @@ export class TextButton extends Container {
   private labelText: Text;
   private primary: boolean;
 
-  constructor(text: string, w: number, h: number, onClick: () => void, primary = false) {
+  constructor(text: string, w: number, h: number, onClick: () => void, primary = false, clickSound = true) {
     super();
     this.primary = primary;
     this.bg = new Graphics();
@@ -116,7 +116,7 @@ export class TextButton extends Container {
     this.on("pointerover", () => this.draw(w, h, true));
     this.on("pointerout", () => this.draw(w, h, false));
     this.on("pointertap", () => {
-      audio.play("button");
+      if (clickSound) audio.play("button");
       onClick();
     });
   }

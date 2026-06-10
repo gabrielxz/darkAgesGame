@@ -45,7 +45,8 @@ export class SoundTestScene extends Scene {
       const col = i % cols;
       const row = Math.floor(i / cols);
       const isMusic = s.kind === "music";
-      const btn = new TextButton(s.label, bw, bh, () => audio.preview(s.key), isMusic);
+      // No UI click sound here — only the catalog sound should play.
+      const btn = new TextButton(s.label, bw, bh, () => audio.preview(s.key), isMusic, false);
       btn.position.set(startX + col * (bw + gapX), startY + row * (bh + gapY));
       this.addChild(btn);
     });
