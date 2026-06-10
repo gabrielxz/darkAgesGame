@@ -35,6 +35,24 @@ export const styles = {
   scoreBig: new TextStyle({ fontFamily: FONT, fontSize: 48, fill: COLORS.accent, stroke: { color: 0x000000, width: 4 } }),
 };
 
+/**
+ * Return a word-wrapping copy of a base style. Cloning (rather than spreading a
+ * TextStyle instance) is the reliable way to carry wordWrap through in Pixi v8.
+ */
+export function wrapped(
+  base: TextStyle,
+  width: number,
+  fontSize?: number,
+  align?: "left" | "center" | "right",
+): TextStyle {
+  const s = base.clone();
+  s.wordWrap = true;
+  s.wordWrapWidth = width;
+  if (fontSize != null) s.fontSize = fontSize;
+  if (align != null) s.align = align;
+  return s;
+}
+
 export function fmtK(n: number): string {
   if (Math.abs(n) >= 1000) return `${Math.round(n / 1000)}K`;
   return `${Math.round(n)}`;

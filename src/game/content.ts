@@ -12,32 +12,33 @@ export interface Briefing {
 }
 
 const COMMON_PREMISE =
-  "A plague is sweeping across medieval Europe. From high above, you alone can act — " +
-  "shielding cities, confining the sick, and when nothing else will serve, scouring the " +
-  "infected from the earth.";
+  "It is a new Dark Age. Humanity has spread to the outer solar system, and now a plague " +
+  "tears through the settlements of Titan. From orbit you alone can hold them together — " +
+  "sealing colonies, confining the sick, and when nothing else will serve, burning the " +
+  "infection out. A relief ship from Earth is inbound with the cure: hold on until it arrives.";
 
 export const BRIEFINGS: Record<ModeId, Briefing> = {
   classic: {
-    title: "CLASSIC · 1348",
+    title: "CLASSIC",
     premise: COMMON_PREMISE,
     points: [
-      "Each turn: click a city, apply any actions, then End Turn.",
-      "On End Turn cities produce, then the infection spreads and kills.",
-      "Survive 25 turns. Your score is the population left alive.",
+      "Each turn: click a settlement, apply any actions, then End Turn.",
+      "On End Turn settlements produce, then the plague spreads and kills.",
+      "The relief ship reaches Titan in 25 turns — hold out until it lands.",
       "This is the original 2014 build: every action is free and unlimited —",
       "and the plague is merciless. The orbital strike is your bluntest mercy.",
     ],
-    flavor: "The bells have stopped ringing. Do what must be done.",
+    flavor: "The colony channels have gone silent. Do what must be done.",
   },
   modern: {
-    title: "MODERN · 1348",
+    title: "MODERN",
     premise: COMMON_PREMISE,
     points: [
       "Each turn you have 3 Action Points — every action spends them.",
-      "Powerful actions also cost Resources, harvested from healthy cities.",
-      "The infected can recover, and a true lockdown can save a city.",
+      "Powerful actions also cost Resources, drawn from healthy settlements.",
+      "The infected can recover, and a true lockdown can save a settlement.",
       "Spend Resources on Research to unlock lasting upgrades.",
-      "Survive 25 turns; you're graded S–F on how much of Europe you save.",
+      "Hold Titan until the cure lands on turn 25; graded S–F on who survives.",
     ],
     flavor: "Hold the line. Spend wisely. Not everyone can be saved.",
   },
@@ -76,25 +77,33 @@ export function helpSections(mode: ModeId): HelpSection[] {
     {
       heading: "The Goal",
       lines: [
-        "Keep as much of Europe's population alive as you can across 25 turns.",
+        "Keep as many of Titan's colonists alive as you can until the relief ship from " +
+          "Earth lands with the cure — 25 turns.",
         mode === "modern"
-          ? "You're graded S to F on the share of people who survive."
-          : "Your score is the number of survivors when the turns run out.",
+          ? "You're graded S to F on the share of colonists who survive."
+          : "Your score is the number of survivors when the ship arrives.",
       ],
     },
     {
       heading: "A Turn",
       lines: [
-        "1. Click a city on the map to select it.",
-        "2. Use the action buttons to act on that city.",
-        "3. Click End Turn to resolve: cities produce, then the plague spreads & kills.",
+        "1. Click a settlement on the map to select it.",
+        "2. Use the action buttons to act on that settlement.",
+        "3. Click End Turn to resolve: settlements produce, then the plague spreads & kills.",
       ],
     },
     {
-      heading: "Reading a City",
+      heading: "Reading a Settlement",
       lines: [
-        "Each city shows a bar:  green = healthy,  yellow = infected,  red = dead.",
-        "An infected city spreads to its neighbours — contain it before it grows.",
+        "Each settlement shows a bar:  green = healthy,  yellow = infected,  red = dead.",
+        "An infected settlement spreads to its neighbours — contain it before it grows.",
+      ],
+    },
+    {
+      heading: "The Relief Ship",
+      lines: [
+        "The craft creeping across the bottom of the map is Earth's relief ship.",
+        "When it reaches Titan on the final turn, the cure arrives — survive until then.",
       ],
     },
     {
@@ -108,7 +117,7 @@ export function helpSections(mode: ModeId): HelpSection[] {
       heading: "Modern Rules",
       lines: [
         "Action Points (3/turn) and Resources gate what you can do — choose carefully.",
-        "Quarantine & Barricade now slow spread WITHIN a city, so lockdowns work.",
+        "Quarantine & Barricade now slow spread WITHIN a settlement, so lockdowns work.",
         "The infected slowly recover; Vaccinate and Research speed that along.",
         "Open Research to spend Resources on permanent upgrades.",
       ],
@@ -118,7 +127,7 @@ export function helpSections(mode: ModeId): HelpSection[] {
       heading: "Classic Notes",
       lines: [
         "Everything is free and unlimited — the challenge is the brutal spread.",
-        "Quarantine does NOT stop spread inside a city; only removing the infected does.",
+        "Quarantine does NOT stop spread inside a settlement; only removing the infected does.",
         "Doing nothing dooms everyone. Act decisively.",
       ],
     });

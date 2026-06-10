@@ -3,7 +3,7 @@ import { Scene, type Game } from "../app";
 import type { ModeId } from "../../sim/types";
 import { tex } from "../assets";
 import { audio } from "../audio";
-import { COLORS, STAGE_H, STAGE_W, styles } from "../theme";
+import { COLORS, STAGE_H, STAGE_W, styles, wrapped } from "../theme";
 import { TextButton } from "../ui/Button";
 import { HelpOverlay } from "../ui/HelpOverlay";
 import { BriefingScene } from "./BriefingScene";
@@ -64,10 +64,7 @@ export class MenuScene extends Scene {
     btn.position.set(x, y);
     this.addChild(btn);
 
-    const sub = new Text({
-      text: desc,
-      style: { ...styles.hudDim, fontSize: 14, wordWrap: true, wordWrapWidth: w },
-    });
+    const sub = new Text({ text: desc, style: wrapped(styles.hudDim, w, 14) });
     sub.position.set(x + 2, y + 58);
     this.addChild(sub);
   }

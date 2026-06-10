@@ -3,7 +3,7 @@ import { Scene, type Game } from "../app";
 import type { ModeId } from "../../sim/types";
 import { BRIEFINGS } from "../content";
 import { tex } from "../assets";
-import { COLORS, STAGE_H, STAGE_W, styles } from "../theme";
+import { COLORS, STAGE_H, STAGE_W, styles, wrapped } from "../theme";
 import { TextButton } from "../ui/Button";
 import { HelpOverlay } from "../ui/HelpOverlay";
 import { GameScene } from "./GameScene";
@@ -28,10 +28,7 @@ export class BriefingScene extends Scene {
     title.position.set(STAGE_W / 2, 50);
     this.addChild(title);
 
-    const premise = new Text({
-      text: b.premise,
-      style: { ...styles.body, align: "center", wordWrapWidth: 820 },
-    });
+    const premise = new Text({ text: b.premise, style: wrapped(styles.body, 820, undefined, "center") });
     premise.anchor.set(0.5, 0);
     premise.position.set(STAGE_W / 2, 140);
     this.addChild(premise);

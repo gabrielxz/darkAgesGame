@@ -62,13 +62,13 @@ export const ACTION_META: Record<ActionId, ActionMeta> = {
     label: "Vaccinate",
     icon: "button_Vaccinate",
     sound: "culling",
-    description: "Spend resources to halve all spread for this city, permanently.",
+    description: "Spend resources to halve all spread for this settlement, permanently.",
   },
   orbitalStrike: {
     id: "orbitalStrike",
     label: "Orbital Strike",
     icon: "button_OrbitalStrike",
     sound: "orbitalStrike",
-    description: "Glass the city: everyone dies, the infection with them. Last resort.",
+    description: "Glass the settlement: everyone dies, the infection with them. Last resort.",
   },
 };

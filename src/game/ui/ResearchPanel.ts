@@ -1,7 +1,7 @@
 import { Container, Graphics, Text } from "pixi.js";
 import type { GameState } from "../../sim/engine";
 import { BRANCHES, TECHS, canUnlock, techById, unlock, type Tech } from "../../sim/research";
-import { COLORS, fmtK, STAGE_H, STAGE_W, styles } from "../theme";
+import { COLORS, fmtK, STAGE_H, STAGE_W, styles, wrapped } from "../theme";
 import { audio } from "../audio";
 import { TextButton } from "./Button";
 
@@ -96,7 +96,7 @@ class TechCard extends Container {
 
     this.descText = new Text({
       text: tech.description,
-      style: { ...styles.hudDim, wordWrap: true, wordWrapWidth: CARD_W - 28 },
+      style: wrapped(styles.hudDim, CARD_W - 28, 14),
     });
     this.descText.position.set(14, 42);
     this.addChild(this.descText);

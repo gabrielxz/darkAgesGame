@@ -3,7 +3,7 @@ import { Scene, type Game } from "../app";
 import type { GameState } from "../../sim/engine";
 import { computeScore } from "../../sim/score";
 import { tex } from "../assets";
-import { COLORS, fmtK, STAGE_H, STAGE_W, styles } from "../theme";
+import { COLORS, fmtK, STAGE_H, STAGE_W, styles, wrapped } from "../theme";
 import { TextButton } from "../ui/Button";
 import { MenuScene } from "./MenuScene";
 import { GameScene } from "./GameScene";
@@ -30,10 +30,7 @@ export class EndScene extends Scene {
     gradeText.position.set(STAGE_W / 2, 130);
     this.addChild(gradeText);
 
-    const verdict = new Text({
-      text: score.verdict,
-      style: { ...styles.body, align: "center", wordWrapWidth: 700 },
-    });
+    const verdict = new Text({ text: score.verdict, style: wrapped(styles.body, 700, undefined, "center") });
     verdict.anchor.set(0.5);
     verdict.position.set(STAGE_W / 2, 215);
     this.addChild(verdict);

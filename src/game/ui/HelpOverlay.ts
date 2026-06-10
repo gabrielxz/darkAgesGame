@@ -1,7 +1,7 @@
 import { Container, Graphics, Text } from "pixi.js";
 import type { ModeId } from "../../sim/types";
 import { helpSections, type HelpSection } from "../content";
-import { COLORS, STAGE_H, STAGE_W, styles } from "../theme";
+import { COLORS, STAGE_H, STAGE_W, styles, wrapped } from "../theme";
 import { TextButton } from "./Button";
 
 const COL_W = 540;
@@ -21,9 +21,10 @@ export class HelpOverlay extends Container {
     this.addChild(title);
 
     const sections = helpSections(mode);
-    // Split sections across two columns: the long "Actions" list anchors the right column.
-    const left = sections.filter((s) => s.heading !== "Actions");
-    const right = sections.filter((s) => s.heading === "Actions");
+    // Split at the "Actions" list, which anchors the right column.
+    const ai = sections.findIndex((s) => s.heading === "Actions");
+    const left = sections.slice(0, ai);
+    const right = sections.slice(ai);
 
     this.renderColumn(left, 90, 96);
     this.renderColumn(right, STAGE_W - 90 - COL_W, 96);
@@ -42,10 +43,7 @@ export class HelpOverlay extends Container {
       y += 32;
 
       for (const line of section.lines) {
-        const t = new Text({
-          text: line,
-          style: { ...styles.hudDim, fontSize: 15, wordWrap: true, wordWrapWidth: COL_W },
-        });
+        const t = new Text({ text: line, style: wrapped(styles.hudDim, COL_W, 15) });
         t.position.set(x, y);
         this.addChild(t);
         y += t.height + 7;

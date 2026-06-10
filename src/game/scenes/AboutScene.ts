@@ -2,7 +2,7 @@ import { Graphics, Sprite, Text } from "pixi.js";
 import { Scene, type Game } from "../app";
 import { ABOUT } from "../content";
 import { tex } from "../assets";
-import { COLORS, STAGE_H, STAGE_W, styles } from "../theme";
+import { COLORS, STAGE_H, STAGE_W, styles, wrapped } from "../theme";
 import { TextButton } from "../ui/Button";
 import { MenuScene } from "./MenuScene";
 
@@ -29,10 +29,7 @@ export class AboutScene extends Scene {
 
     let y = 158;
     for (const para of ABOUT.paragraphs) {
-      const t = new Text({
-        text: para,
-        style: { ...styles.body, align: "center", wordWrapWidth: 760, fontSize: 17 },
-      });
+      const t = new Text({ text: para, style: wrapped(styles.body, 760, 17, "center") });
       t.anchor.set(0.5, 0);
       t.position.set(STAGE_W / 2, y);
       this.addChild(t);
@@ -44,10 +41,7 @@ export class AboutScene extends Scene {
     teamHeading.position.set(STAGE_W / 2, y + 8);
     this.addChild(teamHeading);
 
-    const names = new Text({
-      text: ABOUT.team.join("      "),
-      style: { ...styles.hud, align: "center", wordWrap: true, wordWrapWidth: 820 },
-    });
+    const names = new Text({ text: ABOUT.team.join("      "), style: wrapped(styles.hud, 820, undefined, "center") });
     names.anchor.set(0.5, 0);
     names.position.set(STAGE_W / 2, y + 46);
     this.addChild(names);

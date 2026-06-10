@@ -27,12 +27,12 @@ function gradeFor(pct: number): Grade {
 }
 
 const VERDICTS: Record<Grade, string> = {
-  S: "A golden age. Europe barely felt the plague's touch.",
-  A: "A hard-won triumph. The continent endures, scarred but whole.",
-  B: "Survival, at a cost. The bells toll for many.",
-  C: "A pyrrhic vigil. Whole regions lie silent.",
-  D: "Catastrophe. A broken remnant clings to life.",
-  F: "The Dark Ages claim Europe. Almost nothing remains.",
+  S: "The cure lands on a living world. Titan barely felt the plague's touch.",
+  A: "A hard-won vigil. The colonies endure, scarred but whole.",
+  B: "Survival, at a cost. Many settlements fell silent before the ship.",
+  C: "A pyrrhic hold. Whole districts lie dark.",
+  D: "Catastrophe. A broken remnant greets the relief ship.",
+  F: "The cure arrives too late. Titan is a tomb.",
 };
 
 export function computeScore(state: GameState): ScoreResult {
@@ -67,6 +67,6 @@ export function computeScore(state: GameState): ScoreResult {
     resources: state.resources,
     survivalPct,
     grade,
-    verdict: state.victory ? "The plague passes. Tally the cost." : "Europe is a graveyard.",
+    verdict: state.victory ? "The cure arrives. Tally the cost." : "Titan is a graveyard.",
   };
 }

@@ -1,5 +1,5 @@
 import { Container, Graphics, Text } from "pixi.js";
-import { COLORS, styles } from "../theme";
+import { COLORS, styles, wrapped } from "../theme";
 
 const MAX_W = 300;
 const PAD = 10;
@@ -20,10 +20,7 @@ export class Tooltip extends Container {
     this.titleText.position.set(PAD, PAD);
     this.addChild(this.titleText);
 
-    this.bodyText = new Text({
-      text: "",
-      style: { ...styles.hudDim, fontSize: 14, wordWrap: true, wordWrapWidth: MAX_W - PAD * 2 },
-    });
+    this.bodyText = new Text({ text: "", style: wrapped(styles.hudDim, MAX_W - PAD * 2, 14) });
     this.addChild(this.bodyText);
   }
 

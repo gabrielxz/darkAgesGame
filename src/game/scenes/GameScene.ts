@@ -10,6 +10,7 @@ import { Hud } from "../ui/Hud";
 import { ActionPanel } from "../ui/ActionPanel";
 import { ResearchPanel } from "../ui/ResearchPanel";
 import { HelpOverlay } from "../ui/HelpOverlay";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { Tooltip } from "../ui/Tooltip";
 import { TextButton } from "../ui/Button";
 import { ACTION_META } from "../../sim/actions";
@@ -27,6 +28,7 @@ export class GameScene extends Scene {
   private busy = false;
   private research: ResearchPanel | null = null;
   private help: HelpOverlay | null = null;
+  private dialog: ConfirmDialog | null = null;
   private tooltip: Tooltip;
   private mode: ModeId;
 
@@ -77,7 +79,7 @@ export class GameScene extends Scene {
     }
 
     // Top-left utility cluster: back to menu, help, mute, fullscreen.
-    const menuBtn = new TextButton("Menu", 66, 32, () => this.game.setScene(new MenuScene(this.game)));
+    const menuBtn = new TextButton("Menu", 66, 32, () => this.confirmQuit());
     menuBtn.position.set(12, 12);
     this.addChild(menuBtn);
 
@@ -97,6 +99,19 @@ export class GameScene extends Scene {
 
     this.tooltip = new Tooltip();
     this.addChild(this.tooltip);
+
+    // The roaming ship explains itself on hover.
+    this.ship.eventMode = "static";
+    this.ship.cursor = "help";
+    this.ship.on("pointerover", () =>
+      this.tooltip.show(
+        "Relief Ship",
+        "Earth's relief ship, inbound with the cure. It lands on the final turn — hold Titan until then.",
+        this.ship.x + 320,
+        this.ship.y - 96,
+      ),
+    );
+    this.ship.on("pointerout", () => this.tooltip.hide());
 
     this.selectCity(this.state.selected);
     audio.playMusic("ambient");
@@ -164,6 +179,25 @@ export class GameScene extends Scene {
     }
     // Tooltip sits just left of the action panel, vertically aligned to the button.
     this.tooltip.show(meta.label, body, BOTTOM_PANEL.x - 8, y);
+  }
+
+  private confirmQuit(): void {
+    if (this.dialog || this.state.gameOver) return;
+    this.tooltip.hide();
+    const close = () => {
+      if (this.dialog) {
+        this.removeChild(this.dialog);
+        this.dialog.destroy({ children: true });
+        this.dialog = null;
+      }
+    };
+    this.dialog = new ConfirmDialog(
+      "Leave this game and return to the menu? This run will be lost.",
+      "Quit to Menu",
+      () => this.game.setScene(new MenuScene(this.game)),
+      close,
+    );
+    this.addChild(this.dialog);
   }
 
   private toggleFullscreen(): void {
