@@ -3,10 +3,10 @@ import type { City } from "../../sim/engine";
 import { COLORS, fmtK, styles } from "../theme";
 import { tex } from "../assets";
 
-const W = 84;
-const H = 46;
+const W = 110;
+const H = 58;
 const BAR_W = W - 10;
-const BAR_H = 8;
+const BAR_H = 11;
 
 /** A clickable city marker on the map showing health composition + status. */
 export class CityNode extends Container {
@@ -41,17 +41,17 @@ export class CityNode extends Container {
     this.addChild(this.bars);
 
     this.nameText = new Text({ text: city.name, style: styles.cityName });
-    this.nameText.position.set(5, 16);
+    this.nameText.position.set(6, 19);
     this.addChild(this.nameText);
 
     this.prodText = new Text({ text: "", style: styles.cityNum });
-    this.prodText.position.set(5, 30);
+    this.prodText.position.set(6, 39);
     this.addChild(this.prodText);
 
     this.statusIcon = new Sprite();
-    this.statusIcon.width = 16;
-    this.statusIcon.height = 16;
-    this.statusIcon.position.set(W - 20, 28);
+    this.statusIcon.width = 22;
+    this.statusIcon.height = 22;
+    this.statusIcon.position.set(W - 26, 33);
     this.statusIcon.visible = false;
     this.addChild(this.statusIcon);
 

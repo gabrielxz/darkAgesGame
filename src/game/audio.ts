@@ -20,6 +20,21 @@ const MUSIC: Record<string, string> = {
   tension: "moon_virus_Tension_master.mp3",
 };
 
+/** Player-facing catalog for the Sound Test screen. */
+export const SOUND_CATALOG: { key: string; label: string; kind: "sfx" | "music" }[] = [
+  { key: "ambient", label: "Ambient Theme", kind: "music" },
+  { key: "tension", label: "Tension Theme", kind: "music" },
+  { key: "button", label: "Button Click", kind: "sfx" },
+  { key: "endTurn", label: "End Turn", kind: "sfx" },
+  { key: "quarantine", label: "Quarantine", kind: "sfx" },
+  { key: "houseArrest", label: "House Arrest", kind: "sfx" },
+  { key: "culling", label: "Culling", kind: "sfx" },
+  { key: "laserBlast", label: "Laser Blast", kind: "sfx" },
+  { key: "orbitalStrike", label: "Orbital Strike", kind: "sfx" },
+  { key: "victory", label: "Victory", kind: "sfx" },
+  { key: "death", label: "Death", kind: "sfx" },
+];
+
 class AudioManager {
   private muted = false;
   private sfxVolume = 0.5;
@@ -71,6 +86,27 @@ class AudioManager {
       this.music = null;
     }
     this.currentTrack = "";
+  }
+
+  // --- Sound Test: play any catalog entry once, on demand ---
+  private previewEl: HTMLAudioElement | null = null;
+
+  preview(key: string): void {
+    const file = SFX[key] ?? MUSIC[key];
+    if (!file) return;
+    this.stopPreview();
+    const a = new Audio(snd(file));
+    a.volume = 0.7;
+    a.muted = this.muted;
+    a.play().catch(() => {});
+    this.previewEl = a;
+  }
+
+  stopPreview(): void {
+    if (this.previewEl) {
+      this.previewEl.pause();
+      this.previewEl = null;
+    }
   }
 }
 

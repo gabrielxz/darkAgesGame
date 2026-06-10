@@ -1,4 +1,4 @@
-import { Container, Graphics, Sprite, Text } from "pixi.js";
+import { Graphics, Sprite, Text } from "pixi.js";
 import { Scene, type Game } from "../app";
 import type { ModeId } from "../../sim/types";
 import { tex } from "../assets";
@@ -7,6 +7,8 @@ import { COLORS, STAGE_H, STAGE_W, styles } from "../theme";
 import { TextButton } from "../ui/Button";
 import { HelpOverlay } from "../ui/HelpOverlay";
 import { BriefingScene } from "./BriefingScene";
+import { AboutScene } from "./AboutScene";
+import { SoundTestScene } from "./SoundTestScene";
 
 export class MenuScene extends Scene {
   private help: HelpOverlay | null = null;
@@ -14,82 +16,60 @@ export class MenuScene extends Scene {
   constructor(game: Game) {
     super(game);
 
+    // Full-bleed splash art (it already carries the "Dark Ages of Titan" title).
     const bg = new Sprite(tex("splash"));
     bg.width = STAGE_W;
     bg.height = STAGE_H;
     this.addChild(bg);
 
-    // Darken for legibility.
-    this.addChild(new Graphics().rect(0, 0, STAGE_W, STAGE_H).fill({ color: 0x000000, alpha: 0.45 }));
-
-    const title = new Text({ text: "DARK AGES", style: styles.title });
-    title.anchor.set(0.5);
-    title.position.set(STAGE_W / 2, 130);
-    this.addChild(title);
-
-    const tagline = new Text({
-      text: "A plague sweeps medieval Europe. From orbit, you decide who lives.",
-      style: styles.body,
-    });
-    tagline.anchor.set(0.5);
-    tagline.position.set(STAGE_W / 2, 190);
-    this.addChild(tagline);
-
-    this.addModeCard(
-      STAGE_W / 2 - 320,
-      300,
-      "CLASSIC",
-      "The original 2014 game jam build, preserved exactly — warts, imbalance, and all.",
-      "classic",
-    );
-    this.addModeCard(
-      STAGE_W / 2 + 20,
-      300,
-      "MODERN",
-      "Rebalanced and expanded: action points, real stakes, escalating outbreaks.",
-      "modern",
+    // A compact, translucent panel in the dark lower-left keeps the menu readable
+    // while leaving most of the artwork (and its title) on show.
+    const px = 36;
+    const py = 322;
+    const pw = 372;
+    const ph = 312;
+    this.addChild(
+      new Graphics()
+        .roundRect(px, py, pw, ph, 14)
+        .fill({ color: 0x060a12, alpha: 0.66 })
+        .stroke({ color: COLORS.panelEdge, width: 1.5, alpha: 0.8 }),
     );
 
-    const howto = new TextButton("How to Play", 200, 46, () => this.openHelp("modern"));
-    howto.position.set(STAGE_W / 2 - 100, 580);
-    this.addChild(howto);
+    const innerX = px + 24;
+    const innerW = pw - 48;
+
+    this.playButton("Play Classic", "The original 2014 build — faithful & brutal", innerX, py + 24, innerW, "classic");
+    this.playButton("Play Modern", "Rebalanced & expanded with new systems", innerX, py + 122, innerW, "modern");
+
+    // Secondary row: How to Play · About · (♪ sound test).
+    const rowY = py + 224;
+    const help = new TextButton("How to Play", 158, 42, () => this.openHelp("modern"));
+    help.position.set(innerX, rowY);
+    this.addChild(help);
+
+    const about = new TextButton("About", 100, 42, () => this.game.setScene(new AboutScene(this.game)));
+    about.position.set(innerX + 166, rowY);
+    this.addChild(about);
+
+    // Small, unlabelled music note — a quiet easter egg for the sound test.
+    const soundTest = new TextButton("♪", 42, 42, () => this.game.setScene(new SoundTestScene(this.game)));
+    soundTest.position.set(innerX + innerW - 42, rowY);
+    this.addChild(soundTest);
 
     audio.playMusic("ambient");
   }
 
-  private addModeCard(x: number, y: number, name: string, desc: string, mode: ModeId): void {
-    const w = 300;
-    const h = 240;
-    const card = new Container();
-    card.position.set(x, y);
+  private playButton(label: string, desc: string, x: number, y: number, w: number, mode: ModeId): void {
+    const btn = new TextButton(label, w, 54, () => this.game.setScene(new BriefingScene(this.game, mode)), true);
+    btn.position.set(x, y);
+    this.addChild(btn);
 
-    card.addChild(
-      new Graphics()
-        .roundRect(0, 0, w, h, 12)
-        .fill({ color: COLORS.panel, alpha: 0.85 })
-        .stroke({ color: COLORS.panelEdge, width: 2 }),
-    );
-
-    const heading = new Text({ text: name, style: styles.heading });
-    heading.anchor.set(0.5, 0);
-    heading.position.set(w / 2, 22);
-    card.addChild(heading);
-
-    const body = new Text({
+    const sub = new Text({
       text: desc,
-      style: { ...styles.hudDim, wordWrap: true, wordWrapWidth: w - 40, align: "center" },
+      style: { ...styles.hudDim, fontSize: 14, wordWrap: true, wordWrapWidth: w },
     });
-    body.anchor.set(0.5, 0);
-    body.position.set(w / 2, 70);
-    card.addChild(body);
-
-    const play = new TextButton(`Play ${name}`, w - 60, 48, () => {
-      this.game.setScene(new BriefingScene(this.game, mode));
-    });
-    play.position.set(30, h - 68);
-    card.addChild(play);
-
-    this.addChild(card);
+    sub.position.set(x + 2, y + 58);
+    this.addChild(sub);
   }
 
   private openHelp(mode: ModeId): void {

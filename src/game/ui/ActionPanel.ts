@@ -77,14 +77,12 @@ export class ActionPanel extends Container {
       const check = this.state.canApply(id);
       btn.setEnabled(check.ok);
 
-      // Cost badge (Modern only — Classic actions are free).
+      // Cost badge (Modern only — Classic actions are free). Charges live in the tooltip.
       if (this.state.rule.actionPoints != null) {
         const cost = this.state.actionCost(id);
-        const parts: string[] = [];
-        if (rule.apCost > 0) parts.push(`${rule.apCost}AP`);
+        const parts: string[] = [`${rule.apCost} AP`];
         if (cost > 0) parts.push(fmtK(cost));
-        if (rule.charges != null) parts.push(`x${this.state.charges[id] ?? 0}`);
-        btn.setCost(parts.join(" "), check.ok || check.reason === "unavailable");
+        btn.setCost(parts.join("  "), check.ok || check.reason === "unavailable");
       } else {
         btn.setCost("", true);
       }

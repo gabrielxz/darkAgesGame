@@ -29,8 +29,8 @@ export const styles = {
   hudDim: new TextStyle({ fontFamily: FONT, fontSize: 15, fill: COLORS.textDim }),
   button: new TextStyle({ fontFamily: FONT, fontSize: 16, fill: COLORS.text }),
   buttonSmall: new TextStyle({ fontFamily: FONT, fontSize: 13, fill: COLORS.text }),
-  cityName: new TextStyle({ fontFamily: FONT, fontSize: 11, fill: COLORS.text }),
-  cityNum: new TextStyle({ fontFamily: FONT, fontSize: 10, fill: COLORS.textDim }),
+  cityName: new TextStyle({ fontFamily: FONT, fontSize: 15, fill: COLORS.text }),
+  cityNum: new TextStyle({ fontFamily: FONT, fontSize: 13, fill: COLORS.textDim }),
   body: new TextStyle({ fontFamily: FONT, fontSize: 16, fill: COLORS.text, wordWrap: true, wordWrapWidth: 520 }),
   scoreBig: new TextStyle({ fontFamily: FONT, fontSize: 48, fill: COLORS.accent, stroke: { color: 0x000000, width: 4 } }),
 };

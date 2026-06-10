@@ -14,6 +14,7 @@ import { Tooltip } from "../ui/Tooltip";
 import { TextButton } from "../ui/Button";
 import { ACTION_META } from "../../sim/actions";
 import { EndScene } from "./EndScene";
+import { MenuScene } from "./MenuScene";
 import { BOTTOM_PANEL, fmtK, STAGE_H, TOP_PANEL } from "../theme";
 
 export class GameScene extends Scene {
@@ -75,19 +76,23 @@ export class GameScene extends Scene {
       this.addChild(researchBtn);
     }
 
-    // Top-left utility cluster: help, mute, fullscreen.
-    const helpBtn = new TextButton("?", 38, 38, () => this.openHelp());
-    helpBtn.position.set(12, 12);
+    // Top-left utility cluster: back to menu, help, mute, fullscreen.
+    const menuBtn = new TextButton("Menu", 66, 32, () => this.game.setScene(new MenuScene(this.game)));
+    menuBtn.position.set(12, 12);
+    this.addChild(menuBtn);
+
+    const helpBtn = new TextButton("Help", 60, 32, () => this.openHelp());
+    helpBtn.position.set(84, 12);
     this.addChild(helpBtn);
 
-    const muteBtn = new TextButton(audio.isMuted() ? "♪̸" : "♪", 38, 38, () => {});
-    muteBtn.position.set(56, 12);
+    const muteBtn = new TextButton(audio.isMuted() ? "Muted" : "Sound", 68, 32, () => {});
+    muteBtn.position.set(150, 12);
     this.addChild(muteBtn);
     muteBtn.removeAllListeners("pointertap");
-    muteBtn.on("pointertap", () => muteBtn.setLabel(audio.toggleMute() ? "♪̸" : "♪"));
+    muteBtn.on("pointertap", () => muteBtn.setLabel(audio.toggleMute() ? "Muted" : "Sound"));
 
-    const fsBtn = new TextButton("⛶", 38, 38, () => this.toggleFullscreen());
-    fsBtn.position.set(100, 12);
+    const fsBtn = new TextButton("Full", 56, 32, () => this.toggleFullscreen());
+    fsBtn.position.set(224, 12);
     this.addChild(fsBtn);
 
     this.tooltip = new Tooltip();

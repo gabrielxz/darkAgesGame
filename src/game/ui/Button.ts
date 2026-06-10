@@ -16,12 +16,15 @@ interface ButtonOpts {
 export class ImageButton extends Container {
   private sprite: Sprite;
   private dimLayer: Graphics;
+  private costBg: Graphics;
   private costText: Text;
+  private btnW: number;
   private _enabled = true;
 
   constructor(texture: Texture, opts: ButtonOpts) {
     super();
     const { width, height, onClick } = opts;
+    this.btnW = width;
 
     this.sprite = new Sprite(texture);
     this.sprite.width = width;
@@ -32,9 +35,11 @@ export class ImageButton extends Container {
     this.dimLayer.visible = false;
     this.addChild(this.dimLayer);
 
-    this.costText = new Text({ text: "", style: styles.buttonSmall });
+    // Cost badge: a dark pill in the top-right corner with readable text.
+    this.costBg = new Graphics();
+    this.addChild(this.costBg);
+    this.costText = new Text({ text: "", style: { ...styles.button, fontSize: 15 } });
     this.costText.anchor.set(1, 0);
-    this.costText.position.set(width - 4, 3);
     this.addChild(this.costText);
 
     this.eventMode = "static";
@@ -72,10 +77,18 @@ export class ImageButton extends Container {
     if (!enabled) this.sprite.tint = 0xffffff;
   }
 
-  /** Show a small cost badge (e.g. AP/resource cost) in the corner. */
+  /** Show a cost badge (e.g. AP/resource cost) as a readable pill in the corner. */
   setCost(text: string, affordable: boolean): void {
     this.costText.text = text;
-    this.costText.style.fill = affordable ? COLORS.text : COLORS.danger;
+    this.costText.style.fill = affordable ? 0xffffff : COLORS.danger;
+    this.costBg.clear();
+    if (!text) return;
+    const pad = 5;
+    const w = this.costText.width + pad * 2;
+    const h = this.costText.height + pad;
+    const x = this.btnW - w - 3;
+    this.costBg.roundRect(x, 2, w, h, 5).fill({ color: 0x05080d, alpha: 0.82 });
+    this.costText.position.set(this.btnW - 3 - pad, 2 + pad / 2);
   }
 }
 
@@ -83,14 +96,16 @@ export class ImageButton extends Container {
 export class TextButton extends Container {
   private bg: Graphics;
   private labelText: Text;
+  private primary: boolean;
 
-  constructor(text: string, w: number, h: number, onClick: () => void) {
+  constructor(text: string, w: number, h: number, onClick: () => void, primary = false) {
     super();
+    this.primary = primary;
     this.bg = new Graphics();
     this.addChild(this.bg);
     this.draw(w, h, false);
 
-    this.labelText = new Text({ text, style: styles.button });
+    this.labelText = new Text({ text, style: primary ? styles.heading : styles.button });
     this.labelText.anchor.set(0.5);
     this.labelText.position.set(w / 2, h / 2);
     this.addChild(this.labelText);
@@ -107,11 +122,12 @@ export class TextButton extends Container {
   }
 
   private draw(w: number, h: number, hover: boolean): void {
+    const edge = hover || this.primary ? COLORS.accent : COLORS.panelEdge;
     this.bg
       .clear()
       .roundRect(0, 0, w, h, 8)
-      .fill({ color: hover ? 0x1c3046 : COLORS.panel, alpha: 0.92 })
-      .stroke({ color: hover ? COLORS.accent : COLORS.panelEdge, width: 2 });
+      .fill({ color: hover ? 0x1c3046 : COLORS.panel, alpha: 0.95 })
+      .stroke({ color: edge, width: this.primary ? 2.5 : 2 });
   }
 
   setLabel(text: string): void {

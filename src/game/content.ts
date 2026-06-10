@@ -43,6 +43,29 @@ export const BRIEFINGS: Record<ModeId, Briefing> = {
   },
 };
 
+export const ABOUT = {
+  title: "Dark Ages of Titan",
+  subtitle: "Athens Game Jam · 2014",
+  paragraphs: [
+    "Dark Ages of Titan was built over a single weekend at the Athens Game Jam in early " +
+      "2014 — and it won Best Game overall.",
+    "The team swept every category — Game Design, Art, Implementation, and Sound — with a " +
+      "peer score of 13.06, and earned pro passes to the SIEGE 2014 conference that October.",
+    "This is a 2026 remake. The original build lives on in Classic mode, with a rebuilt, " +
+      "rebalanced Modern mode beside it.",
+  ],
+  teamHeading: "The 2014 team",
+  team: [
+    "Gabriel Beal",
+    "Clayton Mason",
+    "David Pittard",
+    "Richard Harris",
+    "Louis Romanos",
+    "Jenny Brewer",
+    "Andrew Majewski",
+  ],
+};
+
 export interface HelpSection {
   heading: string;
   lines: string[];
