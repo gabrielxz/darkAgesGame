@@ -98,6 +98,9 @@ export class TextButton extends Container {
   private labelText: Text;
   private primary: boolean;
 
+  /** Optional hover callback (for tooltips). */
+  onHover?: (hovering: boolean) => void;
+
   constructor(text: string, w: number, h: number, onClick: () => void, primary = false, clickSound = true) {
     super();
     this.primary = primary;
@@ -113,8 +116,14 @@ export class TextButton extends Container {
     this.eventMode = "static";
     this.cursor = "pointer";
     this.hitArea = this.bg.getLocalBounds().rectangle;
-    this.on("pointerover", () => this.draw(w, h, true));
-    this.on("pointerout", () => this.draw(w, h, false));
+    this.on("pointerover", () => {
+      this.draw(w, h, true);
+      this.onHover?.(true);
+    });
+    this.on("pointerout", () => {
+      this.draw(w, h, false);
+      this.onHover?.(false);
+    });
     this.on("pointertap", () => {
       if (clickSound) audio.play("button");
       onClick();
