@@ -24,10 +24,10 @@ export class AboutScene extends Scene {
 
     const subtitle = new Text({ text: ABOUT.subtitle, style: { ...styles.heading, fill: COLORS.accent } });
     subtitle.anchor.set(0.5, 0);
-    subtitle.position.set(STAGE_W / 2, 104);
+    subtitle.position.set(STAGE_W / 2, 124);
     this.addChild(subtitle);
 
-    let y = 158;
+    let y = 178;
     for (const para of ABOUT.paragraphs) {
       const t = new Text({ text: para, style: wrapped(styles.body, 760, 17, "center") });
       t.anchor.set(0.5, 0);
@@ -41,10 +41,15 @@ export class AboutScene extends Scene {
     teamHeading.position.set(STAGE_W / 2, y + 8);
     this.addChild(teamHeading);
 
-    const names = new Text({ text: ABOUT.team.join("      "), style: wrapped(styles.hud, 820, undefined, "center") });
-    names.anchor.set(0.5, 0);
-    names.position.set(STAGE_W / 2, y + 46);
-    this.addChild(names);
+    // Names on two balanced lines (4 + 3) so no single surname wraps awkwardly.
+    const half = Math.ceil(ABOUT.team.length / 2);
+    const rows = [ABOUT.team.slice(0, half), ABOUT.team.slice(half)];
+    rows.forEach((row, i) => {
+      const line = new Text({ text: row.join("    ·    "), style: { ...styles.hud, align: "center" } });
+      line.anchor.set(0.5, 0);
+      line.position.set(STAGE_W / 2, y + 46 + i * 30);
+      this.addChild(line);
+    });
 
     const back = new TextButton("Back", 180, 50, () => this.game.setScene(new MenuScene(this.game)));
     back.position.set(STAGE_W / 2 - 90, STAGE_H - 70);
